@@ -1,0 +1,98 @@
+package com.xhn.sys.role.controller;
+
+import com.xhn.response.ResponseResult;
+import com.xhn.sys.role.model.SysRole;
+import com.xhn.sys.role.service.SysRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 系统角色控制器
+ *
+ * @author xhn
+ * @date 2025-12-23 10:21:30
+ */
+@RestController
+@RequestMapping("/sys/role")
+public class SysRoleController {
+
+    @Autowired
+    private SysRoleService sysRoleService;
+
+    /**
+     * 新增角色
+     *
+     * @param sysRole 角色信息
+     * @return 操作结果
+     */
+    @PostMapping
+    public ResponseResult<SysRole> create(@RequestBody SysRole sysRole) {
+        boolean result = sysRoleService.save(sysRole);
+        if (result) {
+            return ResponseResult.success(sysRole);
+        } else {
+            return ResponseResult.error("新增角色失败");
+        }
+    }
+
+    /**
+     * 根据ID删除角色
+     *
+     * @param id 角色ID
+     * @return 操作结果
+     */
+    @DeleteMapping("/{id}")
+    public ResponseResult<Void> delete(@PathVariable Long id) {
+        boolean result = sysRoleService.removeById(id);
+        if (result) {
+            return ResponseResult.success();
+        } else {
+            return ResponseResult.error("删除角色失败");
+        }
+    }
+
+    /**
+     * 更新角色信息
+     *
+     * @param sysRole 角色信息
+     * @return 操作结果
+     */
+    @PutMapping
+    public ResponseResult<SysRole> update(@RequestBody SysRole sysRole) {
+        boolean result = sysRoleService.updateById(sysRole);
+        if (result) {
+            return ResponseResult.success(sysRole);
+        } else {
+            return ResponseResult.error("更新角色失败");
+        }
+    }
+
+    /**
+     * 根据ID查询角色
+     *
+     * @param id 角色ID
+     * @return 角色信息
+     */
+    @GetMapping("/{id}")
+    public ResponseResult<SysRole> getById(@PathVariable Long id) {
+        SysRole sysRole = sysRoleService.getById(id);
+        if (sysRole != null) {
+            return ResponseResult.success(sysRole);
+        } else {
+            return ResponseResult.error("角色不存在");
+        }
+    }
+
+    /**
+     * 查询所有角色列表
+     *
+     * @return 角色列表
+     */
+    @GetMapping
+    public ResponseResult<List<SysRole>> listAll() {
+        List<SysRole> list = sysRoleService.list();
+        return ResponseResult.success(list);
+    }
+}

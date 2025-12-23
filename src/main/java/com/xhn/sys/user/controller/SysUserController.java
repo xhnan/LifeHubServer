@@ -1,5 +1,6 @@
 package com.xhn.sys.user.controller;
 
+import com.xhn.response.ResponseResult;
 import com.xhn.sys.user.model.SysUser;
 import com.xhn.sys.user.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.util.List;
  * 系统用户控制器
  *
  * @author xhn
- * @date 2025-12-10 10:13:27
+ * @date 2025-12-09
  */
 @RestController
 @RequestMapping("/sys/user")
@@ -20,6 +21,14 @@ public class SysUserController {
     @Autowired
     private SysUserService sysUserService;
 
+
+    @GetMapping("/test")
+    public ResponseResult<String>  test(){
+        return ResponseResult.success("test");
+    }
+
+
+
     /**
      * 新增用户
      *
@@ -27,8 +36,12 @@ public class SysUserController {
      * @return 操作结果
      */
     @PostMapping
-    public Boolean save(@RequestBody SysUser sysUser) {
-        return sysUserService.save(sysUser);
+    public ResponseResult<SysUser> create(@RequestBody SysUser sysUser) {
+        boolean result = sysUserService.save(sysUser);
+        if (result) {
+            return ResponseResult.success(sysUser);
+        }
+        return ResponseResult.error("新增用户失败");
     }
 
     /**
@@ -38,19 +51,27 @@ public class SysUserController {
      * @return 操作结果
      */
     @DeleteMapping("/{id}")
-    public Boolean removeById(@PathVariable Long id) {
-        return sysUserService.removeById(id);
+    public ResponseResult<Boolean> delete(@PathVariable Long id) {
+        boolean result = sysUserService.removeById(id);
+        if (result) {
+            return ResponseResult.success(true);
+        }
+        return ResponseResult.error("删除用户失败");
     }
 
     /**
-     * 修改用户信息
+     * 更新用户信息
      *
      * @param sysUser 用户信息
      * @return 操作结果
      */
     @PutMapping
-    public Boolean updateById(@RequestBody SysUser sysUser) {
-        return sysUserService.updateById(sysUser);
+    public ResponseResult<SysUser> update(@RequestBody SysUser sysUser) {
+        boolean result = sysUserService.updateById(sysUser);
+        if (result) {
+            return ResponseResult.success(sysUser);
+        }
+        return ResponseResult.error("更新用户失败");
     }
 
     /**
@@ -60,17 +81,22 @@ public class SysUserController {
      * @return 用户信息
      */
     @GetMapping("/{id}")
-    public SysUser getById(@PathVariable Long id) {
-        return sysUserService.getById(id);
+    public ResponseResult<SysUser> getById(@PathVariable Long id) {
+        SysUser sysUser = sysUserService.getById(id);
+        if (sysUser != null) {
+            return ResponseResult.success(sysUser);
+        }
+        return ResponseResult.error("用户不存在");
     }
 
     /**
-     * 查询所有用户
+     * 查询所有用户列表
      *
      * @return 用户列表
      */
     @GetMapping
-    public List<SysUser> list() {
-        return sysUserService.list();
+    public ResponseResult<List<SysUser>> listAll() {
+        List<SysUser> list = sysUserService.list();
+        return ResponseResult.success(list);
     }
 }
