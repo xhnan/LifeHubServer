@@ -1,9 +1,16 @@
 package com.xhn.sys.user.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xhn.base.exception.ApplicationException;
 import com.xhn.response.ResponseResult;
 import com.xhn.sys.user.model.SysUser;
 import com.xhn.sys.user.service.SysUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +28,7 @@ public class SysUserController {
     @Autowired
     private SysUserService sysUserService;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @GetMapping("/test")
     public ResponseResult<String>  test(){
@@ -37,6 +45,20 @@ public class SysUserController {
      */
     @PostMapping
     public ResponseResult<SysUser> create(@RequestBody SysUser sysUser) {
+
+        //对密码加密
+        if (sysUser.getPassword() != null) {
+            String password = sysUser.getPassword();
+            //加入Security的加密
+            PasswordEncoder encoder = new BCryptPasswordEncoder();
+            String newPassword =encoder.encode(password);
+            sysUser.setPassword(newPassword);
+
+        }else {
+            throw new ApplicationException("密码不能为空");
+        }
+
+
         boolean result = sysUserService.save(sysUser);
         if (result) {
             return ResponseResult.success(sysUser);
@@ -99,4 +121,13 @@ public class SysUserController {
         List<SysUser> list = sysUserService.list();
         return ResponseResult.success(list);
     }
+
+    //分页全部用户
+    @GetMapping("/page")
+    public ResponseResult<Page<SysUser>> pageAll(@RequestParam int pageNum, @RequestParam int pageSize) {
+        Page<SysUser> page = new Page<>(pageNum, pageSize);
+        Page<SysUser> resultPage = sysUserService.page(page);
+        return ResponseResult.success(resultPage);
+    }
+
 }

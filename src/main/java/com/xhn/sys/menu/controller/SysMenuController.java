@@ -1,6 +1,7 @@
 package com.xhn.sys.menu.controller;
 
 import com.xhn.response.ResponseResult;
+import com.xhn.sys.menu.model.MenuTreeModel;
 import com.xhn.sys.menu.model.SysMenu;
 import com.xhn.sys.menu.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,4 +92,26 @@ public class SysMenuController {
         List<SysMenu> list = sysMenuService.list();
         return ResponseResult.success(list);
     }
+
+
+    /**
+     * 获取菜单树
+     */
+    @GetMapping("/tree")
+    public ResponseResult<List<MenuTreeModel>> getMenuTree() {
+        List<MenuTreeModel> menuTree = sysMenuService.getMenuTree();
+        return ResponseResult.success(menuTree);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

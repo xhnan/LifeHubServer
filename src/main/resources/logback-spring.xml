@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!--
+      推荐用 logback-spring.xml：
+      1) 支持 <springProfile> 分环境配置
+      2) 支持 <springProperty> 读取 application*.properties
+     -->
+
+    <!-- 从 Spring 环境读取日志路径/应用名；提供默认值 -->
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="LifeHubServer"/>
+    <!-- 你也可以在 application-dev.properties / application-prod.properties 里设置 logging.file.path -->
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="logs"/>
+
+    <!--
+      控制台：彩色（使用 logback 自带的颜色转换器，避免依赖 Spring Boot 的 %clr）
+      - %highlight: 根据 level 自动上色
+      - %cyan/%magenta/%yellow/%green: 固定颜色
+      注：颜色只影响控制台，文件仍然不带颜色。
+    -->
+    <property name="CONSOLE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n%ex"/>
+
+    <!-- 文件：不要彩色，避免 ANSI 控制符写入文件 -->
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n%ex"/>
+
+    <!-- 控制台输出（开发环境更常用） -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 业务日志文件：按天 + 按大小滚动 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}.log</file>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 示例：logs/LifeHubServer.2025-12-30.0.log.gz -->
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- SQL 日志文件：用于单独落 MyBatis SQL（建议仅 dev 开启） -->
+    <appender name="SQL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}-sql.log</file>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}-sql.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 开发环境：更详细日志 + 控制台为主 -->
+    <springProfile name="dev,default">
+        <!-- 你的业务包：建议 DEBUG -->
+        <logger name="com.xhn" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </logger>
+
+        <!--
+          MyBatis/MyBatis-Plus SQL 日志：dev 下同时输出到 控制台 + 业务文件 + sql 文件
+          additivity=false：避免重复打到 root（否则同一条 SQL 会多次输出）
+        -->
+        <logger name="org.mybatis" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="SQL_FILE"/>
+        </logger>
+        <logger name="org.apache.ibatis" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="SQL_FILE"/>
+        </logger>
+
+        <!-- MyBatis-Plus 本身的一些日志（非 SQL），一般 INFO 足够 -->
+        <logger name="com.baomidou" level="INFO"/>
+
+        <!-- Spring / Reactor / Netty 降噪（需要更详细再调高） -->
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="reactor.netty" level="INFO"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- 生产环境：更克制的日志 -->
+    <springProfile name="prod">
+        <logger name="com.xhn" level="INFO"/>
+
+        <!-- 生产不建议打印 SQL（可能泄露敏感字段且刷屏） -->
+        <logger name="org.mybatis" level="WARN"/>
+        <logger name="org.apache.ibatis" level="WARN"/>
+
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="reactor.netty" level="INFO"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>
+
