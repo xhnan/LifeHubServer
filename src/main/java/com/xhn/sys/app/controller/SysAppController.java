@@ -4,6 +4,7 @@ import com.xhn.response.ResponseResult;
 import com.xhn.sys.app.model.SysApp;
 import com.xhn.sys.app.service.SysAppService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

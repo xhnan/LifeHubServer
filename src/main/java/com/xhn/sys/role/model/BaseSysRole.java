@@ -4,13 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 /**
- * 角色实体类
+ * 角色信息表实体类
  * @author xhn
- * @date 2025-12-23 15:20:34
+ * @date 2025-12-19
  */
 @Data
 @TableName("sys_role")

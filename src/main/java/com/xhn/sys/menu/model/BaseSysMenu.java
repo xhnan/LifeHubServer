@@ -9,9 +9,8 @@ import java.time.LocalDateTime;
 
 /**
  * 菜单实体类
- *
  * @author xhn
- * @date 2025-12-23 15:19:49
+ * @date 2025-12-19
  */
 @Data
 @TableName("sys_menu")
@@ -20,7 +19,7 @@ public class BaseSysMenu {
     /**
      * 主键ID
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 /**
  * 用户实体类
  * @author xhn
- * @date 2025-12-23 10:24:10
+ * @date 2025-12-18 10:16:02
  */
 @Data
 @TableName("sys_user")
@@ -125,5 +125,4 @@ public class BaseSysUser {
      */
     @TableField("is_deleted")
     private Boolean isDeleted;
-
 }

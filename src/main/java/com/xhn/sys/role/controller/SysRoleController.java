@@ -1,8 +1,10 @@
 package com.xhn.sys.role.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhn.response.ResponseResult;
 import com.xhn.sys.role.model.SysRole;
 import com.xhn.sys.role.service.SysRoleService;
+import com.xhn.sys.user.model.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,4 +97,14 @@ public class SysRoleController {
         List<SysRole> list = sysRoleService.list();
         return ResponseResult.success(list);
     }
+
+
+    //分页全部用户
+    @GetMapping("/page")
+    public ResponseResult<Page<SysRole>> pageAll(@RequestParam int pageNum, @RequestParam int pageSize) {
+        Page<SysRole> page = new Page<>(pageNum, pageSize);
+        Page<SysRole> resultPage = sysRoleService.page(page);
+        return ResponseResult.success(resultPage);
+    }
+
 }

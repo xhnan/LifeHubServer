@@ -4,21 +4,26 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
 import java.time.LocalDateTime;
 
 /**
  * 系统应用实体类
  * @author xhn
- * @date 2025-12-23
+ * @date 2025-12-19
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 @TableName("sys_app")
 public class BaseSysApp {
 
     /**
      * 系统ID，主键
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
