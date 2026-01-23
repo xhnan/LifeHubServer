@@ -9,12 +9,14 @@ import java.time.LocalDateTime;
 
 /**
  * 权限菜单关联表实体类
+ * 
  * @author xhn
- * @date 2025-12-19
+ * @date 2025-01-22
  */
 @Data
 @TableName("sys_permission_menu")
 public class BaseSysPermissionMenu {
+
     /**
      * 主键ID
      */
@@ -35,4 +37,5 @@ public class BaseSysPermissionMenu {
      * 创建时间
      */
     private LocalDateTime createdAt;
+
 }

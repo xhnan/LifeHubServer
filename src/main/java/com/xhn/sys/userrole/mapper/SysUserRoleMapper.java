@@ -1,7 +1,10 @@
 package com.xhn.sys.userrole.mapper;
 
+import com.xhn.sys.role.model.SysRole;
 import com.xhn.sys.userrole.model.SysUserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * 用户角色关联表 Mapper 接口
@@ -10,4 +13,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
+
+    List<SysRole> getRolesByUserId(Long userId);
 }

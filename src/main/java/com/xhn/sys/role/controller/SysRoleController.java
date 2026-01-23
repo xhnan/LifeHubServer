@@ -1,14 +1,20 @@
 package com.xhn.sys.role.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.util.concurrent.RateLimiter;
 import com.xhn.response.ResponseResult;
 import com.xhn.sys.role.model.SysRole;
 import com.xhn.sys.role.service.SysRoleService;
 import com.xhn.sys.user.model.SysUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 系统角色控制器
@@ -19,6 +25,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/sys/role")
 public class SysRoleController {
+
+    private Logger logger = LoggerFactory.getLogger(SysRoleController.class);
 
     @Autowired
     private SysRoleService sysRoleService;
@@ -106,5 +114,13 @@ public class SysRoleController {
         Page<SysRole> resultPage = sysRoleService.page(page);
         return ResponseResult.success(resultPage);
     }
+
+    @GetMapping("/test")
+    public ResponseResult test() {
+
+        logger.info("time----"+ new Date());
+        return ResponseResult.success();
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.xhn.sys.userrole.controller;
 
 import com.xhn.response.ResponseResult;
+import com.xhn.sys.role.model.SysRole;
 import com.xhn.sys.userrole.model.SysUserRole;
 import com.xhn.sys.userrole.service.SysUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,4 +92,16 @@ public class SysUserRoleController {
         List<SysUserRole> list = sysUserRoleService.list();
         return ResponseResult.success(list);
     }
+
+    //获取用户的角色列表
+    @GetMapping("/user/{userId}/roles")
+    public ResponseResult<List<SysRole>> getRolesByUserId(@PathVariable Long userId) {
+        List<SysRole> roles = sysUserRoleService.getRolesByUserId(userId);
+        return ResponseResult.success(roles);
+
+
+    }
+
+
+
 }

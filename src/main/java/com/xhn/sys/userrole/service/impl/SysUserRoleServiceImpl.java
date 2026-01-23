@@ -1,10 +1,13 @@
 package com.xhn.sys.userrole.service.impl;
 
+import com.xhn.sys.role.model.SysRole;
 import com.xhn.sys.userrole.model.SysUserRole;
 import com.xhn.sys.userrole.mapper.SysUserRoleMapper;
 import com.xhn.sys.userrole.service.SysUserRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 用户角色关联表 Service实现类
@@ -15,4 +18,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUserRole> implements SysUserRoleService {
 
+    @Override
+    public List<SysRole> getRolesByUserId(Long userId) {
+
+        return this.baseMapper.getRolesByUserId(userId);
+    }
 }

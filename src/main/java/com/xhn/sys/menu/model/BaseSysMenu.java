@@ -4,22 +4,24 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
 /**
  * 菜单实体类
  * @author xhn
- * @date 2025-12-19
+ * @date 2025-12-22 16:54:58
  */
 @Data
+@Accessors(chain = true)
 @TableName("sys_menu")
 public class BaseSysMenu {
 
     /**
      * 主键ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

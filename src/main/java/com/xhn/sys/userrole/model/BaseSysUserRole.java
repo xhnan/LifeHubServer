@@ -9,14 +9,12 @@ import java.time.LocalDateTime;
 
 /**
  * 用户角色关联表实体类
- * 
  * @author xhn
- * @date 2025-12-19
+ * @date 2025-01-22
  */
 @Data
 @TableName("sys_user_role")
 public class BaseSysUserRole {
-
     /**
      * 主键ID
      */
@@ -37,5 +35,4 @@ public class BaseSysUserRole {
      * 创建时间
      */
     private LocalDateTime createdAt;
-
 }

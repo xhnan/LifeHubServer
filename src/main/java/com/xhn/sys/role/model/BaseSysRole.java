@@ -7,9 +7,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 角色信息表实体类
+ * 角色表实体类
  * @author xhn
- * @date 2025-12-19
+ * @date 2025-12-25
  */
 @Data
 @TableName("sys_role")
@@ -33,7 +33,7 @@ public class BaseSysRole {
     /**
      * 角色状态：1启用 0禁用
      */
-    private Integer status;
+    private Boolean status;
 
     /**
      * 角色备注说明
