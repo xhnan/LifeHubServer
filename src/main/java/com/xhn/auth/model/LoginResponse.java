@@ -34,7 +34,11 @@ public class LoginResponse {
      */
     private String username;
 
-    public LoginResponse(String token, Long expiresIn, String username) {
+
+    //头像
+    private String avatar;
+
+    public LoginResponse(String token, Long expiresIn, String username, String avatar) {
         this.token = token;
         this.expiresIn = expiresIn;
         this.username = username;

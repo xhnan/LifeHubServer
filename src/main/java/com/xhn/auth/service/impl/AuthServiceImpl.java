@@ -79,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(username);
         
         // 7. 返回登录响应
-        return new LoginResponse(token, 86400000L, username);
+        return new LoginResponse(token, 86400000L, username,"");
     }
 
     @Override
