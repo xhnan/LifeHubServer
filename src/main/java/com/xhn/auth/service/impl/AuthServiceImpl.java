@@ -3,6 +3,7 @@ package com.xhn.auth.service.impl;
 import com.xhn.auth.model.LoginRequest;
 import com.xhn.auth.model.LoginResponse;
 import com.xhn.auth.service.AuthService;
+import com.xhn.base.exception.ApplicationException;
 import com.xhn.base.utils.JwtUtil;
 import com.xhn.sys.user.model.SysUser;
 import com.xhn.sys.user.service.SysUserService;
@@ -35,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 1. 验证用户名和密码不能为空
         if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
-            throw new IllegalArgumentException("用户名和密码不能为空");
+            throw new ApplicationException("用户名和密码不能为空");
         }
 
         // 2. 根据用户名查询用户
@@ -45,18 +46,18 @@ public class AuthServiceImpl implements AuthService {
         
         if (user == null) {
             log.warn("登录失败：用户不存在，用户名: {}", username);
-            throw new IllegalArgumentException("用户名或密码错误");
+            throw new ApplicationException("用户名或密码错误");
         }
 
         // 3. 检查用户状态
         if ("inactive".equals(user.getStatus())) {
             log.warn("登录失败：用户账户未激活，用户名: {}", username);
-            throw new IllegalArgumentException("用户账户未激活");
+            throw new ApplicationException("用户账户未激活");
         }
         
         if ("banned".equals(user.getStatus())) {
             log.warn("登录失败：用户账户已被封禁，用户名: {}", username);
-            throw new IllegalArgumentException("用户账户已被封禁");
+            throw new ApplicationException("用户账户已被封禁");
         }
 
         // 4. 验证密码
@@ -66,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
             sysUserService.updateById(user);
             
             log.warn("登录失败：密码错误，用户名: {}", username);
-            throw new IllegalArgumentException("用户名或密码错误");
+            throw new ApplicationException("用户名或密码错误");
         }
 
         // 5. 重置登录失败次数，更新最后登录时间
