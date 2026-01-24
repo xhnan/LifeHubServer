@@ -3,7 +3,7 @@ package com.xhn.auth.controller;
 
 import com.xhn.auth.model.LoginRequest;
 import com.xhn.auth.model.LoginResponse;
-import com.xhn.base.utils.JwtUtil;
+import com.xhn.auth.service.AuthService;
 import com.xhn.response.ResponseResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
     /**
      * 用户登录
@@ -32,15 +32,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseResult<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        // TODO: 实现登录逻辑
-        // 1. 验证用户名密码（从数据库查询用户信息）
-        // 2. 验证密码是否正确（BCrypt 比对）
-        // 3. 生成 JWT token
-
-        // 示例：生成 token
-        String token = jwtUtil.generateToken(loginRequest.getUsername());
-        LoginResponse response = new LoginResponse(token, 86400000L, loginRequest.getUsername());
-
+        LoginResponse response = authService.login(loginRequest);
         return ResponseResult.success(response);
     }
 

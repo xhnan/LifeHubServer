@@ -42,7 +42,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseResult<Void>> handleValidException(Exception e) {
         logger.error("参数校验异常: {}", e.getMessage(), e);
         String message = "参数校验失败";
-        if (e instanceof MethodArgumentNotValidException ex) {
+        if (e instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException ex = (MethodArgumentNotValidException) e;
             if (ex.getBindingResult().hasErrors()) {
                 message = Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage();
             }
@@ -68,7 +69,8 @@ public class GlobalExceptionHandler {
         if (cause instanceof DecodingException) {
             Throwable rootCause = cause.getCause();
 
-            if (rootCause instanceof MismatchedInputException mie) {
+            if (rootCause instanceof MismatchedInputException) {
+                MismatchedInputException mie = (MismatchedInputException) rootCause;
                 String fieldName = mie.getPath().stream()
                         .map(JsonMappingException.Reference::getFieldName)
                         .filter(Objects::nonNull)
