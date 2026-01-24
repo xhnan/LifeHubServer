@@ -13,10 +13,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.resource.NoResourceFoundException;
 import org.springframework.web.server.ServerWebInputException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -88,6 +87,15 @@ public class GlobalExceptionHandler {
         );
     }
 
+    /**
+     * 处理 404 资源未找到异常
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ResponseResult<Void>> handleNoResourceFound(NoResourceFoundException e) {
+        logger.warn("资源未找到: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ResponseResult.error(404, "请求的资源不存在"));
+    }
 
     /**
      * 处理空指针异常

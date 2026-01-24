@@ -54,6 +54,10 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.12.6</version>
@@ -102,7 +106,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- 下面这两个建议删除版本号/甚至无需显式依赖：Spring Boot 会统一管理 slf4j + logback 版本 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
