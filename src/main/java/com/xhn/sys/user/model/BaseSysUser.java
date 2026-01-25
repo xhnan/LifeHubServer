@@ -20,7 +20,7 @@ public class BaseSysUser {
      * 用户ID，主键，自增
      */
     @TableId(type = IdType.AUTO)
-    private Integer userId;
+    private Long userId;
 
     /**
      * 用户名，唯一

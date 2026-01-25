@@ -21,9 +21,25 @@ public class MenuTreeModel {
     private String menuName;
 
     private Integer level;
+
     private String icon;
 
     private Integer sort;
-    private List<MenuTreeModel> children;
 
+    /** 路由路径 */
+    private String path;
+
+    /** 组件路径 */
+    private String component;
+
+    /** 菜单类型(目录/菜单/按钮) */
+    private Integer menuType;
+
+    /** 是否可见 */
+    private Boolean visible;
+
+    /** 权限标识 */
+    private String permission;
+
+    private List<MenuTreeModel> children;
 }

@@ -76,8 +76,11 @@ public class AuthServiceImpl implements AuthService {
         sysUserService.updateById(user);
 
         // 6. 生成JWT token
-        String token = jwtUtil.generateToken(username);
-        
+        String token = jwtUtil.generateToken(user.getUserId());
+        //保存用户角色到redis中
+        //查询
+
+
         // 7. 返回登录响应
         return new LoginResponse(token, 86400000L, username,"");
     }

@@ -31,7 +31,7 @@ public class JwtUtil {
     private String secretKey;
 
     @Value("${jwt.expiration:86400000}")
-    private long expiration; // 默认24小时，可配置
+    private long expiration; // 默认24小时,可配置
 
     /**
      * 生成密钥
@@ -41,43 +41,43 @@ public class JwtUtil {
     }
 
     /**
-     * 生成Token（仅包含用户名）
+     * 生成Token(仅包含用户ID)
      *
-     * @param username 用户名
+     * @param userId 用户ID
      * @return JWT token
      */
-    public String generateToken(String username) {
-        return generateToken(username, new HashMap<>());
+    public String generateToken(Long userId) {
+        return generateToken(userId, new HashMap<>());
     }
 
     /**
-     * 生成Token（包含用户名和权限信息）
+     * 生成Token(包含用户ID和权限信息)
      *
-     * @param username 用户名
-     * @param permissions 权限列表（可为null）
+     * @param userId 用户ID
+     * @param permissions 权限列表(可为null)
      * @return JWT token
      */
-    public String generateToken(String username, List<String> permissions) {
+    public String generateToken(Long userId, List<String> permissions) {
         Map<String, Object> claims = new HashMap<>();
         if (permissions != null && !permissions.isEmpty()) {
             claims.put("permissions", permissions);
         }
-        return generateToken(username, claims);
+        return generateToken(userId, claims);
     }
 
     /**
-     * 生成Token（包含自定义声明）
+     * 生成Token(包含自定义声明)
      *
-     * @param username 用户名
+     * @param userId 用户ID
      * @param claims 自定义声明
      * @return JWT token
      */
-    public String generateToken(String username, Map<String, Object> claims) {
+    public String generateToken(Long userId, Map<String, Object> claims) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
-                .subject(username)
+                .subject(String.valueOf(userId))
                 .claims(claims)
                 .issuedAt(now)
                 .expiration(expiryDate)
@@ -109,13 +109,13 @@ public class JwtUtil {
     }
 
     /**
-     * 从Token中获取用户名
+     * 从Token中获取用户ID
      *
      * @param token JWT token
-     * @return 用户名
+     * @return 用户ID
      */
-    public String getUsernameFromToken(String token) {
-        return parseToken(token).getSubject();
+    public Long getUserIdFromToken(String token) {
+        return Long.valueOf(parseToken(token).getSubject());
     }
 
     /**
@@ -147,7 +147,7 @@ public class JwtUtil {
      * 验证Token是否有效
      *
      * @param token JWT token
-     * @return true-有效，false-无效
+     * @return true-有效,false-无效
      */
     public boolean validateToken(String token) {
         try {
@@ -169,8 +169,8 @@ public class JwtUtil {
      * 检查Token是否即将过期
      *
      * @param token JWT token
-     * @param threshold 阈值（毫秒），默认30分钟
-     * @return true-即将过期，false-未过期
+     * @param threshold 阈值(毫秒),默认30分钟
+     * @return true-即将过期,false-未过期
      */
     public boolean isTokenExpiringSoon(String token, long threshold) {
         try {
@@ -184,7 +184,7 @@ public class JwtUtil {
     }
 
     /**
-     * 刷新Token（保留原有的claims）
+     * 刷新Token(保留原有的claims)
      *
      * @param token 旧的JWT token
      * @return 新的JWT token
@@ -192,13 +192,13 @@ public class JwtUtil {
     public String refreshToken(String token) {
         try {
             Claims claims = parseToken(token);
-            String username = claims.getSubject();
+            Long userId = Long.valueOf(claims.getSubject());
 
-            // 移除标准的时间相关声明，使用新的时间
+            // 移除标准的时间相关声明,使用新的时间
             claims.remove(Claims.ISSUED_AT);
             claims.remove(Claims.EXPIRATION);
 
-            return generateToken(username, new HashMap<>(claims));
+            return generateToken(userId, new HashMap<>(claims));
         } catch (Exception e) {
             log.error("刷新Token失败", e);
             throw new JwtException("无法刷新Token", e);
@@ -219,7 +219,7 @@ public class JwtUtil {
      * 检查Token是否过期
      *
      * @param token JWT token
-     * @return true-已过期，false-未过期
+     * @return true-已过期,false-未过期
      */
     public boolean isTokenExpired(String token) {
         try {
