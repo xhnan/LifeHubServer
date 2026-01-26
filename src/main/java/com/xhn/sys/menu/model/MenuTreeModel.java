@@ -41,5 +41,7 @@ public class MenuTreeModel {
     /** 权限标识 */
     private String permission;
 
+    private String routerName;
+
     private List<MenuTreeModel> children;
 }

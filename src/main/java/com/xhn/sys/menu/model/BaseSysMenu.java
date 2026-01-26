@@ -4,17 +4,15 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.experimental.Accessors;
-
 import java.time.LocalDateTime;
 
 /**
- * 菜单实体类
+ * 菜单表实体类
+ * 
  * @author xhn
- * @date 2025-12-22 16:54:58
+ * @date 2025-12-27 10:57:26
  */
 @Data
-@Accessors(chain = true)
 @TableName("sys_menu")
 public class BaseSysMenu {
 
@@ -98,5 +96,10 @@ public class BaseSysMenu {
      * 更新时间
      */
     private LocalDateTime updatedAt;
+
+    /**
+     * 路由名称
+     */
+    private String routerName;
 
 }

@@ -67,6 +67,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         node.setId(menu.getId());
         node.setMenuName(menu.getMenuName());
         node.setLevel(level);
+        node.setPath(menu.getPath());
+        node.setParentId(menu.getParentId());
+        node.setComponent(menu.getComponent());
+        node.setIcon(menu.getIcon());
+        node.setSort(menu.getSortOrder());
+        node.setMenuType(menu.getMenuType());
+        node.setVisible(menu.getVisible());
+        node.setPermission(menu.getMenuCode());
+        node.setRouterName(menu.getRouterName());
 
         Long id = menu.getId();
         if (id == null) {
