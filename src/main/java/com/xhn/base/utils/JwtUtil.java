@@ -34,6 +34,20 @@ public class JwtUtil {
     private long expiration; // 默认24小时,可配置
 
     /**
+     * 获取token有效期（毫秒）
+     */
+    public long getExpirationMillis() {
+        return expiration;
+    }
+
+    /**
+     * 获取token有效期（Duration）
+     */
+    public java.time.Duration getExpirationDuration() {
+        return java.time.Duration.ofMillis(expiration);
+    }
+
+    /**
      * 生成密钥
      */
     private SecretKey getSigningKey() {

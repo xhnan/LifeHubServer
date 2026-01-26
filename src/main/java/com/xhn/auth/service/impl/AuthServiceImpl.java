@@ -3,17 +3,26 @@ package com.xhn.auth.service.impl;
 import com.xhn.auth.model.LoginRequest;
 import com.xhn.auth.model.LoginResponse;
 import com.xhn.auth.service.AuthService;
+import com.xhn.base.constants.RedisKeys;
 import com.xhn.base.exception.ApplicationException;
 import com.xhn.base.utils.JwtUtil;
+import com.xhn.sys.role.model.SysRole;
 import com.xhn.sys.user.model.SysUser;
 import com.xhn.sys.user.service.SysUserService;
+import com.xhn.sys.userrole.service.SysUserRoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 认证服务实现类
@@ -28,6 +37,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final SysUserService sysUserService;
     private final PasswordEncoder passwordEncoder;
+    private final SysUserRoleService sysUserRoleService;
+    private final ReactiveRedisTemplate<String, Object> reactiveRedisTemplate;
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
@@ -77,12 +88,37 @@ public class AuthServiceImpl implements AuthService {
 
         // 6. 生成JWT token
         String token = jwtUtil.generateToken(user.getUserId());
-        //保存用户角色到redis中
-        //查询
 
+        // token 有效期（毫秒），作为统一口径
+        long tokenTtlMillis = jwtUtil.getExpirationMillis();
+        Duration tokenTtl = jwtUtil.getExpirationDuration();
 
-        // 7. 返回登录响应
-        return new LoginResponse(token, 86400000L, username,"");
+        // 7. 保存用户角色到Redis中（异步操作，不阻塞登录流程）
+        List<SysRole> roles = sysUserRoleService.getRolesByUserId(user.getUserId());
+        if (roles != null && !roles.isEmpty()) {
+            List<String> roleCodes = roles.stream()
+                    .map(SysRole::getRoleCode)
+                    .collect(Collectors.toList());
+
+            String redisKey = RedisKeys.userRolesKey(user.getUserId());
+            reactiveRedisTemplate.opsForValue()
+                    .set(redisKey, roleCodes, tokenTtl)
+                    .doOnSuccess(v -> log.info("用户角色已保存到Redis，用户ID: {}, 角色列表: {}, ttl: {}ms", user.getUserId(), roleCodes, tokenTtlMillis))
+                    .doOnError(e -> log.error("保存用户角色到Redis失败，用户ID: {}", user.getUserId(), e))
+                    .onErrorResume(e -> {
+                        // 即使Redis失败也不影响登录
+                        log.warn("Redis操作失败，继续登录流程，用户ID: {}", user.getUserId());
+                        return Mono.empty();
+                    })
+                    // 避免在当前线程里做IO（如果调用链在事件线程上，最好切走）
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
+        } else {
+            log.warn("用户未分配角色，用户ID: {}", user.getUserId());
+        }
+
+        // 8. 返回登录响应
+        return new LoginResponse(token, tokenTtlMillis, username, "");
     }
 
     @Override
