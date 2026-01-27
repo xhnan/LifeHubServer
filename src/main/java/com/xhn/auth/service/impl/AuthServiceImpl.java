@@ -4,6 +4,7 @@ import com.xhn.auth.model.LoginRequest;
 import com.xhn.auth.model.LoginResponse;
 import com.xhn.auth.service.AuthService;
 import com.xhn.base.constants.RedisKeys;
+import com.xhn.base.constants.SecurityConstants;
 import com.xhn.base.exception.ApplicationException;
 import com.xhn.base.utils.JwtUtil;
 import com.xhn.sys.role.model.SysRole;
@@ -100,17 +101,40 @@ public class AuthServiceImpl implements AuthService {
                     .map(SysRole::getRoleCode)
                     .collect(Collectors.toList());
 
-            String redisKey = RedisKeys.userRolesKey(user.getUserId());
+            // 7.1 缓存角色列表
+            String rolesKey = RedisKeys.userRolesKey(user.getUserId());
             reactiveRedisTemplate.opsForValue()
-                    .set(redisKey, roleCodes, tokenTtl)
+                    .set(rolesKey, roleCodes, tokenTtl)
                     .doOnSuccess(v -> log.info("用户角色已保存到Redis，用户ID: {}, 角色列表: {}, ttl: {}ms", user.getUserId(), roleCodes, tokenTtlMillis))
                     .doOnError(e -> log.error("保存用户角色到Redis失败，用户ID: {}", user.getUserId(), e))
                     .onErrorResume(e -> {
-                        // 即使Redis失败也不影响登录
-                        log.warn("Redis操作失败，继续登录流程，用户ID: {}", user.getUserId());
+                        log.warn("Redis操作失败(roles)，继续登录流程，用户ID: {}", user.getUserId());
                         return Mono.empty();
                     })
-                    // 避免在当前线程里做IO（如果调用链在事件线程上，最好切走）
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
+
+            // 7.2 计算并缓存 authorities（用于 Spring Security 鉴权）
+            // 角色 -> ROLE_xxx
+            List<String> authorities = roleCodes.stream()
+                    .filter(rc -> rc != null && !rc.isBlank())
+                    .map(rc -> SecurityConstants.ROLE_PREFIX + rc)
+                    .collect(Collectors.toList());
+
+            // 超级管理员：追加全权限占位符 authority
+            if (roleCodes.contains(SecurityConstants.SUPER_ADMIN_ROLE_CODE)) {
+                authorities.add(SecurityConstants.ALL_PERMISSIONS_AUTHORITY);
+            }
+
+            String authoritiesKey = RedisKeys.userPermsKey(user.getUserId());
+            reactiveRedisTemplate.opsForValue()
+                    .set(authoritiesKey, authorities, tokenTtl)
+                    .doOnSuccess(v -> log.info("用户权限(authorities)已保存到Redis，用户ID: {}, authorities: {}, ttl: {}ms", user.getUserId(), authorities, tokenTtlMillis))
+                    .doOnError(e -> log.error("保存用户权限(authorities)到Redis失败，用户ID: {}", user.getUserId(), e))
+                    .onErrorResume(e -> {
+                        log.warn("Redis操作失败(authorities)，继续登录流程，用户ID: {}", user.getUserId());
+                        return Mono.empty();
+                    })
                     .subscribeOn(Schedulers.boundedElastic())
                     .subscribe();
         } else {

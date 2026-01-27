@@ -1,10 +1,14 @@
 package com.xhn.sys.menu.service.impl;
 
+import com.xhn.base.constants.SecurityConstants;
 import com.xhn.sys.menu.model.MenuTreeModel;
 import com.xhn.sys.menu.model.SysMenu;
 import com.xhn.sys.menu.mapper.SysMenuMapper;
 import com.xhn.sys.menu.service.SysMenuService;
+import com.xhn.sys.role.model.SysRole;
+import com.xhn.sys.userrole.service.SysUserRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +30,10 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
+
+    private final SysUserRoleService sysUserRoleService;
 
     private static final Long ROOT_PARENT_ID = 0L;
 
@@ -43,6 +50,52 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             return Collections.emptyList();
         }
 
+        return buildMenuTree(sysMenus);
+    }
+
+    @Override
+    public List<MenuTreeModel> getMenuTreeByUserId(Long userId) {
+        if (userId == null) {
+            log.error("用户ID为空，无法获取菜单");
+            return Collections.emptyList();
+        }
+
+        // 获取用户角色
+        List<SysRole> roles = sysUserRoleService.getRolesByUserId(userId);
+        if (roles == null || roles.isEmpty()) {
+            log.warn("用户未分配角色，userId: {}", userId);
+            return Collections.emptyList();
+        }
+
+        // 判断是否是超级管理员
+        boolean isSuperAdmin = roles.stream()
+                .anyMatch(role -> SecurityConstants.SUPER_ADMIN_ROLE_CODE.equals(role.getRoleCode()));
+
+        List<SysMenu> sysMenus;
+        if (isSuperAdmin) {
+            // 超级管理员获取所有菜单
+            log.info("超级管理员获取所有菜单，userId: {}", userId);
+            sysMenus = baseMapper.selectList(null);
+        } else {
+            // 普通用户根据角色获取菜单
+            log.info("普通用户获取角色菜单，userId: {}", userId);
+            sysMenus = baseMapper.selectMenusByUserId(userId);
+        }
+
+        if (sysMenus == null || sysMenus.isEmpty()) {
+            log.warn("用户菜单列表为空，userId: {}", userId);
+            return Collections.emptyList();
+        }
+
+        return buildMenuTree(sysMenus);
+    }
+
+    /**
+     * 构建菜单树
+     * @param sysMenus 菜单列表
+     * @return 菜单树
+     */
+    private List<MenuTreeModel> buildMenuTree(List<SysMenu> sysMenus) {
         Map<Long, List<SysMenu>> childrenByParentId = sysMenus.stream()
                 .filter(m -> m.getId() != null) // id 为空的数据无法入树，直接忽略
                 .collect(Collectors.groupingBy(m -> m.getParentId() == null ? ROOT_PARENT_ID : m.getParentId()));
@@ -52,7 +105,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
         List<MenuTreeModel> result = new ArrayList<>(roots.size());
         for (SysMenu root : roots) {
-            // 防环用“路径 visited”：每棵树独立一份，避免不同根之间互相影响
+            // 防环用"路径 visited"：每棵树独立一份，避免不同根之间互相影响
             Set<Long> pathVisited = new HashSet<>();
             result.add(toTree(root, childrenByParentId, pathVisited, 0));
         }

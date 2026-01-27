@@ -14,4 +14,11 @@ public final class RedisKeys {
     public static String userRolesKey(Long userId) {
         return USER_ROLES_PREFIX + userId;
     }
+
+    /** 用户权限缓存 key 前缀：user:perms:{userId} */
+    public static final String USER_PERMS_PREFIX = "user:perms:";
+
+    public static String userPermsKey(Long userId) {
+        return USER_PERMS_PREFIX + userId;
+    }
 }

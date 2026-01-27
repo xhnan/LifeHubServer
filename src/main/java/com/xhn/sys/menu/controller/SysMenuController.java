@@ -1,11 +1,13 @@
 package com.xhn.sys.menu.controller;
 
+import com.xhn.base.utils.SecurityUtils;
 import com.xhn.response.ResponseResult;
 import com.xhn.sys.menu.model.MenuTreeModel;
 import com.xhn.sys.menu.model.SysMenu;
 import com.xhn.sys.menu.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -95,13 +97,26 @@ public class SysMenuController {
 
 
     /**
-     * 获取菜单树
+     * 获取当前用户的菜单树
+     * 超级管理员返回所有菜单，其他用户根据角色权限返回菜单
      */
     @GetMapping("/tree")
     public ResponseResult<List<MenuTreeModel>> getMenuTree() {
         List<MenuTreeModel> menuTree = sysMenuService.getMenuTree();
         return ResponseResult.success(menuTree);
+    }
 
+    /**
+     * 获取当前用户的菜单树（基于登录用户）
+     * 超级管理员返回所有菜单，其他用户根据角色权限返回菜单
+     */
+    @GetMapping("/user/tree")
+    public Mono<ResponseResult<List<MenuTreeModel>>> getUserMenuTree() {
+        return SecurityUtils.getCurrentUserId()
+                .map(userId -> {
+                    List<MenuTreeModel> menuTree = sysMenuService.getMenuTreeByUserId(userId);
+                    return ResponseResult.success(menuTree);
+                });
     }
 
 
