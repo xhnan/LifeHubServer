@@ -3,8 +3,10 @@ package com.xhn.sys.role.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.util.concurrent.RateLimiter;
 import com.xhn.response.ResponseResult;
+import com.xhn.sys.permission.model.SysPermission;
 import com.xhn.sys.role.model.SysRole;
 import com.xhn.sys.role.service.SysRoleService;
+import com.xhn.sys.rolepermission.service.SysRolePermissionService;
 import com.xhn.sys.user.model.SysUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,9 @@ public class SysRoleController {
 
     @Autowired
     private SysRoleService sysRoleService;
+
+    @Autowired
+    private SysRolePermissionService sysRolePermissionService;
 
     /**
      * 新增角色
@@ -122,5 +127,16 @@ public class SysRoleController {
         return ResponseResult.success();
     }
 
+    /**
+     * 根据角色ID查询权限列表
+     *
+     * @param id 角色ID
+     * @return 权限列表
+     */
+    @GetMapping("/{id}/permissions")
+    public ResponseResult<List<SysPermission>> getPermissionsByRoleId(@PathVariable Long id) {
+        List<SysPermission> permissions = sysRolePermissionService.getPermissionsByRoleId(id);
+        return ResponseResult.success(permissions);
+    }
 
 }

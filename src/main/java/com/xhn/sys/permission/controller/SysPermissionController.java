@@ -3,10 +3,12 @@ package com.xhn.sys.permission.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhn.response.ResponseResult;
 import com.xhn.sys.permission.model.SysPermission;
+import com.xhn.sys.permission.model.UserPermissionsDTO;
 import com.xhn.sys.permission.service.SysPermissionService;
 import com.xhn.sys.role.model.SysRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +111,36 @@ public class SysPermissionController {
         appCodes.add("SYS");
         return ResponseResult.success(appCodes);
     }
+
+    /**
+     * 根据用户ID查询用户的权限和角色
+     * 超级管理员返回全部权限
+     *
+     * @param userId 用户ID
+     * @return 用户权限和角色信息
+     */
+    @GetMapping("/user/{userId}")
+    public ResponseResult<UserPermissionsDTO> getUserPermissionsAndRoles(@PathVariable Long userId) {
+        UserPermissionsDTO result = sysPermissionService.getUserPermissionsAndRoles(userId);
+        if (result != null) {
+            return ResponseResult.success(result);
+        }
+        return ResponseResult.error("获取用户权限和角色失败");
+    }
+
+    /**
+     * 获取当前登录用户的权限和角色
+     * 超级管理员返回全部权限
+     *
+     * @return 用户权限和角色信息
+     */
+    @GetMapping("/user/current")
+    public Mono<ResponseResult<UserPermissionsDTO>> getCurrentUserPermissionsAndRoles() {
+        return sysPermissionService.getCurrentUserPermissionsAndRoles()
+                .map(ResponseResult::success)
+                .switchIfEmpty(Mono.just(ResponseResult.error("获取当前用户权限和角色失败")));
+    }
+
 
 
 }
