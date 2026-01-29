@@ -23,7 +23,13 @@ public class SecurityConstants {
     public static final String[] WHITE_LIST = {
             "/auth/**",
             "/public/**",
-            "/ws/**"  // WebSocket路径
+            "/ws/**",  // WebSocket路径
+            "/swagger-ui/**",  // Swagger UI
+            "/swagger-ui.html",  // Swagger UI HTML
+            "/webjars/**",  // Swagger webjars
+            "/v3/api-docs/**",  // OpenAPI 3.0 docs
+            "/swagger-resources/**",  // Swagger resources
+            "/actuator/**"  // Actuator endpoints (可选)
     };
 
     /** Spring Security 角色前缀 */
