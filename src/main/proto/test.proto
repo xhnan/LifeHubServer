@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+option java_package = "com.xhn.proto";
+option java_outer_classname = "TestProto";
+option java_multiple_files = true;
+
+// 测试请求消息
+message TestRequest {
+  string id = 1;
+  string name = 2;
+  int32 age = 3;
+  repeated string tags = 4;
+}
+
+// 测试响应消息
+message TestResponse {
+  int32 code = 1;
+  string message = 2;
+  TestData data = 3;
+}
+
+// 测试数据消息
+message TestData {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  bool status = 4;
+  int64 created_at = 5;
+}
+
+// 测试用户信息
+message UserInfo {
+  int64 user_id = 1;
+  string username = 2;
+  string nickname = 3;
+  repeated string roles = 4;
+}
+
+// ========== gRPC Service 定义（远程调用接口）==========
+
+// 用户服务
+service UserService {
+  // 获取用户信息
+  rpc GetUser(GetUserRequest) returns (UserInfo);
+
+  // 获取用户列表（流式返回）
+  rpc ListUsers(ListUsersRequest) returns (stream UserInfo);
+
+  // 创建用户
+  rpc CreateUser(CreateUserRequest) returns (UserInfo);
+}
+
+// 请求消息定义
+message GetUserRequest {
+  int64 user_id = 1;
+}
+
+message ListUsersRequest {
+  int32 page = 1;
+  int32 size = 2;
+  string role_code = 3;
+}
+
+message CreateUserRequest {
+  string username = 1;
+  string password = 2;
+  string nickname = 3;
+  repeated string role_codes = 4;
+}

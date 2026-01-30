@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package test;
+
+option java_package = "com.xhn.external.grpc";
+option java_outer_classname = "TestGrpcProto";
+option java_multiple_files = true;
+
+// 简单的测试服务
+service TestService {
+  // 发送字符串，返回字符串（测试连通性）
+  rpc Echo(EchoRequest) returns (EchoResponse);
+}
+
+message EchoRequest {
+  string message = 1;
+}
+
+message EchoResponse {
+  string message = 1;
+  int64 timestamp = 2;
+}
