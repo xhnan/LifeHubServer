@@ -1,4 +1,4 @@
-package com.xhn.fin.trans_tags.model;
+package com.xhn.fin.transtags.model;
 
 /**
  * 财务交易标签关联表

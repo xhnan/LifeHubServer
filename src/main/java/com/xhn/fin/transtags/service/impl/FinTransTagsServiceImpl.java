@@ -1,8 +1,8 @@
-package com.xhn.fin.trans_tags.service.impl;
+package com.xhn.fin.transtags.service.impl;
 
-import com.xhn.fin.trans_tags.mapper.FinTransTagsMapper;
-import com.xhn.fin.trans_tags.model.FinTransTags;
-import com.xhn.fin.trans_tags.service.FinTransTagsService;
+import com.xhn.fin.transtags.mapper.FinTransTagsMapper;
+import com.xhn.fin.transtags.model.FinTransTags;
+import com.xhn.fin.transtags.service.FinTransTagsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

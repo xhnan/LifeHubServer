@@ -1,6 +1,6 @@
-package com.xhn.fin.trans_tags.service;
+package com.xhn.fin.transtags.service;
 
-import com.xhn.fin.trans_tags.model.FinTransTags;
+import com.xhn.fin.transtags.model.FinTransTags;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

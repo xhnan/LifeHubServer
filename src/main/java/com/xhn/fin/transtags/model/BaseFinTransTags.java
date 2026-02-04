@@ -1,4 +1,4 @@
-package com.xhn.fin.trans_tags.model;
+package com.xhn.fin.transtags.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;

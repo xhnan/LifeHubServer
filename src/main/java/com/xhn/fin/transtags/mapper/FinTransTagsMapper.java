@@ -1,6 +1,6 @@
-package com.xhn.fin.trans_tags.mapper;
+package com.xhn.fin.transtags.mapper;
 
-import com.xhn.fin.trans_tags.model.FinTransTags;
+import com.xhn.fin.transtags.model.FinTransTags;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

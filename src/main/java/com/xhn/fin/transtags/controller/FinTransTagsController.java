@@ -1,7 +1,7 @@
-package com.xhn.fin.trans_tags.controller;
+package com.xhn.fin.transtags.controller;
 
-import com.xhn.fin.trans_tags.model.FinTransTags;
-import com.xhn.fin.trans_tags.service.FinTransTagsService;
+import com.xhn.fin.transtags.model.FinTransTags;
+import com.xhn.fin.transtags.service.FinTransTagsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhn.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
