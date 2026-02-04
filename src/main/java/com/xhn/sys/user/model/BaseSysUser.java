@@ -19,7 +19,7 @@ public class BaseSysUser {
 
     @Schema(description = "用户ID，主键，自增")
     @TableId(value = "user_id", type = IdType.AUTO)
-    private Integer userId;
+    private Long userId;
 
     @Schema(description = "用户名，唯一")
     @TableField("username")
