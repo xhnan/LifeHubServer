@@ -8,14 +8,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 账户表基类
+ * 财务科目表实体基类
  * 对应数据库表: fin_accounts
  * @author xhn
  * @date 2026-02-04
  */
 @Data
 @TableName("fin_accounts")
-@Schema(description = "账户表基类")
+@Schema(description = "财务科目表")
 public class BaseFinAccounts {
 
     @Schema(description = "主键ID")
@@ -43,8 +43,8 @@ public class BaseFinAccounts {
     private BigDecimal initialBalance;
 
     @Schema(description = "是否归档 (0:启用, 1:归档/逻辑删除)")
-    @TableField("is_archived")
     @TableLogic
+    @TableField("is_archived")
     private Integer isArchived;
 
     @Schema(description = "创建时间")
@@ -54,4 +54,16 @@ public class BaseFinAccounts {
     @Schema(description = "更新时间")
     @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+
+    @Schema(description = "科目说明/备注：用于解释该科目的核算范围")
+    @TableField("description")
+    private String description;
+
+    @Schema(description = "是否叶子节点：只有true的科目允许被录入凭证")
+    @TableField("is_leaf")
+    private Boolean isLeaf;
+
+    @Schema(description = "业务编码")
+    @TableField("code")
+    private String code;
 }

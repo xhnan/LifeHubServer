@@ -162,3 +162,18 @@ ALTER TABLE fin_trans_tags
         FOREIGN KEY (tag_id) REFERENCES fin_tags (id) ON DELETE CASCADE;
 
 COMMENT ON TABLE fin_trans_tags IS '交易与标签的关联表 (多对多)';
+
+-- 补充
+ALTER TABLE fin_accounts
+    ADD COLUMN description VARCHAR(500);
+
+COMMENT ON COLUMN fin_accounts.description IS '科目说明/备注：用于解释该科目的核算范围';
+
+
+ALTER TABLE fin_accounts
+    ADD COLUMN is_leaf BOOLEAN DEFAULT TRUE; -- 默认为 true，因为新建的科目默认没有子节点
+
+COMMENT ON COLUMN fin_accounts.is_leaf IS '是否叶子节点：只有 true 的科目允许被录入凭证';
+
+ALTER TABLE fin_accounts
+    ADD COLUMN code VARCHAR(50);
