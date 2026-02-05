@@ -1,6 +1,7 @@
 package com.xhn.fin.accounts.controller;
 
 import com.xhn.fin.accounts.model.FinAccounts;
+import com.xhn.fin.accounts.model.SubjectTreeDTO;
 import com.xhn.fin.accounts.service.FinAccountsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhn.response.ResponseResult;
@@ -78,5 +79,23 @@ public class FinAccountsController {
         Page<FinAccounts> page = new Page<>(pageNum, pageSize);
         Page<FinAccounts> resultPage = finAccountsService.page(page);
         return ResponseResult.success(resultPage);
+    }
+
+    // ========== 科目表相关接口 ==========
+
+    @GetMapping("/subjects/tree")
+    @Operation(summary = "获取科目树形结构")
+    public ResponseResult<List<SubjectTreeDTO>> getSubjectTree() {
+        List<SubjectTreeDTO> tree = finAccountsService.getSubjectTree();
+        return ResponseResult.success(tree);
+    }
+
+    @GetMapping("/subjects")
+    @Operation(summary = "根据父级ID获取子科目列表")
+    public ResponseResult<List<SubjectTreeDTO>> getSubjectsByParentId(
+            @Parameter(description = "父级ID，不传或传0查询根节点") @RequestParam(required = false) Long parentId
+    ) {
+        List<SubjectTreeDTO> subjects = finAccountsService.getSubjectsByParentId(parentId);
+        return ResponseResult.success(subjects);
     }
 }

@@ -8,10 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 财务科目表实体基类
- * 对应数据库表: fin_accounts
+ * 财务科目表 实体基类
  * @author xhn
- * @date 2026-02-04
+ * @date 2026-02-05
  */
 @Data
 @TableName("fin_accounts")
@@ -42,10 +41,9 @@ public class BaseFinAccounts {
     @TableField("initial_balance")
     private BigDecimal initialBalance;
 
-    @Schema(description = "是否归档 (0:启用, 1:归档/逻辑删除)")
-    @TableLogic
+    @Schema(description = "是否归档")
     @TableField("is_archived")
-    private Integer isArchived;
+    private Boolean isArchived;
 
     @Schema(description = "创建时间")
     @TableField(value = "created_at", fill = FieldFill.INSERT)
@@ -66,4 +64,8 @@ public class BaseFinAccounts {
     @Schema(description = "业务编码")
     @TableField("code")
     private String code;
+
+    @Schema(description = "账户原本的借贷方向：DEBIT=资产/支出，CREDIT=负债/权益/收入")
+    @TableField("balance_direction")
+    private String balanceDirection;
 }
