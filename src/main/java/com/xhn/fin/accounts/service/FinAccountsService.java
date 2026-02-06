@@ -15,6 +15,22 @@ import java.util.List;
 public interface FinAccountsService extends IService<FinAccounts> {
 
     /**
+     * 新增账户（自动设置借贷方向）
+     *
+     * @param finAccounts 账户信息
+     * @return 是否成功
+     */
+    boolean saveAccount(FinAccounts finAccounts);
+
+    /**
+     * 修改账户（自动更新借贷方向）
+     *
+     * @param finAccounts 账户信息
+     * @return 是否成功
+     */
+    boolean updateAccount(FinAccounts finAccounts);
+
+    /**
      * 获取科目树形结构
      *
      * @return 树形结构的科目列表

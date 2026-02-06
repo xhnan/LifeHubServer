@@ -22,6 +22,7 @@ import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 
 import java.util.Objects;
@@ -93,9 +94,33 @@ public class GlobalExceptionHandler {
      * 处理请求参数错误异常
      */
     @ExceptionHandler(ServerWebInputException.class)
-    public ResponseEntity<ResponseResult<Void>> handleServerWebInputException(ServerWebInputException e) {
+    public ResponseEntity<ResponseResult<Void>> handleServerWebInputException(
+            ServerWebInputException e,
+            ServerWebExchange exchange
+    ) {
         Throwable cause = e.getCause();
-        logger.warn("请求参数错误: {}", e.getReason());
+        String requestPath = exchange.getRequest().getPath().value();
+        String requestMethod = exchange.getRequest().getMethod().name();
+        String queryParams = exchange.getRequest().getURI().getQuery();
+        String contentType = exchange.getRequest().getHeaders().getContentType() != null
+                ? exchange.getRequest().getHeaders().getContentType().toString()
+                : "unknown";
+
+        logger.warn("========================================");
+        logger.warn("请求参数错误详情:");
+        logger.warn("请求路径: {} {}", requestMethod, requestPath);
+        logger.warn("Content-Type: {}", contentType);
+        if (queryParams != null && !queryParams.isEmpty()) {
+            logger.warn("查询参数: {}", queryParams);
+        }
+
+        // 打印请求头信息
+        logger.warn("请求头: {}", exchange.getRequest().getHeaders().toSingleValueMap());
+
+        logger.warn("异常原因: {}", e.getReason());
+        logger.warn("异常消息: {}", e.getMessage());
+        logger.warn("完整异常: ", e);
+        logger.warn("========================================");
 
         if (cause instanceof DecodingException) {
             Throwable rootCause = cause.getCause();
@@ -107,6 +132,9 @@ public class GlobalExceptionHandler {
                         .filter(Objects::nonNull)
                         .findFirst()
                         .orElse("unknown");
+
+                logger.warn("字段类型不匹配 - 字段: {}, 期望类型: {}",
+                        fieldName, mie.getTargetType().getSimpleName());
 
                 return ResponseEntity.badRequest().body(
                         ResponseResult.error("字段 '" + fieldName + "' 的类型不匹配，期望类型: " +

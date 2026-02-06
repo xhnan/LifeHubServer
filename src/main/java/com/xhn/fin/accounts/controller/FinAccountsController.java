@@ -32,8 +32,12 @@ public class FinAccountsController {
     public ResponseResult<Boolean> add(
             @RequestBody FinAccounts finAccounts
     ) {
-        boolean result = finAccountsService.save(finAccounts);
-        return result ? ResponseResult.success(true) : ResponseResult.error("新增失败");
+        try {
+            boolean result = finAccountsService.saveAccount(finAccounts);
+            return result ? ResponseResult.success(true) : ResponseResult.error("新增失败");
+        } catch (RuntimeException e) {
+            return ResponseResult.error(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -50,7 +54,7 @@ public class FinAccountsController {
     public ResponseResult<Boolean> update(
             @RequestBody FinAccounts finAccounts
     ) {
-        boolean result = finAccountsService.updateById(finAccounts);
+        boolean result = finAccountsService.updateAccount(finAccounts);
         return result ? ResponseResult.success(true) : ResponseResult.error("修改失败");
     }
 

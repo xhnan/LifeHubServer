@@ -83,4 +83,32 @@ public class FinAccounts extends BaseFinAccounts {
         return AccountType.EXPENSE.equals(getAccountTypeEnum());
     }
 
+    /**
+     * 【推荐使用】强类型 Getter - 获取借贷方向枚举
+     * 业务代码里优先调用这个方法，而不是父类的 getBalanceDirection()
+     *
+     * @return 借贷方向枚举，如果数据库值为 null 则返回 null
+     */
+    public com.xhn.fin.enums.Direction getBalanceDirectionEnum() {
+        String code = super.getBalanceDirection();
+        if (code == null) {
+            return null;
+        }
+        return com.xhn.fin.enums.Direction.fromCode(code);
+    }
+
+    /**
+     * 【推荐使用】强类型 Setter - 设置借贷方向枚举
+     * 业务代码里优先调用这个方法，而不是父类的 setBalanceDirection(String)
+     *
+     * @param direction 借贷方向枚举，传 null 会清空字段
+     */
+    public void setBalanceDirectionEnum(com.xhn.fin.enums.Direction direction) {
+        if (direction != null) {
+            super.setBalanceDirection(direction.getCode());
+        } else {
+            super.setBalanceDirection(null);
+        }
+    }
+
 }
