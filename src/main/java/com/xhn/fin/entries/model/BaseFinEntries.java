@@ -7,9 +7,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 财务分录表基类
+ * 财务分录表 基础实体类
  * @author xhn
- * @date 2026-02-05
+ * @date 2026-02-07
  */
 @Data
 @TableName("fin_entries")
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class BaseFinEntries {
 
     @Schema(description = "主键ID")
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     @Schema(description = "关联主交易表的ID")
@@ -44,11 +44,15 @@ public class BaseFinEntries {
     @TableField("quantity")
     private BigDecimal quantity;
 
-    @Schema(description = "单价")
+    @Schema(description = "价格")
     @TableField("price")
     private BigDecimal price;
 
     @Schema(description = "商品代码")
     @TableField("commodity_code")
     private String commodityCode;
+
+    @Schema(description = "用户id")
+    @TableField("user_id")
+    private Long userId;
 }

@@ -8,9 +8,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 财务科目表 实体基类
+ * 财务科目表实体基类
+ * 表名: fin_accounts
  * @author xhn
- * @date 2026-02-05
+ * @date 2026-02-07
  */
 @Data
 @TableName("fin_accounts")
@@ -68,4 +69,8 @@ public class BaseFinAccounts {
     @Schema(description = "账户原本的借贷方向：DEBIT=资产/支出，CREDIT=负债/权益/收入")
     @TableField("balance_direction")
     private String balanceDirection;
+
+    @Schema(description = "用户id")
+    @TableField("user_id")
+    private Long userId;
 }

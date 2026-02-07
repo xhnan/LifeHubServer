@@ -5,6 +5,7 @@ import com.xhn.fin.accounts.mapper.FinAccountsMapper;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
 import com.xhn.fin.accounts.service.FinAccountsService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,53 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         return this.updateById(finAccounts);
     }
 
+    @Override
+    public boolean updateAccountAndUserId(FinAccounts finAccounts, Long userId) {
+        // 先验证数据是否属于当前用户
+        FinAccounts existing = this.getById(finAccounts.getId());
+        if (existing == null || !userId.equals(existing.getUserId())) {
+            log.warn("更新账户失败：数据不存在或无权限, accountId={}, userId={}", finAccounts.getId(), userId);
+            return false;
+        }
+        // 自动更新借贷方向
+        setBalanceDirectionByAccountType(finAccounts);
+        return this.updateById(finAccounts);
+    }
+
+    @Override
+    public List<FinAccounts> listByUserId(Long userId) {
+        LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FinAccounts::getUserId, userId);
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public Page<FinAccounts> pageByUserId(Page<FinAccounts> page, Long userId) {
+        LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FinAccounts::getUserId, userId);
+        return this.page(page, queryWrapper);
+    }
+
+    @Override
+    public FinAccounts getByIdAndUserId(Long id, Long userId) {
+        FinAccounts account = this.getById(id);
+        if (account != null && !userId.equals(account.getUserId())) {
+            log.warn("查询账户失败：无权限, accountId={}, userId={}", id, userId);
+            return null;
+        }
+        return account;
+    }
+
+    @Override
+    public boolean removeByIdAndUserId(Long id, Long userId) {
+        FinAccounts account = this.getById(id);
+        if (account == null || !userId.equals(account.getUserId())) {
+            log.warn("删除账户失败：数据不存在或无权限, accountId={}, userId={}", id, userId);
+            return false;
+        }
+        return this.removeById(id);
+    }
+
     /**
      * 根据账户类型自动设置借贷方向
      * 资产、费用类：借方增加
@@ -90,9 +138,15 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
     }
 
     @Override
-    public List<SubjectTreeDTO> getSubjectTree() {
+    public List<SubjectTreeDTO> getSubjectTree(String accountType) {
         // 查询所有未归档的科目（@TableLogic会自动过滤已归档的数据）
         LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 如果传入了账户类型，添加筛选条件
+        if (accountType != null && !accountType.trim().isEmpty()) {
+            queryWrapper.eq(FinAccounts::getAccountType, accountType);
+        }
+
         queryWrapper.orderByAsc(FinAccounts::getCode);
 
         List<FinAccounts> allAccounts = this.list(queryWrapper);
@@ -211,5 +265,51 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
             default:
                 return null;
         }
+    }
+
+    @Override
+    public List<SubjectTreeDTO> getSubjectTreeByUserId(String accountType, Long userId) {
+        // 查询指定用户的未归档科目
+        LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FinAccounts::getUserId, userId);
+
+        // 如果传入了账户类型，添加筛选条件
+        if (accountType != null && !accountType.trim().isEmpty()) {
+            queryWrapper.eq(FinAccounts::getAccountType, accountType);
+        }
+
+        queryWrapper.orderByAsc(FinAccounts::getCode);
+
+        List<FinAccounts> allAccounts = this.list(queryWrapper);
+
+        // 转换为 DTO
+        List<SubjectTreeDTO> allDTOs = allAccounts.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        // 构建树形结构
+        return buildTree(allDTOs, null);
+    }
+
+    @Override
+    public List<SubjectTreeDTO> getSubjectsByParentIdAndUserId(Long parentId, Long userId) {
+        // 查询指定用户和父级ID下的子科目
+        LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FinAccounts::getUserId, userId);
+
+        if (parentId == null || parentId == 0) {
+            queryWrapper.isNull(FinAccounts::getParentId)
+                    .or()
+                    .eq(FinAccounts::getParentId, 0);
+        } else {
+            queryWrapper.eq(FinAccounts::getParentId, parentId);
+        }
+
+        queryWrapper.orderByAsc(FinAccounts::getCode);
+
+        List<FinAccounts> accounts = this.list(queryWrapper);
+        return accounts.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }
