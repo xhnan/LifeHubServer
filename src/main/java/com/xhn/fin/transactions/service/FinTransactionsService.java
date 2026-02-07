@@ -13,13 +13,13 @@ import com.xhn.fin.transactions.model.FinTransactions;
 public interface FinTransactionsService extends IService<FinTransactions> {
 
     /**
-     * 根据用户ID和日期范围分页查询交易记录
+     * 根据账本ID和日期范围分页查询交易记录
      *
      * @param page 分页对象
-     * @param userId 用户ID
+     * @param bookId 账本ID
      * @param startDate 开始日期 (yyyy-MM-dd)，可选
      * @param endDate 结束日期 (yyyy-MM-dd)，可选
      * @return 分页结果
      */
-    Page<FinTransactions> pageByUserIdAndDateRange(Page<FinTransactions> page, Long userId, String startDate, String endDate);
+    Page<FinTransactions> pageByBookIdAndDateRange(Page<FinTransactions> page, Long bookId, String startDate, String endDate);
 }

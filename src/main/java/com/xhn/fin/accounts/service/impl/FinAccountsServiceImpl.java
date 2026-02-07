@@ -69,11 +69,11 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
     }
 
     @Override
-    public boolean updateAccountAndUserId(FinAccounts finAccounts, Long userId) {
+    public boolean updateAccountAndBookId(FinAccounts finAccounts, Long bookId) {
         // 先验证数据是否属于当前用户
         FinAccounts existing = this.getById(finAccounts.getId());
-        if (existing == null || !userId.equals(existing.getUserId())) {
-            log.warn("更新账户失败：数据不存在或无权限, accountId={}, userId={}", finAccounts.getId(), userId);
+        if (existing == null || !bookId.equals(existing.getBookId())) {
+            log.warn("更新账户失败：数据不存在或无权限, accountId={}, bookId={}", finAccounts.getId(), bookId);
             return false;
         }
         // 自动更新借贷方向
@@ -82,34 +82,34 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
     }
 
     @Override
-    public List<FinAccounts> listByUserId(Long userId) {
+    public List<FinAccounts> listByBookId(Long bookId) {
         LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(FinAccounts::getUserId, userId);
+        queryWrapper.eq(FinAccounts::getBookId, bookId);
         return this.list(queryWrapper);
     }
 
     @Override
-    public Page<FinAccounts> pageByUserId(Page<FinAccounts> page, Long userId) {
+    public Page<FinAccounts> pageByBookId(Page<FinAccounts> page, Long bookId) {
         LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(FinAccounts::getUserId, userId);
+        queryWrapper.eq(FinAccounts::getBookId, bookId);
         return this.page(page, queryWrapper);
     }
 
     @Override
-    public FinAccounts getByIdAndUserId(Long id, Long userId) {
+    public FinAccounts getByIdAndBookId(Long id, Long bookId) {
         FinAccounts account = this.getById(id);
-        if (account != null && !userId.equals(account.getUserId())) {
-            log.warn("查询账户失败：无权限, accountId={}, userId={}", id, userId);
+        if (account != null && !bookId.equals(account.getBookId())) {
+            log.warn("查询账户失败：无权限, accountId={}, bookId={}", id, bookId);
             return null;
         }
         return account;
     }
 
     @Override
-    public boolean removeByIdAndUserId(Long id, Long userId) {
+    public boolean removeByIdAndBookId(Long id, Long bookId) {
         FinAccounts account = this.getById(id);
-        if (account == null || !userId.equals(account.getUserId())) {
-            log.warn("删除账户失败：数据不存在或无权限, accountId={}, userId={}", id, userId);
+        if (account == null || !bookId.equals(account.getBookId())) {
+            log.warn("删除账户失败：数据不存在或无权限, accountId={}, bookId={}", id, bookId);
             return false;
         }
         return this.removeById(id);
@@ -268,10 +268,10 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
     }
 
     @Override
-    public List<SubjectTreeDTO> getSubjectTreeByUserId(String accountType, Long userId) {
-        // 查询指定用户的未归档科目
+    public List<SubjectTreeDTO> getSubjectTreeByBookId(String accountType, Long bookId) {
+        // 查询指定账本的未归档科目
         LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(FinAccounts::getUserId, userId);
+        queryWrapper.eq(FinAccounts::getBookId, bookId);
 
         // 如果传入了账户类型，添加筛选条件
         if (accountType != null && !accountType.trim().isEmpty()) {
@@ -292,10 +292,10 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
     }
 
     @Override
-    public List<SubjectTreeDTO> getSubjectsByParentIdAndUserId(Long parentId, Long userId) {
-        // 查询指定用户和父级ID下的子科目
+    public List<SubjectTreeDTO> getSubjectsByParentIdAndBookId(Long parentId, Long bookId) {
+        // 查询指定账本和父级ID下的子科目
         LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(FinAccounts::getUserId, userId);
+        queryWrapper.eq(FinAccounts::getBookId, bookId);
 
         if (parentId == null || parentId == 0) {
             queryWrapper.isNull(FinAccounts::getParentId)
@@ -314,38 +314,38 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
     }
 
     @Override
-    public boolean initDefaultAccounts(Long userId) {
-        // 检查用户是否已经初始化过
+    public boolean initDefaultAccounts(Long bookId) {
+        // 检查账本是否已经初始化过
         LambdaQueryWrapper<FinAccounts> checkWrapper = new LambdaQueryWrapper<>();
-        checkWrapper.eq(FinAccounts::getUserId, userId);
+        checkWrapper.eq(FinAccounts::getBookId, bookId);
         long count = this.count(checkWrapper);
         if (count > 0) {
-            log.info("用户已初始化过科目，跳过初始化, userId={}", userId);
+            log.info("账本已初始化过科目，跳过初始化, bookId={}", bookId);
             return true;
         }
 
-        log.info("开始为用户初始化默认科目, userId={}", userId);
+        log.info("开始为账本初始化默认科目, bookId={}", bookId);
 
         // 第一批：保存所有一级科目（父节点）
         List<FinAccounts> firstLevelAccounts = new ArrayList<>();
 
-        FinAccounts account1 = createAccount(userId, null, "资产", "ASSET", "1", false);
+        FinAccounts account1 = createAccount(bookId, null, "资产", "ASSET", "1", false);
         firstLevelAccounts.add(account1);
 
-        FinAccounts account2 = createAccount(userId, null, "负债", "LIABILITY", "2", false);
+        FinAccounts account2 = createAccount(bookId, null, "负债", "LIABILITY", "2", false);
         firstLevelAccounts.add(account2);
 
-        FinAccounts account3 = createAccount(userId, null, "权益", "EQUITY", "3", false);
+        FinAccounts account3 = createAccount(bookId, null, "权益", "EQUITY", "3", false);
         firstLevelAccounts.add(account3);
 
-        FinAccounts account4 = createAccount(userId, null, "收入", "INCOME", "4", false);
+        FinAccounts account4 = createAccount(bookId, null, "收入", "INCOME", "4", false);
         firstLevelAccounts.add(account4);
 
-        FinAccounts account5 = createAccount(userId, null, "支出", "EXPENSE", "5", false);
+        FinAccounts account5 = createAccount(bookId, null, "支出", "EXPENSE", "5", false);
         firstLevelAccounts.add(account5);
 
         if (!this.saveBatch(firstLevelAccounts)) {
-            log.error("保存一级科目失败, userId={}", userId);
+            log.error("保存一级科目失败, bookId={}", bookId);
             return false;
         }
 
@@ -353,72 +353,72 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         List<FinAccounts> secondLevelAccounts = new ArrayList<>();
 
         // 1. 资产类子科目
-        FinAccounts account101 = createAccount(userId, account1.getId(), "流动资产", "ASSET", "101", false);
+        FinAccounts account101 = createAccount(bookId, account1.getId(), "流动资产", "ASSET", "101", false);
         secondLevelAccounts.add(account101);
 
-        FinAccounts account102 = createAccount(userId, account1.getId(), "投资资产", "ASSET", "102", true);
+        FinAccounts account102 = createAccount(bookId, account1.getId(), "投资资产", "ASSET", "102", true);
         secondLevelAccounts.add(account102);
 
-        FinAccounts account103 = createAccount(userId, account1.getId(), "应收账款", "ASSET", "103", false);
+        FinAccounts account103 = createAccount(bookId, account1.getId(), "应收账款", "ASSET", "103", false);
         secondLevelAccounts.add(account103);
 
-        FinAccounts account104 = createAccount(userId, account1.getId(), "固定资产", "ASSET", "104", false);
+        FinAccounts account104 = createAccount(bookId, account1.getId(), "固定资产", "ASSET", "104", false);
         secondLevelAccounts.add(account104);
 
-        FinAccounts account105 = createAccount(userId, account1.getId(), "受限资产", "ASSET", "105", false);
+        FinAccounts account105 = createAccount(bookId, account1.getId(), "受限资产", "ASSET", "105", false);
         secondLevelAccounts.add(account105);
 
         // 2. 负债类子科目
-        FinAccounts account201 = createAccount(userId, account2.getId(), "流动负债", "LIABILITY", "201", false);
+        FinAccounts account201 = createAccount(bookId, account2.getId(), "流动负债", "LIABILITY", "201", false);
         secondLevelAccounts.add(account201);
 
-        FinAccounts account202 = createAccount(userId, account2.getId(), "长期负债", "LIABILITY", "202", false);
+        FinAccounts account202 = createAccount(bookId, account2.getId(), "长期负债", "LIABILITY", "202", false);
         secondLevelAccounts.add(account202);
 
         // 3. 权益类子科目
-        secondLevelAccounts.add(createAccount(userId, account3.getId(), "期初权益", "EQUITY", "301", true));
-        secondLevelAccounts.add(createAccount(userId, account3.getId(), "余额调整", "EQUITY", "302", true));
+        secondLevelAccounts.add(createAccount(bookId, account3.getId(), "期初权益", "EQUITY", "301", true));
+        secondLevelAccounts.add(createAccount(bookId, account3.getId(), "余额调整", "EQUITY", "302", true));
 
         // 4. 收入类子科目
-        FinAccounts account401 = createAccount(userId, account4.getId(), "主动收入 (Active Income)", "INCOME", "401", false);
+        FinAccounts account401 = createAccount(bookId, account4.getId(), "主动收入 (Active Income)", "INCOME", "401", false);
         secondLevelAccounts.add(account401);
 
-        FinAccounts account402 = createAccount(userId, account4.getId(), "被动收入 (Passive Income)", "INCOME", "402", false);
+        FinAccounts account402 = createAccount(bookId, account4.getId(), "被动收入 (Passive Income)", "INCOME", "402", false);
         secondLevelAccounts.add(account402);
 
         // 5. 支出类子科目
-        FinAccounts account501 = createAccount(userId, account5.getId(), "餐饮", "EXPENSE", "501", false);
+        FinAccounts account501 = createAccount(bookId, account5.getId(), "餐饮", "EXPENSE", "501", false);
         secondLevelAccounts.add(account501);
 
-        FinAccounts account502 = createAccount(userId, account5.getId(), "日常交通", "EXPENSE", "502", false);
+        FinAccounts account502 = createAccount(bookId, account5.getId(), "日常交通", "EXPENSE", "502", false);
         secondLevelAccounts.add(account502);
 
-        FinAccounts account503 = createAccount(userId, account5.getId(), "居住", "EXPENSE", "503", false);
+        FinAccounts account503 = createAccount(bookId, account5.getId(), "居住", "EXPENSE", "503", false);
         secondLevelAccounts.add(account503);
 
-        FinAccounts account504 = createAccount(userId, account5.getId(), "购物", "EXPENSE", "504", false);
+        FinAccounts account504 = createAccount(bookId, account5.getId(), "购物", "EXPENSE", "504", false);
         secondLevelAccounts.add(account504);
 
-        FinAccounts account505 = createAccount(userId, account5.getId(), "服务与订阅", "EXPENSE", "505", false);
+        FinAccounts account505 = createAccount(bookId, account5.getId(), "服务与订阅", "EXPENSE", "505", false);
         secondLevelAccounts.add(account505);
 
-        FinAccounts account506 = createAccount(userId, account5.getId(), "医疗", "EXPENSE", "506", false);
+        FinAccounts account506 = createAccount(bookId, account5.getId(), "医疗", "EXPENSE", "506", false);
         secondLevelAccounts.add(account506);
 
-        FinAccounts account507 = createAccount(userId, account5.getId(), "个人提升", "EXPENSE", "507", false);
+        FinAccounts account507 = createAccount(bookId, account5.getId(), "个人提升", "EXPENSE", "507", false);
         secondLevelAccounts.add(account507);
 
-        FinAccounts account508 = createAccount(userId, account5.getId(), "差旅与度假", "EXPENSE", "508", false);
+        FinAccounts account508 = createAccount(bookId, account5.getId(), "差旅与度假", "EXPENSE", "508", false);
         secondLevelAccounts.add(account508);
 
-        FinAccounts account509 = createAccount(userId, account5.getId(), "情感与社交", "EXPENSE", "509", false);
+        FinAccounts account509 = createAccount(bookId, account5.getId(), "情感与社交", "EXPENSE", "509", false);
         secondLevelAccounts.add(account509);
 
-        FinAccounts account511 = createAccount(userId, account5.getId(), "折旧与摊销", "EXPENSE", "511", false);
+        FinAccounts account511 = createAccount(bookId, account5.getId(), "折旧与摊销", "EXPENSE", "511", false);
         secondLevelAccounts.add(account511);
 
         if (!this.saveBatch(secondLevelAccounts)) {
-            log.error("保存二级科目失败, userId={}", userId);
+            log.error("保存二级科目失败, bookId={}", bookId);
             return false;
         }
 
@@ -426,90 +426,90 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         List<FinAccounts> thirdLevelAccounts = new ArrayList<>();
 
         // 101 流动资产 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account101.getId(), "现金", "ASSET", "10101", true));
-        thirdLevelAccounts.add(createAccount(userId, account101.getId(), "支付宝", "ASSET", "10102", true));
-        thirdLevelAccounts.add(createAccount(userId, account101.getId(), "微信", "ASSET", "10103", true));
+        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "现金", "ASSET", "10101", true));
+        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "支付宝", "ASSET", "10102", true));
+        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "微信", "ASSET", "10103", true));
 
         // 102 投资资产 - 无子科目（叶子节点）
 
         // 103 应收账款 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account103.getId(), "公司报销款", "ASSET", "10301", true));
-        thirdLevelAccounts.add(createAccount(userId, account103.getId(), "借出款项", "ASSET", "10302", true));
+        thirdLevelAccounts.add(createAccount(bookId, account103.getId(), "公司报销款", "ASSET", "10301", true));
+        thirdLevelAccounts.add(createAccount(bookId, account103.getId(), "借出款项", "ASSET", "10302", true));
 
         // 104 固定资产 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account104.getId(), "汽车", "ASSET", "10401", true));
+        thirdLevelAccounts.add(createAccount(bookId, account104.getId(), "汽车", "ASSET", "10401", true));
 
         // 105 受限资产 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account105.getId(), "公积金", "ASSET", "10501", true));
+        thirdLevelAccounts.add(createAccount(bookId, account105.getId(), "公积金", "ASSET", "10501", true));
 
         // 201 流动负债 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account201.getId(), "花呗", "LIABILITY", "20101", true));
+        thirdLevelAccounts.add(createAccount(bookId, account201.getId(), "花呗", "LIABILITY", "20101", true));
 
         // 202 长期负债 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account202.getId(), "车贷", "LIABILITY", "20201", true));
-        thirdLevelAccounts.add(createAccount(userId, account202.getId(), "房贷", "LIABILITY", "20202", true));
+        thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "车贷", "LIABILITY", "20201", true));
+        thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "房贷", "LIABILITY", "20202", true));
 
         // 401 主动收入 (Active Income) - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account401.getId(), "工资", "INCOME", "40101", true));
-        thirdLevelAccounts.add(createAccount(userId, account401.getId(), "奖金", "INCOME", "40102", true));
+        thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "工资", "INCOME", "40101", true));
+        thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "奖金", "INCOME", "40102", true));
 
         // 402 被动收入 (Passive Income) - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account402.getId(), "利息", "INCOME", "40201", true));
-        thirdLevelAccounts.add(createAccount(userId, account402.getId(), "股息", "INCOME", "40202", true));
-        thirdLevelAccounts.add(createAccount(userId, account402.getId(), "二手交易 (Carousell/闲鱼)", "INCOME", "40203", true));
+        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "利息", "INCOME", "40201", true));
+        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "股息", "INCOME", "40202", true));
+        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "二手交易 (Carousell/闲鱼)", "INCOME", "40203", true));
 
         // 501 餐饮 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account501.getId(), "买菜生鲜", "EXPENSE", "50101", true));
-        thirdLevelAccounts.add(createAccount(userId, account501.getId(), "一日三餐", "EXPENSE", "50102", true));
-        thirdLevelAccounts.add(createAccount(userId, account501.getId(), "零食饮料", "EXPENSE", "50103", true));
+        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "买菜生鲜", "EXPENSE", "50101", true));
+        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "一日三餐", "EXPENSE", "50102", true));
+        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "零食饮料", "EXPENSE", "50103", true));
 
         // 502 交通 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account502.getId(), "公共交通 (MRT/Bus)", "EXPENSE", "50201", true));
-        thirdLevelAccounts.add(createAccount(userId, account502.getId(), "打车 (Grab/Gojek/Tada)", "EXPENSE", "50202", true));
-        thirdLevelAccounts.add(createAccount(userId, account502.getId(), "车辆日常", "EXPENSE", "50203", true));
-        thirdLevelAccounts.add(createAccount(userId, account502.getId(), "车辆养护", "EXPENSE", "50204", true));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "公共交通 (MRT/Bus)", "EXPENSE", "50201", true));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "打车 (Grab/Gojek/Tada)", "EXPENSE", "50202", true));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆日常", "EXPENSE", "50203", true));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆养护", "EXPENSE", "50204", true));
 
         // 503 居住 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account503.getId(), "房租", "EXPENSE", "50301", true));
-        thirdLevelAccounts.add(createAccount(userId, account503.getId(), "水电网", "EXPENSE", "50302", true));
+        thirdLevelAccounts.add(createAccount(bookId, account503.getId(), "房租", "EXPENSE", "50301", true));
+        thirdLevelAccounts.add(createAccount(bookId, account503.getId(), "水电网", "EXPENSE", "50302", true));
 
         // 504 购物 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account504.getId(), "数码电子", "EXPENSE", "50401", true));
-        thirdLevelAccounts.add(createAccount(userId, account504.getId(), "服饰", "EXPENSE", "50402", true));
-        thirdLevelAccounts.add(createAccount(userId, account504.getId(), "日用百货", "EXPENSE", "50403", true));
+        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "数码电子", "EXPENSE", "50401", true));
+        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "服饰", "EXPENSE", "50402", true));
+        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "日用百货", "EXPENSE", "50403", true));
 
         // 505 服务与订阅 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account505.getId(), "软件订阅 (ChatGPT/Claude/AWS/Spotify/Netflix)", "EXPENSE", "50501", true));
-        thirdLevelAccounts.add(createAccount(userId, account505.getId(), "手机话费", "EXPENSE", "50502", true));
+        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "软件订阅 (ChatGPT/Claude/AWS/Spotify/Netflix)", "EXPENSE", "50501", true));
+        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "手机话费", "EXPENSE", "50502", true));
 
         // 506 医疗 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account506.getId(), "看病", "EXPENSE", "50601", true));
-        thirdLevelAccounts.add(createAccount(userId, account506.getId(), "药品", "EXPENSE", "50602", true));
+        thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "看病", "EXPENSE", "50601", true));
+        thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "药品", "EXPENSE", "50602", true));
 
         // 507 个人提升 (Self-Improvement) - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account507.getId(), "书籍/课程 (Books/Courses)", "EXPENSE", "50701", true));
+        thirdLevelAccounts.add(createAccount(bookId, account507.getId(), "书籍/课程 (Books/Courses)", "EXPENSE", "50701", true));
 
         // 508 差旅与度假 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account508.getId(), "交通", "EXPENSE", "50801", true));
-        thirdLevelAccounts.add(createAccount(userId, account508.getId(), "酒店住宿", "EXPENSE", "50802", true));
-        thirdLevelAccounts.add(createAccount(userId, account508.getId(), "景点玩乐", "EXPENSE", "50803", true));
-        thirdLevelAccounts.add(createAccount(userId, account508.getId(), "度假消费", "EXPENSE", "50804", true));
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "交通", "EXPENSE", "50801", true));
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "酒店住宿", "EXPENSE", "50802", true));
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "景点玩乐", "EXPENSE", "50803", true));
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "度假消费", "EXPENSE", "50804", true));
 
         // 509 情感与社交 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account509.getId(), "伴侣投入", "EXPENSE", "50901", true));
-        thirdLevelAccounts.add(createAccount(userId, account509.getId(), "孝敬长辈", "EXPENSE", "50902", true));
-        thirdLevelAccounts.add(createAccount(userId, account509.getId(), "朋友人情", "EXPENSE", "50903", true));
+        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "伴侣投入", "EXPENSE", "50901", true));
+        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "孝敬长辈", "EXPENSE", "50902", true));
+        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "朋友人情", "EXPENSE", "50903", true));
 
         // 511 折旧与摊销 - 子科目
-        thirdLevelAccounts.add(createAccount(userId, account511.getId(), "汽车折旧", "EXPENSE", "51101", true));
+        thirdLevelAccounts.add(createAccount(bookId, account511.getId(), "汽车折旧", "EXPENSE", "51101", true));
 
         boolean result = this.saveBatch(thirdLevelAccounts);
 
         if (result) {
             int totalCount = firstLevelAccounts.size() + secondLevelAccounts.size() + thirdLevelAccounts.size();
-            log.info("成功为用户初始化默认科目, userId={}, 科目数量={}", userId, totalCount);
+            log.info("成功为用户初始化默认科目, bookId={}, 科目数量={}", bookId, totalCount);
         } else {
-            log.error("为用户初始化默认科目失败, userId={}", userId);
+            log.error("为用户初始化默认科目失败, bookId={}", bookId);
         }
 
         return result;
@@ -518,7 +518,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
     /**
      * 创建账户对象
      *
-     * @param userId 用户ID
+     * @param bookId 用户ID
      * @param parentId 父账户ID
      * @param name 账户名称
      * @param accountType 账户类型
@@ -526,10 +526,10 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
      * @param isLeaf 是否叶子节点
      * @return 账户对象
      */
-    private FinAccounts createAccount(Long userId, Long parentId, String name, String accountType,
+    private FinAccounts createAccount(Long bookId, Long parentId, String name, String accountType,
                                        String code, boolean isLeaf) {
         FinAccounts account = new FinAccounts();
-        account.setUserId(userId);
+        account.setBookId(bookId);
         account.setParentId(parentId);
         account.setName(name);
         account.setAccountType(accountType);

@@ -23,9 +23,9 @@ import java.time.LocalDateTime;
 public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMapper, FinTransactions> implements FinTransactionsService {
 
     @Override
-    public Page<FinTransactions> pageByUserIdAndDateRange(Page<FinTransactions> page, Long userId, String startDate, String endDate) {
+    public Page<FinTransactions> pageByBookIdAndDateRange(Page<FinTransactions> page, Long bookId, String startDate, String endDate) {
         LambdaQueryWrapper<FinTransactions> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(FinTransactions::getUserId, userId);
+        wrapper.eq(FinTransactions::getBookId, bookId);
 
         // 日期范围筛选
         if (startDate != null && !startDate.trim().isEmpty()) {
