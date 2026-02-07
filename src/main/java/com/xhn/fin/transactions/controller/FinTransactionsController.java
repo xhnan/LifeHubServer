@@ -104,14 +104,14 @@ public class FinTransactionsController {
     @Operation(summary = "分页查询财务交易记录")
     public Mono<ResponseResult<Page<FinTransactions>>> page(
             @Parameter(description = "页码") @RequestParam int pageNum,
-            @Parameter(description = "每页数量") @RequestParam int pageSize
+            @Parameter(description = "每页数量") @RequestParam int pageSize,
+            @Parameter(description = "开始日期 (yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @Parameter(description = "结束日期 (yyyy-MM-dd)") @RequestParam(required = false) String endDate
     ) {
         return SecurityUtils.getCurrentUserId()
                 .map(userId -> {
                     Page<FinTransactions> page = new Page<>(pageNum, pageSize);
-                    LambdaQueryWrapper<FinTransactions> wrapper = new LambdaQueryWrapper<>();
-                    wrapper.eq(FinTransactions::getUserId, userId);
-                    Page<FinTransactions> resultPage = finTransactionsService.page(page, wrapper);
+                    Page<FinTransactions> resultPage = finTransactionsService.pageByUserIdAndDateRange(page, userId, startDate, endDate);
                     return ResponseResult.success(resultPage);
                 });
     }

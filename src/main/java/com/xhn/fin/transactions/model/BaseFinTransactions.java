@@ -25,14 +25,14 @@ public class BaseFinTransactions {
     @TableField("trans_date")
     private LocalDateTime transDate;
 
-    @Schema(description = "交易描述 (如：周末超市采购)")
+    @Schema(description = "交易描述")
     private String description;
 
-    @Schema(description = "附件ID (关联MinIO文件对象)")
+    @Schema(description = "附件ID(关联MinIO文件对象)")
     @TableField("attachment_id")
     private String attachmentId;
 
-    @Schema(description = "创建人ID (关联RBAC用户表)")
+    @Schema(description = "创建人ID(关联RBAC用户表)")
     @TableField("created_by")
     private Long createdBy;
 
@@ -43,4 +43,8 @@ public class BaseFinTransactions {
     @Schema(description = "用户id")
     @TableField("user_id")
     private Long userId;
+
+    @Schema(description = "所属账本ID")
+    @TableField("book_id")
+    private Long bookId;
 }

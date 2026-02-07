@@ -7,17 +7,17 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 财务分录表 基础实体类
+ * 分录表 实体基类
  * @author xhn
  * @date 2026-02-07
  */
 @Data
 @TableName("fin_entries")
-@Schema(description = "财务分录表")
+@Schema(description = "分录表")
 public class BaseFinEntries {
 
     @Schema(description = "主键ID")
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     @Schema(description = "关联主交易表的ID")
@@ -55,4 +55,8 @@ public class BaseFinEntries {
     @Schema(description = "用户id")
     @TableField("user_id")
     private Long userId;
+
+    @Schema(description = "账本id")
+    @TableField("book_id")
+    private Long bookId;
 }

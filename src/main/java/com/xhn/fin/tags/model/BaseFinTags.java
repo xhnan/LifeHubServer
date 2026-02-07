@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * 财务标签表实体基类
  * 对应数据库表：fin_tags
  * @author xhn
- * @date 2026-02-04
+ * @date 2026-02-07
  */
 @Data
 @TableName("fin_tags")

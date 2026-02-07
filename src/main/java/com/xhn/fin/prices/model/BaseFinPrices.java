@@ -8,14 +8,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 金融价格数据表实体基类
+ * 价格信息表 基类
  * 表名: fin_prices
  * @author xhn
- * @date 2026-02-04
+ * @date 2026-02-07
  */
 @Data
 @TableName("fin_prices")
-@Schema(description = "金融价格数据表")
+@Schema(description = "价格信息表")
 public class BaseFinPrices {
 
     @Schema(description = "主键ID")

@@ -108,4 +108,12 @@ public interface FinAccountsService extends IService<FinAccounts> {
      * @return 子科目列表
      */
     List<SubjectTreeDTO> getSubjectsByParentIdAndUserId(Long parentId, Long userId);
+
+    /**
+     * 为用户初始化默认科目
+     *
+     * @param userId 用户ID
+     * @return 是否成功
+     */
+    boolean initDefaultAccounts(Long userId);
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * 预算表实体基类
  * 表名: fin_budgets
  * @author xhn
- * @date 2026-02-04
+ * @date 2026-02-07
  */
 @Data
 @TableName("fin_budgets")

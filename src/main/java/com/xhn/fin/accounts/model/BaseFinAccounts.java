@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class BaseFinAccounts {
 
     @Schema(description = "主键ID")
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     @Schema(description = "账户名称 (如：招商银行、午餐)")
@@ -73,4 +73,8 @@ public class BaseFinAccounts {
     @Schema(description = "用户id")
     @TableField("user_id")
     private Long userId;
+
+    @Schema(description = "所属账本ID (数据隔离核心字段)")
+    @TableField("book_id")
+    private Long bookId;
 }

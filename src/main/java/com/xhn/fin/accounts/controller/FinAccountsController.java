@@ -107,6 +107,16 @@ public class FinAccountsController {
 
     // ========== 科目表相关接口 ==========
 
+    @PostMapping("/init")
+    @Operation(summary = "初始化用户默认科目")
+    public Mono<ResponseResult<Boolean>> initDefaultAccounts() {
+        return SecurityUtils.getCurrentUserId()
+                .map(userId -> {
+                    boolean result = finAccountsService.initDefaultAccounts(userId);
+                    return result ? ResponseResult.success(true) : ResponseResult.error("初始化失败");
+                });
+    }
+
     @GetMapping("/subjects/tree")
     @Operation(summary = "获取科目树形结构")
     public Mono<ResponseResult<List<SubjectTreeDTO>>> getSubjectTree(
