@@ -1,5 +1,6 @@
 package com.xhn.fin.books.controller;
 
+import com.xhn.base.utils.SecurityUtils;
 import com.xhn.fin.books.model.FinBooks;
 import com.xhn.fin.books.service.FinBooksService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -28,11 +30,15 @@ public class FinBooksController {
 
     @PostMapping
     @Operation(summary = "新增账簿")
-    public ResponseResult<Boolean> add(
+    public Mono<ResponseResult<Boolean>> add(
             @RequestBody FinBooks finBooks
     ) {
-        boolean result = finBooksService.save(finBooks);
-        return result ? ResponseResult.success(true) : ResponseResult.error("新增失败");
+        return SecurityUtils.getCurrentUserId()
+                .map(userId -> {
+                    finBooks.setOwnerId(userId);
+                    boolean result = finBooksService.save(finBooks);
+                    return result ? ResponseResult.success(true) : ResponseResult.error("新增失败");
+                });
     }
 
     @DeleteMapping("/{id}")
@@ -67,6 +73,16 @@ public class FinBooksController {
     public ResponseResult<List<FinBooks>> list() {
         List<FinBooks> list = finBooksService.list();
         return ResponseResult.success(list);
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "获取我的账本列表（包括创建的和加入的）")
+    public Mono<ResponseResult<List<FinBooks>>> getMyBooks() {
+        return SecurityUtils.getCurrentUserId()
+                .map(userId -> {
+                    List<FinBooks> books = finBooksService.getBooksByUserId(userId);
+                    return ResponseResult.success(books);
+                });
     }
 
     @GetMapping("/page")

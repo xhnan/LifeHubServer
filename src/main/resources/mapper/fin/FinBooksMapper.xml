@@ -14,4 +14,13 @@
         updated_at
     </sql>
 
+    <!-- 查询用户加入的账本列表（通过成员表） -->
+    <select id="selectByUserId" resultType="com.xhn.fin.books.model.FinBooks">
+        SELECT DISTINCT
+            <include refid="Base_Column_List"/>
+        FROM fin_books fb
+        INNER JOIN fin_book_members fbm ON fb.id = fbm.book_id
+        WHERE fbm.user_id = #{userId}
+    </select>
+
 </mapper>

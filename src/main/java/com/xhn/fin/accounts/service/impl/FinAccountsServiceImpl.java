@@ -63,6 +63,35 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
 
     @Override
     public boolean updateAccount(FinAccounts finAccounts) {
+        // 验证：非叶子节点不允许有期初余额
+        FinAccounts existing = this.getById(finAccounts.getId());
+        if (existing != null) {
+            // 如果从叶子节点变成非叶子节点，需要检查是否有余额
+            Boolean isLeaf = finAccounts.getIsLeaf();
+            if (isLeaf != null && !isLeaf) {
+                // 变成非叶子节点，检查期初余额
+                if (finAccounts.getInitialBalance() != null &&
+                    finAccounts.getInitialBalance().compareTo(BigDecimal.ZERO) != 0) {
+                    throw new RuntimeException("非叶子节点不允许有期初余额");
+                }
+                // 检查是否有子节点
+                LambdaQueryWrapper<FinAccounts> childWrapper = new LambdaQueryWrapper<>();
+                childWrapper.eq(FinAccounts::getParentId, finAccounts.getId());
+                long childCount = this.count(childWrapper);
+                if (childCount > 0) {
+                    throw new RuntimeException("已有子节点的科目不能设置为期初余额非零");
+                }
+            }
+
+            // 如果是非叶子节点，不允许设置期初余额
+            Boolean existingIsLeaf = existing.getIsLeaf();
+            if (existingIsLeaf != null && !existingIsLeaf &&
+                finAccounts.getInitialBalance() != null &&
+                finAccounts.getInitialBalance().compareTo(BigDecimal.ZERO) != 0) {
+                throw new RuntimeException("非叶子节点不允许有期初余额");
+            }
+        }
+
         // 自动更新借贷方向
         setBalanceDirectionByAccountType(finAccounts);
         return this.updateById(finAccounts);
@@ -70,12 +99,41 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
 
     @Override
     public boolean updateAccountAndBookId(FinAccounts finAccounts, Long bookId) {
-        // 先验证数据是否属于当前用户
+        // 先验证数据是否属于当前账本
         FinAccounts existing = this.getById(finAccounts.getId());
         if (existing == null || !bookId.equals(existing.getBookId())) {
             log.warn("更新账户失败：数据不存在或无权限, accountId={}, bookId={}", finAccounts.getId(), bookId);
             return false;
         }
+
+        // 验证：非叶子节点不允许有期初余额
+        Boolean isLeaf = finAccounts.getIsLeaf();
+        if (isLeaf != null && !isLeaf) {
+            // 变成非叶子节点，检查期初余额
+            if (finAccounts.getInitialBalance() != null &&
+                finAccounts.getInitialBalance().compareTo(BigDecimal.ZERO) != 0) {
+                log.warn("更新账户失败：非叶子节点不允许有期初余额, accountId={}", finAccounts.getId());
+                return false;
+            }
+            // 检查是否有子节点
+            LambdaQueryWrapper<FinAccounts> childWrapper = new LambdaQueryWrapper<>();
+            childWrapper.eq(FinAccounts::getParentId, finAccounts.getId());
+            long childCount = this.count(childWrapper);
+            if (childCount > 0) {
+                log.warn("更新账户失败：已有子节点的科目不能设置为期初余额非零, accountId={}", finAccounts.getId());
+                return false;
+            }
+        }
+
+        // 如果是非叶子节点，不允许设置期初余额
+        Boolean existingIsLeaf = existing.getIsLeaf();
+        if (existingIsLeaf != null && !existingIsLeaf &&
+            finAccounts.getInitialBalance() != null &&
+            finAccounts.getInitialBalance().compareTo(BigDecimal.ZERO) != 0) {
+            log.warn("更新账户失败：非叶子节点不允许有期初余额, accountId={}", finAccounts.getId());
+            return false;
+        }
+
         // 自动更新借贷方向
         setBalanceDirectionByAccountType(finAccounts);
         return this.updateById(finAccounts);
@@ -380,10 +438,10 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         secondLevelAccounts.add(createAccount(bookId, account3.getId(), "余额调整", "EQUITY", "302", true));
 
         // 4. 收入类子科目
-        FinAccounts account401 = createAccount(bookId, account4.getId(), "主动收入 (Active Income)", "INCOME", "401", false);
+        FinAccounts account401 = createAccount(bookId, account4.getId(), "主动收入", "INCOME", "401", false);
         secondLevelAccounts.add(account401);
 
-        FinAccounts account402 = createAccount(bookId, account4.getId(), "被动收入 (Passive Income)", "INCOME", "402", false);
+        FinAccounts account402 = createAccount(bookId, account4.getId(), "被动收入", "INCOME", "402", false);
         secondLevelAccounts.add(account402);
 
         // 5. 支出类子科目
@@ -449,14 +507,14 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "车贷", "LIABILITY", "20201", true));
         thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "房贷", "LIABILITY", "20202", true));
 
-        // 401 主动收入 (Active Income) - 子科目
+        // 401 主动收入 - 子科目
         thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "工资", "INCOME", "40101", true));
         thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "奖金", "INCOME", "40102", true));
 
-        // 402 被动收入 (Passive Income) - 子科目
+        // 402 被动收入 - 子科目
         thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "利息", "INCOME", "40201", true));
         thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "股息", "INCOME", "40202", true));
-        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "二手交易 (Carousell/闲鱼)", "INCOME", "40203", true));
+        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "二手交易", "INCOME", "40203", true));
 
         // 501 餐饮 - 子科目
         thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "买菜生鲜", "EXPENSE", "50101", true));
@@ -464,8 +522,8 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "零食饮料", "EXPENSE", "50103", true));
 
         // 502 交通 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "公共交通 (MRT/Bus)", "EXPENSE", "50201", true));
-        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "打车 (Grab/Gojek/Tada)", "EXPENSE", "50202", true));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "公共交通", "EXPENSE", "50201", true));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "打车", "EXPENSE", "50202", true));
         thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆日常", "EXPENSE", "50203", true));
         thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆养护", "EXPENSE", "50204", true));
 
@@ -479,15 +537,15 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "日用百货", "EXPENSE", "50403", true));
 
         // 505 服务与订阅 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "软件订阅 (ChatGPT/Claude/AWS/Spotify/Netflix)", "EXPENSE", "50501", true));
+        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "软件订阅", "EXPENSE", "50501", true));
         thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "手机话费", "EXPENSE", "50502", true));
 
         // 506 医疗 - 子科目
         thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "看病", "EXPENSE", "50601", true));
         thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "药品", "EXPENSE", "50602", true));
 
-        // 507 个人提升 (Self-Improvement) - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account507.getId(), "书籍/课程 (Books/Courses)", "EXPENSE", "50701", true));
+        // 507 个人提升 - 子科目
+        thirdLevelAccounts.add(createAccount(bookId, account507.getId(), "书籍课程", "EXPENSE", "50701", true));
 
         // 508 差旅与度假 - 子科目
         thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "交通", "EXPENSE", "50801", true));
