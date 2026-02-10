@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * 财务标签表实体基类
- * 
+ * 表名: fin_tags
  * @author xhn
  * @date 2026-02-10
  */
@@ -26,7 +26,7 @@ public class BaseFinTags {
     private String tagName;
 
     @Schema(description = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
+    @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
     @Schema(description = "标签颜色")
@@ -35,4 +35,7 @@ public class BaseFinTags {
     @Schema(description = "用户ID")
     @TableField("user_id")
     private Long userId;
+
+    @Schema(description = "标签图标")
+    private String icon;
 }
