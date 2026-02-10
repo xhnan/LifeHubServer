@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhn.fin.entries.model.FinEntries;
 import com.xhn.fin.entries.service.FinEntriesService;
+import com.xhn.fin.transtags.model.FinTransTags;
+import com.xhn.fin.transtags.service.FinTransTagsService;
 import com.xhn.fin.transactions.mapper.FinTransactionsMapper;
 import com.xhn.fin.transactions.model.FinTransactions;
 import com.xhn.fin.transactions.service.FinTransactionsService;
@@ -32,6 +34,9 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
 
     @Autowired
     private FinEntriesService finEntriesService;
+
+    @Autowired
+    private FinTransTagsService finTransTagsService;
 
     @Override
     public Page<FinTransactions> pageByBookIdAndDateRange(Page<FinTransactions> page, Long bookId, String startDate, String endDate) {
@@ -154,6 +159,23 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
         boolean entriesSaved = finEntriesService.saveBatch(entries);
         if (!entriesSaved) {
             throw new RuntimeException("保存分录表失败");
+        }
+
+        // 5. 创建标签关联
+        if (dto.getTagIds() != null && !dto.getTagIds().isEmpty()) {
+            List<FinTransTags> transTagsList = new ArrayList<>();
+            for (Long tagId : dto.getTagIds()) {
+                FinTransTags transTag = new FinTransTags();
+                transTag.setTransId(transId);
+                transTag.setTagId(tagId);
+                transTagsList.add(transTag);
+            }
+
+            boolean tagsSaved = finTransTagsService.saveBatch(transTagsList);
+            if (!tagsSaved) {
+                throw new RuntimeException("保存标签关联失败");
+            }
+            log.info("成功创建标签关联，transId={}, 标签数量={}", transId, transTagsList.size());
         }
 
         log.info("成功创建交易及分录，transId={}, 分录数量={}", transId, entries.size());

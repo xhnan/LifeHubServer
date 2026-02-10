@@ -34,6 +34,9 @@ public class TransactionEntryDTO {
     @Schema(description = "分录列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<EntryRequest> entries;
 
+    @Schema(description = "标签ID列表", example = "[1, 2, 3]")
+    private List<Long> tagIds;
+
     /**
      * 分录请求
      */

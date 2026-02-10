@@ -1,5 +1,6 @@
 package com.xhn.fin.tags.controller;
 
+import com.xhn.base.utils.SecurityUtils;
 import com.xhn.fin.tags.model.FinTags;
 import com.xhn.fin.tags.service.FinTagsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -28,11 +30,15 @@ public class FinTagsController {
 
     @PostMapping
     @Operation(summary = "新增标签")
-    public ResponseResult<Boolean> add(
+    public Mono<ResponseResult<Boolean>> add(
         @RequestBody FinTags finTags
     ) {
-        boolean result = finTagsService.save(finTags);
-        return result ? ResponseResult.success(true) : ResponseResult.error("新增失败");
+        return SecurityUtils.getCurrentUserId()
+            .map(userId -> {
+                finTags.setUserId(userId);
+                boolean result = finTagsService.save(finTags);
+                return result ? ResponseResult.success(true) : ResponseResult.error("新增失败");
+            });
     }
 
     @DeleteMapping("/{id}")
