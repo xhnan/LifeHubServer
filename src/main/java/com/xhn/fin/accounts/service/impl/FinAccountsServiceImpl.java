@@ -206,7 +206,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
             queryWrapper.eq(FinAccounts::getAccountType, accountType);
         }
 
-        queryWrapper.orderByAsc(FinAccounts::getCode);
+        queryWrapper.orderByAsc(FinAccounts::getSortOrder);
 
         List<FinAccounts> allAccounts = this.list(queryWrapper);
 
@@ -232,7 +232,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
             queryWrapper.eq(FinAccounts::getParentId, parentId);
         }
 
-        queryWrapper.orderByAsc(FinAccounts::getCode);
+        queryWrapper.orderByAsc(FinAccounts::getSortOrder);
 
         List<FinAccounts> accounts = this.list(queryWrapper);
         return accounts.stream()
@@ -298,6 +298,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         dto.setIsArchived(account.getIsArchived());
         dto.setDescription(account.getDescription());
         dto.setIsLeaf(account.getIsLeaf());
+        dto.setIcon(account.getIcon());
         return dto;
     }
 
@@ -337,7 +338,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
             queryWrapper.eq(FinAccounts::getAccountType, accountType);
         }
 
-        queryWrapper.orderByAsc(FinAccounts::getCode);
+        queryWrapper.orderByAsc(FinAccounts::getSortOrder);
 
         List<FinAccounts> allAccounts = this.list(queryWrapper);
 
@@ -364,7 +365,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
             queryWrapper.eq(FinAccounts::getParentId, parentId);
         }
 
-        queryWrapper.orderByAsc(FinAccounts::getCode);
+        queryWrapper.orderByAsc(FinAccounts::getSortOrder);
 
         List<FinAccounts> accounts = this.list(queryWrapper);
         return accounts.stream()
@@ -389,19 +390,19 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         // 第一批：保存所有一级科目（父节点）
         List<FinAccounts> firstLevelAccounts = new ArrayList<>();
 
-        FinAccounts account1 = createAccount(bookId, null, "资产", "ASSET", "1", false);
+        FinAccounts account1 = createAccount(bookId, null, "资产", "ASSET", "1", false, 1L, "material-symbols-light:account-balance-wallet-outline-rounded");
         firstLevelAccounts.add(account1);
 
-        FinAccounts account2 = createAccount(bookId, null, "负债", "LIABILITY", "2", false);
+        FinAccounts account2 = createAccount(bookId, null, "负债", "LIABILITY", "2", false, 2L, "material-symbols-light:credit-card-outline-rounded");
         firstLevelAccounts.add(account2);
 
-        FinAccounts account3 = createAccount(bookId, null, "权益", "EQUITY", "3", false);
+        FinAccounts account3 = createAccount(bookId, null, "权益", "EQUITY", "3", false, 3L, "material-symbols-light:trending-up-outline-rounded");
         firstLevelAccounts.add(account3);
 
-        FinAccounts account4 = createAccount(bookId, null, "收入", "INCOME", "4", false);
+        FinAccounts account4 = createAccount(bookId, null, "收入", "INCOME", "4", false, 4L, "material-symbols-light:attach-money-outline-rounded");
         firstLevelAccounts.add(account4);
 
-        FinAccounts account5 = createAccount(bookId, null, "支出", "EXPENSE", "5", false);
+        FinAccounts account5 = createAccount(bookId, null, "支出", "EXPENSE", "5", false, 5L, "material-symbols-light:payments-outline-rounded");
         firstLevelAccounts.add(account5);
 
         if (!this.saveBatch(firstLevelAccounts)) {
@@ -412,69 +413,69 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         // 第二批：保存所有二级科目（子节点）
         List<FinAccounts> secondLevelAccounts = new ArrayList<>();
 
-        // 1. 资产类子科目
-        FinAccounts account101 = createAccount(bookId, account1.getId(), "流动资产", "ASSET", "101", false);
+        // 1. 资产类子科目 (sort: 1-5)
+        FinAccounts account101 = createAccount(bookId, account1.getId(), "流动资产", "ASSET", "101", false, 1L, "material-symbols-light:savings-outline-rounded");
         secondLevelAccounts.add(account101);
 
-        FinAccounts account102 = createAccount(bookId, account1.getId(), "投资资产", "ASSET", "102", true);
+        FinAccounts account102 = createAccount(bookId, account1.getId(), "投资资产", "ASSET", "102", true, 2L, "material-symbols-light:show-chart-outline-rounded");
         secondLevelAccounts.add(account102);
 
-        FinAccounts account103 = createAccount(bookId, account1.getId(), "应收账款", "ASSET", "103", false);
+        FinAccounts account103 = createAccount(bookId, account1.getId(), "应收账款", "ASSET", "103", false, 3L, "material-symbols-light:receipt-long-outline-rounded");
         secondLevelAccounts.add(account103);
 
-        FinAccounts account104 = createAccount(bookId, account1.getId(), "固定资产", "ASSET", "104", false);
+        FinAccounts account104 = createAccount(bookId, account1.getId(), "固定资产", "ASSET", "104", false, 4L, "material-symbols-light:home-outline-rounded");
         secondLevelAccounts.add(account104);
 
-        FinAccounts account105 = createAccount(bookId, account1.getId(), "受限资产", "ASSET", "105", false);
+        FinAccounts account105 = createAccount(bookId, account1.getId(), "受限资产", "ASSET", "105", false, 5L, "material-symbols-light:lock-outline-rounded");
         secondLevelAccounts.add(account105);
 
-        // 2. 负债类子科目
-        FinAccounts account201 = createAccount(bookId, account2.getId(), "流动负债", "LIABILITY", "201", false);
+        // 2. 负债类子科目 (sort: 1-2)
+        FinAccounts account201 = createAccount(bookId, account2.getId(), "流动负债", "LIABILITY", "201", false, 1L, "material-symbols-light:credit-card-outline-rounded");
         secondLevelAccounts.add(account201);
 
-        FinAccounts account202 = createAccount(bookId, account2.getId(), "长期负债", "LIABILITY", "202", false);
+        FinAccounts account202 = createAccount(bookId, account2.getId(), "长期负债", "LIABILITY", "202", false, 2L, "material-symbols-light:account-balance-outline-rounded");
         secondLevelAccounts.add(account202);
 
-        // 3. 权益类子科目
-        secondLevelAccounts.add(createAccount(bookId, account3.getId(), "期初权益", "EQUITY", "301", true));
-        secondLevelAccounts.add(createAccount(bookId, account3.getId(), "余额调整", "EQUITY", "302", true));
+        // 3. 权益类子科目 (sort: 1-2)
+        secondLevelAccounts.add(createAccount(bookId, account3.getId(), "期初权益", "EQUITY", "301", true, 1L, "material-symbols-light:analytics-outline-rounded"));
+        secondLevelAccounts.add(createAccount(bookId, account3.getId(), "余额调整", "EQUITY", "302", true, 2L, "material-symbols-light:balance-outline-rounded"));
 
-        // 4. 收入类子科目
-        FinAccounts account401 = createAccount(bookId, account4.getId(), "主动收入", "INCOME", "401", false);
+        // 4. 收入类子科目 (sort: 1-2)
+        FinAccounts account401 = createAccount(bookId, account4.getId(), "主动收入", "INCOME", "401", false, 1L, "material-symbols-light:work-outline-rounded");
         secondLevelAccounts.add(account401);
 
-        FinAccounts account402 = createAccount(bookId, account4.getId(), "被动收入", "INCOME", "402", false);
+        FinAccounts account402 = createAccount(bookId, account4.getId(), "被动收入", "INCOME", "402", false, 2L, "material-symbols-light:account-balance-outline-rounded");
         secondLevelAccounts.add(account402);
 
-        // 5. 支出类子科目
-        FinAccounts account501 = createAccount(bookId, account5.getId(), "餐饮", "EXPENSE", "501", false);
+        // 5. 支出类子科目 (sort: 1-11)
+        FinAccounts account501 = createAccount(bookId, account5.getId(), "餐饮", "EXPENSE", "501", false, 1L, "material-symbols-light:restaurant-outline-rounded");
         secondLevelAccounts.add(account501);
 
-        FinAccounts account502 = createAccount(bookId, account5.getId(), "日常交通", "EXPENSE", "502", false);
+        FinAccounts account502 = createAccount(bookId, account5.getId(), "日常交通", "EXPENSE", "502", false, 2L, "material-symbols-light:directions-car-outline-rounded");
         secondLevelAccounts.add(account502);
 
-        FinAccounts account503 = createAccount(bookId, account5.getId(), "居住", "EXPENSE", "503", false);
+        FinAccounts account503 = createAccount(bookId, account5.getId(), "居住", "EXPENSE", "503", false, 3L, "material-symbols-light:home-outline-rounded");
         secondLevelAccounts.add(account503);
 
-        FinAccounts account504 = createAccount(bookId, account5.getId(), "购物", "EXPENSE", "504", false);
+        FinAccounts account504 = createAccount(bookId, account5.getId(), "购物", "EXPENSE", "504", false, 4L, "material-symbols-light:shopping-bag-outline-rounded");
         secondLevelAccounts.add(account504);
 
-        FinAccounts account505 = createAccount(bookId, account5.getId(), "服务与订阅", "EXPENSE", "505", false);
+        FinAccounts account505 = createAccount(bookId, account5.getId(), "服务与订阅", "EXPENSE", "505", false, 5L, "material-symbols-light:subscriptions-outline-rounded");
         secondLevelAccounts.add(account505);
 
-        FinAccounts account506 = createAccount(bookId, account5.getId(), "医疗", "EXPENSE", "506", false);
+        FinAccounts account506 = createAccount(bookId, account5.getId(), "医疗", "EXPENSE", "506", false, 6L, "material-symbols-light:medical-services-outline-rounded");
         secondLevelAccounts.add(account506);
 
-        FinAccounts account507 = createAccount(bookId, account5.getId(), "个人提升", "EXPENSE", "507", false);
+        FinAccounts account507 = createAccount(bookId, account5.getId(), "个人提升", "EXPENSE", "507", false, 7L, "material-symbols-light:school-outline-rounded");
         secondLevelAccounts.add(account507);
 
-        FinAccounts account508 = createAccount(bookId, account5.getId(), "差旅与度假", "EXPENSE", "508", false);
+        FinAccounts account508 = createAccount(bookId, account5.getId(), "差旅与度假", "EXPENSE", "508", false, 8L, "material-symbols-light:flight-outline-rounded");
         secondLevelAccounts.add(account508);
 
-        FinAccounts account509 = createAccount(bookId, account5.getId(), "情感与社交", "EXPENSE", "509", false);
+        FinAccounts account509 = createAccount(bookId, account5.getId(), "情感与社交", "EXPENSE", "509", false, 9L, "material-symbols-light:favorite-outline-rounded");
         secondLevelAccounts.add(account509);
 
-        FinAccounts account511 = createAccount(bookId, account5.getId(), "折旧与摊销", "EXPENSE", "511", false);
+        FinAccounts account511 = createAccount(bookId, account5.getId(), "折旧与摊销", "EXPENSE", "511", false, 10L, "material-symbols-light:trending-down-outline-rounded");
         secondLevelAccounts.add(account511);
 
         if (!this.saveBatch(secondLevelAccounts)) {
@@ -485,83 +486,83 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         // 第三批：保存所有三级科目（叶子节点）
         List<FinAccounts> thirdLevelAccounts = new ArrayList<>();
 
-        // 101 流动资产 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "现金", "ASSET", "10101", true));
-        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "支付宝", "ASSET", "10102", true));
-        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "微信", "ASSET", "10103", true));
+        // 101 流动资产 - 子科目 (sort: 1-3)
+        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "现金", "ASSET", "10101", true, 1L, "material-symbols-light:paid-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "支付宝", "ASSET", "10102", true, 2L, "material-symbols-light:account-balance-wallet-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account101.getId(), "微信", "ASSET", "10103", true, 3L, "material-symbols-light:chat-outline-rounded"));
 
         // 102 投资资产 - 无子科目（叶子节点）
 
-        // 103 应收账款 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account103.getId(), "公司报销款", "ASSET", "10301", true));
-        thirdLevelAccounts.add(createAccount(bookId, account103.getId(), "借出款项", "ASSET", "10302", true));
+        // 103 应收账款 - 子科目 (sort: 1-2)
+        thirdLevelAccounts.add(createAccount(bookId, account103.getId(), "公司报销款", "ASSET", "10301", true, 1L, "material-symbols-light:receipt-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account103.getId(), "借出款项", "ASSET", "10302", true, 2L, "material-symbols-light:handshake-outline-rounded"));
 
-        // 104 固定资产 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account104.getId(), "汽车", "ASSET", "10401", true));
+        // 104 固定资产 - 子科目 (sort: 1)
+        thirdLevelAccounts.add(createAccount(bookId, account104.getId(), "汽车", "ASSET", "10401", true, 1L, "material-symbols-light:directions-car-outline-rounded"));
 
-        // 105 受限资产 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account105.getId(), "公积金", "ASSET", "10501", true));
+        // 105 受限资产 - 子科目 (sort: 1)
+        thirdLevelAccounts.add(createAccount(bookId, account105.getId(), "公积金", "ASSET", "10501", true, 1L, "material-symbols-light:savings-outline-rounded"));
 
-        // 201 流动负债 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account201.getId(), "花呗", "LIABILITY", "20101", true));
+        // 201 流动负债 - 子科目 (sort: 1)
+        thirdLevelAccounts.add(createAccount(bookId, account201.getId(), "花呗", "LIABILITY", "20101", true, 1L, "material-symbols-light:credit-card-outline-rounded"));
 
-        // 202 长期负债 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "车贷", "LIABILITY", "20201", true));
-        thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "房贷", "LIABILITY", "20202", true));
+        // 202 长期负债 - 子科目 (sort: 1-2)
+        thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "车贷", "LIABILITY", "20201", true, 1L, "material-symbols-light:directions-car-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account202.getId(), "房贷", "LIABILITY", "20202", true, 2L, "material-symbols-light:home-outline-rounded"));
 
-        // 401 主动收入 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "工资", "INCOME", "40101", true));
-        thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "奖金", "INCOME", "40102", true));
+        // 401 主动收入 - 子科目 (sort: 1-2)
+        thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "工资", "INCOME", "40101", true, 1L, "material-symbols-light:payments-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account401.getId(), "奖金", "INCOME", "40102", true, 2L, "material-symbols-light:card-giftcard-outline-rounded"));
 
-        // 402 被动收入 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "利息", "INCOME", "40201", true));
-        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "股息", "INCOME", "40202", true));
-        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "二手交易", "INCOME", "40203", true));
+        // 402 被动收入 - 子科目 (sort: 1-3)
+        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "利息", "INCOME", "40201", true, 1L, "material-symbols-light:percent-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "股息", "INCOME", "40202", true, 2L, "material-symbols-light:trending-up-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account402.getId(), "二手交易", "INCOME", "40203", true, 3L, "material-symbols-light:swap-horiz-outline-rounded"));
 
-        // 501 餐饮 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "买菜生鲜", "EXPENSE", "50101", true));
-        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "一日三餐", "EXPENSE", "50102", true));
-        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "零食饮料", "EXPENSE", "50103", true));
+        // 501 餐饮 - 子科目 (sort: 1-3)
+        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "买菜生鲜", "EXPENSE", "50101", true, 1L, "material-symbols-light:grocery-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "一日三餐", "EXPENSE", "50102", true, 2L, "material-symbols-light:ramen-dining-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account501.getId(), "零食饮料", "EXPENSE", "50103", true, 3L, "material-symbols-light:icecream-outline-rounded"));
 
-        // 502 交通 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "公共交通", "EXPENSE", "50201", true));
-        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "打车", "EXPENSE", "50202", true));
-        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆日常", "EXPENSE", "50203", true));
-        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆养护", "EXPENSE", "50204", true));
+        // 502 交通 - 子科目 (sort: 1-4)
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "公共交通", "EXPENSE", "50201", true, 1L, "material-symbols-light:train-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "打车", "EXPENSE", "50202", true, 2L, "material-symbols-light:local-taxi-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆日常", "EXPENSE", "50203", true, 3L, "material-symbols-light:local-gas-station-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account502.getId(), "车辆养护", "EXPENSE", "50204", true, 4L, "material-symbols-light:build-outline-rounded"));
 
-        // 503 居住 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account503.getId(), "房租", "EXPENSE", "50301", true));
-        thirdLevelAccounts.add(createAccount(bookId, account503.getId(), "水电网", "EXPENSE", "50302", true));
+        // 503 居住 - 子科目 (sort: 1-2)
+        thirdLevelAccounts.add(createAccount(bookId, account503.getId(), "房租", "EXPENSE", "50301", true, 1L, "material-symbols-light:key-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account503.getId(), "水电网", "EXPENSE", "50302", true, 2L, "material-symbols-light:light-bulb-outline-rounded"));
 
-        // 504 购物 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "数码电子", "EXPENSE", "50401", true));
-        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "服饰", "EXPENSE", "50402", true));
-        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "日用百货", "EXPENSE", "50403", true));
+        // 504 购物 - 子科目 (sort: 1-3)
+        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "数码电子", "EXPENSE", "50401", true, 1L, "material-symbols-light:devices-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "服饰", "EXPENSE", "50402", true, 2L, "material-symbols-light:checkroom-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account504.getId(), "日用百货", "EXPENSE", "50403", true, 3L, "material-symbols-light:shopping-basket-outline-rounded"));
 
-        // 505 服务与订阅 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "软件订阅", "EXPENSE", "50501", true));
-        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "手机话费", "EXPENSE", "50502", true));
+        // 505 服务与订阅 - 子科目 (sort: 1-2)
+        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "软件订阅", "EXPENSE", "50501", true, 1L, "material-symbols-light:apps-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account505.getId(), "手机话费", "EXPENSE", "50502", true, 2L, "material-symbols-light:phone-enabled-outline-rounded"));
 
-        // 506 医疗 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "看病", "EXPENSE", "50601", true));
-        thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "药品", "EXPENSE", "50602", true));
+        // 506 医疗 - 子科目 (sort: 1-2)
+        thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "看病", "EXPENSE", "50601", true, 1L, "material-symbols-light:local-hospital-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account506.getId(), "药品", "EXPENSE", "50602", true, 2L, "material-symbols-light:medication-outline-rounded"));
 
-        // 507 个人提升 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account507.getId(), "书籍课程", "EXPENSE", "50701", true));
+        // 507 个人提升 - 子科目 (sort: 1)
+        thirdLevelAccounts.add(createAccount(bookId, account507.getId(), "书籍课程", "EXPENSE", "50701", true, 1L, "material-symbols-light:menu-book-outline-rounded"));
 
-        // 508 差旅与度假 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "交通", "EXPENSE", "50801", true));
-        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "酒店住宿", "EXPENSE", "50802", true));
-        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "景点玩乐", "EXPENSE", "50803", true));
-        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "度假消费", "EXPENSE", "50804", true));
+        // 508 差旅与度假 - 子科目 (sort: 1-4)
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "交通", "EXPENSE", "50801", true, 1L, "material-symbols-light:train-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "酒店住宿", "EXPENSE", "50802", true, 2L, "material-symbols-light:hotel-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "景点玩乐", "EXPENSE", "50803", true, 3L, "material-symbols-light:attractions-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account508.getId(), "度假消费", "EXPENSE", "50804", true, 4L, "material-symbols-light:beach-access-outline-rounded"));
 
-        // 509 情感与社交 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "伴侣投入", "EXPENSE", "50901", true));
-        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "孝敬长辈", "EXPENSE", "50902", true));
-        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "朋友人情", "EXPENSE", "50903", true));
+        // 509 情感与社交 - 子科目 (sort: 1-3)
+        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "伴侣投入", "EXPENSE", "50901", true, 1L, "material-symbols-light:favorite-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "孝敬长辈", "EXPENSE", "50902", true, 2L, "material-symbols-light:elderly-outline-rounded"));
+        thirdLevelAccounts.add(createAccount(bookId, account509.getId(), "朋友人情", "EXPENSE", "50903", true, 3L, "material-symbols-light:diversity-3-outline-rounded"));
 
-        // 511 折旧与摊销 - 子科目
-        thirdLevelAccounts.add(createAccount(bookId, account511.getId(), "汽车折旧", "EXPENSE", "51101", true));
+        // 511 折旧与摊销 - 子科目 (sort: 1)
+        thirdLevelAccounts.add(createAccount(bookId, account511.getId(), "汽车折旧", "EXPENSE", "51101", true, 1L, "material-symbols-light:trending-down-outline-rounded"));
 
         boolean result = this.saveBatch(thirdLevelAccounts);
 
@@ -584,10 +585,12 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
      * @param accountType 账户类型
      * @param code 业务编码
      * @param isLeaf 是否叶子节点
+     * @param sortOrder 同级排序字段
+     * @param icon 图标
      * @return 账户对象
      */
     private FinAccounts createAccount(Long bookId, Long parentId, String name, String accountType,
-                                       String code, boolean isLeaf) {
+                                       String code, boolean isLeaf, Long sortOrder, String icon) {
         FinAccounts account = new FinAccounts();
         account.setBookId(bookId);
         account.setParentId(parentId);
@@ -598,6 +601,8 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         account.setCurrencyCode("CNY");
         account.setInitialBalance(BigDecimal.ZERO);
         account.setIsArchived(false);
+        account.setSortOrder(sortOrder);
+        account.setIcon(icon);
 
         // 自动设置借贷方向
         setBalanceDirectionByAccountType(account);

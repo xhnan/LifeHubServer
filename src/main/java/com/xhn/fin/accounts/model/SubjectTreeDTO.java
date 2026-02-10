@@ -58,6 +58,9 @@ public class SubjectTreeDTO {
     @Schema(description = "是否叶子节点")
     private Boolean isLeaf;
 
+    @Schema(description = "图标")
+    private String icon;
+
     @Schema(description = "子节点列表")
     private List<SubjectTreeDTO> children;
 }

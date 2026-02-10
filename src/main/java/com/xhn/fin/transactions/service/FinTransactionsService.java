@@ -2,6 +2,7 @@ package com.xhn.fin.transactions.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xhn.fin.transactions.dto.TransactionEntryDTO;
 import com.xhn.fin.transactions.model.FinTransactions;
 
 /**
@@ -22,4 +23,15 @@ public interface FinTransactionsService extends IService<FinTransactions> {
      * @return 分页结果
      */
     Page<FinTransactions> pageByBookIdAndDateRange(Page<FinTransactions> page, Long bookId, String startDate, String endDate);
+
+    /**
+     * 统一记账接口：创建交易及分录
+     * 在一个事务中同时创建交易主表和分录表，并自动关联 transId
+     *
+     * @param dto 交易及分录请求 DTO
+     * @param userId 当前用户 ID
+     * @return 交易 ID
+     * @throws IllegalArgumentException 如果借贷不平衡或分录为空
+     */
+    Long createTransactionWithEntries(TransactionEntryDTO dto, Long userId);
 }

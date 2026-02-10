@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 
 /**
  * 财务标签表实体基类
- * 对应数据库表：fin_tags
+ * 
  * @author xhn
- * @date 2026-02-07
+ * @date 2026-02-10
  */
 @Data
 @TableName("fin_tags")
@@ -26,6 +26,13 @@ public class BaseFinTags {
     private String tagName;
 
     @Schema(description = "创建时间")
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
+
+    @Schema(description = "标签颜色")
+    private String color;
+
+    @Schema(description = "用户ID")
+    @TableField("user_id")
+    private Long userId;
 }
