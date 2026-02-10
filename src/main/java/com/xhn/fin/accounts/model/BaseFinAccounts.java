@@ -8,18 +8,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 财务科目表实体基类
- * 表名: fin_accounts
+ * 账户科目表实体基类
  * @author xhn
- * @date 2026-02-07
+ * @date 2026-02-10
  */
 @Data
 @TableName("fin_accounts")
-@Schema(description = "财务科目表")
+@Schema(description = "账户科目表")
 public class BaseFinAccounts {
 
     @Schema(description = "主键ID")
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     @Schema(description = "账户名称 (如：招商银行、午餐)")
@@ -77,4 +76,12 @@ public class BaseFinAccounts {
     @Schema(description = "所属账本ID (数据隔离核心字段)")
     @TableField("book_id")
     private Long bookId;
+
+    @Schema(description = "图标")
+    @TableField("icon")
+    private String icon;
+
+    @Schema(description = "排序")
+    @TableField("sort_order")
+    private Long sortOrder;
 }
