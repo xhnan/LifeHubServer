@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -371,6 +372,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public boolean initDefaultAccounts(Long bookId) {
         // 检查账本是否已经初始化过
