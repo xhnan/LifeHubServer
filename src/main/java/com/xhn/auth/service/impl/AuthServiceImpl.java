@@ -163,10 +163,44 @@ public class AuthServiceImpl implements AuthService {
         throw new UnsupportedOperationException("token刷新功能暂未实现");
     }
 
-    @Override
-    public void logout(String token) {
-        // TODO: 实现登出逻辑
-        // 可以将token加入黑名单
-        log.info("用户登出，token: {}", token);
-    }
+    
+        @Override
+        public void logout(String token) {
+            if (!StringUtils.hasText(token)) {
+                throw new ApplicationException("Token不能为空");
+            }
+
+            try {
+                // 1. 从token中获取用户ID和剩余有效期
+                Long userId = jwtUtil.getUserIdFromToken(token);
+                long remainingMillis = jwtUtil.getExpirationDateFromToken(token).getTime() - System.currentTimeMillis();
+
+                if (remainingMillis > 0) {
+                    // 2. 将token加入黑名单，TTL = token剩余有效期（过期后自动清除，不浪费Redis空间）
+                    String blacklistKey = RedisKeys.tokenBlacklistKey(token);
+                    reactiveRedisTemplate.opsForValue()
+                            .set(blacklistKey, "1", Duration.ofMillis(remainingMillis))
+                            .doOnSuccess(v -> log.info("Token已加入黑名单，用户ID: {}, 剩余有效期: {}ms", userId, remainingMillis))
+                            .doOnError(e -> log.error("Token加入黑名单失败，用户ID: {}", userId, e))
+                            .subscribeOn(Schedulers.boundedElastic())
+                            .subscribe();
+                }
+
+                // 3. 清除用户的角色和权限缓存
+                String rolesKey = RedisKeys.userRolesKey(userId);
+                String permsKey = RedisKeys.userPermsKey(userId);
+                reactiveRedisTemplate.delete(rolesKey, permsKey)
+                        .doOnSuccess(count -> log.info("已清除用户缓存，用户ID: {}, 删除key数量: {}", userId, count))
+                        .doOnError(e -> log.error("清除用户缓存失败，用户ID: {}", userId, e))
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe();
+
+                log.info("用户登出成功，用户ID: {}", userId);
+            } catch (Exception e) {
+                log.warn("登出时Token解析失败: {}", e.getMessage());
+                // Token无效也视为登出成功，不抛异常
+            }
+        }
+
+
 }

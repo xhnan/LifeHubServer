@@ -21,4 +21,12 @@ public final class RedisKeys {
     public static String userPermsKey(Long userId) {
         return USER_PERMS_PREFIX + userId;
     }
+
+    /** Token黑名单 key 前缀：token:blacklist:{token} */
+    public static final String TOKEN_BLACKLIST_PREFIX = "token:blacklist:";
+
+    public static String tokenBlacklistKey(String token) {
+        return TOKEN_BLACKLIST_PREFIX + token;
+    }
+
 }
