@@ -2,6 +2,7 @@ package com.xhn.fin.transactions.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
 import com.xhn.fin.transactions.dto.TransactionEntryDTO;
 import com.xhn.fin.transactions.model.FinTransactions;
 
@@ -34,4 +35,12 @@ public interface FinTransactionsService extends IService<FinTransactions> {
      * @throws IllegalArgumentException 如果借贷不平衡或分录为空
      */
     Long createTransactionWithEntries(TransactionEntryDTO dto, Long userId);
+
+    /**
+     * 获取本月收支统计
+     *
+     * @param bookId 账本ID
+     * @return 本月统计数据（收入、支出、结余）
+     */
+    MonthlyStatisticsDTO getMonthlyStatistics(Long bookId);
 }

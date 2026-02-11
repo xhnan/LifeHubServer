@@ -3,6 +3,8 @@ package com.xhn.fin.transactions.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhn.base.utils.SecurityUtils;
+import com.xhn.fin.bookmembers.service.FinBookMembersService;
+import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
 import com.xhn.fin.transactions.dto.TransactionEntryDTO;
 import com.xhn.fin.transactions.dto.TransactionEntryResponseDTO;
 import com.xhn.fin.transactions.model.FinTransactions;
@@ -32,6 +34,9 @@ public class FinTransactionsController {
 
     @Autowired
     private FinTransactionsService finTransactionsService;
+
+    @Autowired
+    private FinBookMembersService finBookMembersService;
 
     @PostMapping("/save")
     @Operation(summary = "新增财务交易记录")
@@ -133,5 +138,22 @@ public class FinTransactionsController {
         Page<FinTransactions> page = new Page<>(pageNum, pageSize);
         Page<FinTransactions> resultPage = finTransactionsService.pageByBookIdAndDateRange(page, bookId, startDate, endDate);
         return ResponseResult.success(resultPage);
+    }
+
+    @GetMapping("/monthly-statistics")
+    @Operation(summary = "获取本月收支统计", description = "统计本月的收入总额、支出总额和结余")
+    public Mono<ResponseResult<MonthlyStatisticsDTO>> getMonthlyStatistics(
+            @Parameter(description = "账本ID") @RequestParam Long bookId
+    ) {
+        return SecurityUtils.getCurrentUserId()
+                .flatMap(userId -> {
+                    // 验证用户是否有权限访问该账本
+                    if (!finBookMembersService.hasAccess(bookId, userId)) {
+                        return Mono.just(ResponseResult.<MonthlyStatisticsDTO>error("无权限访问该账本"));
+                    }
+                    MonthlyStatisticsDTO statistics = finTransactionsService.getMonthlyStatistics(bookId);
+                    return Mono.just(ResponseResult.success(statistics));
+                })
+                .switchIfEmpty(Mono.just(ResponseResult.error("用户未登录")));
     }
 }

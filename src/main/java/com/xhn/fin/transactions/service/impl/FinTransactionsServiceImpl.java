@@ -2,10 +2,12 @@ package com.xhn.fin.transactions.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xhn.fin.entries.mapper.FinEntriesMapper;
 import com.xhn.fin.entries.model.FinEntries;
 import com.xhn.fin.entries.service.FinEntriesService;
 import com.xhn.fin.transtags.model.FinTransTags;
 import com.xhn.fin.transtags.service.FinTransTagsService;
+import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
 import com.xhn.fin.transactions.mapper.FinTransactionsMapper;
 import com.xhn.fin.transactions.model.FinTransactions;
 import com.xhn.fin.transactions.service.FinTransactionsService;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,9 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
 
     @Autowired
     private FinTransTagsService finTransTagsService;
+
+    @Autowired
+    private FinEntriesMapper finEntriesMapper;
 
     @Override
     public Page<FinTransactions> pageByBookIdAndDateRange(Page<FinTransactions> page, Long bookId, String startDate, String endDate) {
@@ -180,5 +186,36 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
 
         log.info("成功创建交易及分录，transId={}, 分录数量={}", transId, entries.size());
         return transId;
+    }
+
+    @Override
+    public MonthlyStatisticsDTO getMonthlyStatistics(Long bookId) {
+        // 获取本月开始和结束时间
+        YearMonth currentMonth = YearMonth.now();
+        LocalDateTime monthStart = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime monthEnd = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        log.info("查询本月收支统计，bookId={}, 时间范围：{} 到 {}", bookId, monthStart, monthEnd);
+
+        // 查询本月收入
+        BigDecimal totalIncome = finEntriesMapper.sumIncomeByMonth(bookId, monthStart, monthEnd);
+        if (totalIncome == null) {
+            totalIncome = BigDecimal.ZERO;
+        }
+
+        // 查询本月支出
+        BigDecimal totalExpense = finEntriesMapper.sumExpenseByMonth(bookId, monthStart, monthEnd);
+        if (totalExpense == null) {
+            totalExpense = BigDecimal.ZERO;
+        }
+
+        // 计算结余
+        BigDecimal balance = totalIncome.subtract(totalExpense);
+
+        return MonthlyStatisticsDTO.builder()
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .balance(balance)
+                .build();
     }
 }

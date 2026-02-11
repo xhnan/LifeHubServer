@@ -7,4 +7,30 @@
         id, trans_id, account_id, direction, amount, quantity, price, commodity_code
     </sql>
 
+    <!-- 统计本月收入总额 -->
+    <!-- 收入 = 收入科目(INCOME)的贷方金额 - 借方金额 -->
+    <select id="sumIncomeByMonth" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(CASE WHEN e.direction = 'CREDIT' THEN e.amount ELSE -e.amount END), 0) AS total_income
+        FROM fin_entries e
+        INNER JOIN fin_accounts a ON e.account_id = a.id
+        INNER JOIN fin_transactions t ON e.trans_id = t.id
+        WHERE a.account_type = 'INCOME'
+          AND e.book_id = #{bookId}
+          AND t.trans_date >= #{monthStart}
+          AND t.trans_date &lt;= #{monthEnd}
+    </select>
+
+    <!-- 统计本月支出总额 -->
+    <!-- 支出 = 支出科目(EXPENSE)的借方金额 - 贷方金额 -->
+    <select id="sumExpenseByMonth" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(CASE WHEN e.direction = 'DEBIT' THEN e.amount ELSE -e.amount END), 0) AS total_expense
+        FROM fin_entries e
+        INNER JOIN fin_accounts a ON e.account_id = a.id
+        INNER JOIN fin_transactions t ON e.trans_id = t.id
+        WHERE a.account_type = 'EXPENSE'
+          AND e.book_id = #{bookId}
+          AND t.trans_date >= #{monthStart}
+          AND t.trans_date &lt;= #{monthEnd}
+    </select>
+
 </mapper>
