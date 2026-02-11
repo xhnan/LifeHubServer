@@ -2,12 +2,16 @@ package com.xhn.fin.books.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xhn.fin.books.mapper.FinBooksMapper;
+import com.xhn.fin.books.model.BookAssetSummaryDTO;
 import com.xhn.fin.books.model.FinBooks;
 import com.xhn.fin.books.service.FinBooksService;
+import com.xhn.fin.entries.mapper.FinEntriesMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class FinBooksServiceImpl extends ServiceImpl<FinBooksMapper, FinBooks> implements FinBooksService {
+
+    @Autowired
+    private FinEntriesMapper finEntriesMapper;
 
     @Override
     public List<FinBooks> getBooksByUserId(Long userId) {
@@ -41,5 +48,18 @@ public class FinBooksServiceImpl extends ServiceImpl<FinBooksMapper, FinBooks> i
         return result.stream()
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public BookAssetSummaryDTO getAssetSummary(Long bookId) {
+        BigDecimal totalAssets = finEntriesMapper.sumAssetBalance(bookId);
+        BigDecimal totalLiabilities = finEntriesMapper.sumLiabilityBalance(bookId);
+        BigDecimal netAssets = totalAssets.subtract(totalLiabilities);
+
+        return BookAssetSummaryDTO.builder()
+                .totalAssets(totalAssets)
+                .totalLiabilities(totalLiabilities)
+                .netAssets(netAssets)
+                .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.xhn.fin.books.controller;
 
 import com.xhn.base.utils.SecurityUtils;
+import com.xhn.fin.books.model.BookAssetSummaryDTO;
 import com.xhn.fin.books.model.FinBooks;
 import com.xhn.fin.books.service.FinBooksService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -105,5 +106,14 @@ public class FinBooksController {
         Page<FinBooks> page = new Page<>(pageNum, pageSize);
         Page<FinBooks> resultPage = finBooksService.page(page);
         return ResponseResult.success(resultPage);
+    }
+
+    @GetMapping("/{bookId}/asset-summary")
+    @Operation(summary = "查询账本资产概览（总资产、总负债、净资产）")
+    public ResponseResult<BookAssetSummaryDTO> getAssetSummary(
+            @Parameter(description = "账本ID") @PathVariable Long bookId
+    ) {
+        BookAssetSummaryDTO summary = finBooksService.getAssetSummary(bookId);
+        return ResponseResult.success(summary);
     }
 }

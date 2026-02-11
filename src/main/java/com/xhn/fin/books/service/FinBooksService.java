@@ -1,5 +1,6 @@
 package com.xhn.fin.books.service;
 
+import com.xhn.fin.books.model.BookAssetSummaryDTO;
 import com.xhn.fin.books.model.FinBooks;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,4 +22,12 @@ public interface FinBooksService extends IService<FinBooks> {
      * @return 账本列表
      */
     List<FinBooks> getBooksByUserId(Long userId);
+
+    /**
+     * 获取账本资产概览（总资产、总负债、净资产）
+     *
+     * @param bookId 账本ID
+     * @return 资产概览
+     */
+    BookAssetSummaryDTO getAssetSummary(Long bookId);
 }

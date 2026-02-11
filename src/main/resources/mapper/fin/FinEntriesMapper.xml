@@ -45,4 +45,69 @@
           AND t.trans_date &lt;= #{monthEnd}
     </select>
 
+    <!-- 统计指定账本的资产类科目余额合计 -->
+    <!-- 资产余额 = 初始余额 + 借方金额 - 贷方金额 -->
+    <select id="sumAssetBalance" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+            (SELECT COALESCE(SUM(a.initial_balance), 0)
+             FROM fin_accounts a
+             WHERE a.account_type = 'ASSET'
+               AND a.is_archived = false
+               AND a.is_leaf = true
+               AND a.book_id = #{bookId})
+            +
+            (SELECT COALESCE(SUM(
+                CASE
+                    WHEN e.direction = 'DEBIT' THEN e.amount
+                    WHEN e.direction = 'CREDIT' THEN -e.amount
+                    ELSE 0
+                END
+            ), 0)
+             FROM fin_entries e
+             INNER JOIN fin_accounts a ON e.account_id = a.id
+             WHERE a.account_type = 'ASSET'
+               AND e.book_id = #{bookId})
+        , 0)
+    </select>
+
+    <!-- 统计指定账本的负债类科目余额合计 -->
+    <!-- 负债余额 = 初始余额 + 贷方金额 - 借方金额 -->
+    <select id="sumLiabilityBalance" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+            (SELECT COALESCE(SUM(a.initial_balance), 0)
+             FROM fin_accounts a
+             WHERE a.account_type = 'LIABILITY'
+               AND a.is_archived = false
+               AND a.is_leaf = true
+               AND a.book_id = #{bookId})
+            +
+            (SELECT COALESCE(SUM(
+                CASE
+                    WHEN e.direction = 'CREDIT' THEN e.amount
+                    WHEN e.direction = 'DEBIT' THEN -e.amount
+                    ELSE 0
+                END
+            ), 0)
+             FROM fin_entries e
+             INNER JOIN fin_accounts a ON e.account_id = a.id
+             WHERE a.account_type = 'LIABILITY'
+               AND e.book_id = #{bookId})
+        , 0)
+    </select>
+
+    <!-- 按科目分组统计每个科目的净变动额（借方 - 贷方） -->
+    <select id="sumBalanceChangeByAccount" resultType="java.util.Map">
+        SELECT e.account_id,
+               COALESCE(SUM(
+                   CASE
+                       WHEN e.direction = 'DEBIT' THEN e.amount
+                       WHEN e.direction = 'CREDIT' THEN -e.amount
+                       ELSE 0
+                   END
+               ), 0) AS net_amount
+        FROM fin_entries e
+        WHERE e.book_id = #{bookId}
+        GROUP BY e.account_id
+    </select>
+
 </mapper>

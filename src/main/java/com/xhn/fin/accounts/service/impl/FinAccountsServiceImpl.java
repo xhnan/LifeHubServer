@@ -5,15 +5,19 @@ import com.xhn.fin.accounts.mapper.FinAccountsMapper;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
 import com.xhn.fin.accounts.service.FinAccountsService;
+import com.xhn.fin.entries.mapper.FinEntriesMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +29,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAccounts> implements FinAccountsService {
+
+    @Autowired
+    private FinEntriesMapper finEntriesMapper;
 
     @Override
     public boolean saveAccount(FinAccounts finAccounts) {
@@ -342,13 +349,75 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
 
         List<FinAccounts> allAccounts = this.list(queryWrapper);
 
-        // 转换为 DTO
+        // 查询该账本下每个科目的分录净变动额
+        Map<Long, BigDecimal> balanceChangeMap = getBalanceChangeMap(bookId);
+
+        // 转换为 DTO，并计算当前余额
         List<SubjectTreeDTO> allDTOs = allAccounts.stream()
-                .map(this::convertToDTO)
+                .map(account -> convertToDTOWithBalance(account, balanceChangeMap))
                 .collect(Collectors.toList());
 
         // 构建树形结构
-        return buildTree(allDTOs, null);
+        List<SubjectTreeDTO> tree = buildTree(allDTOs, null);
+
+        // 汇总父节点余额（父节点余额 = 所有子节点余额之和）
+        tree.forEach(this::sumChildrenBalance);
+
+        return tree;
+    }
+
+    /**
+     * 查询账本下每个科目的分录净变动额（借方-贷方）
+     */
+    private Map<Long, BigDecimal> getBalanceChangeMap(Long bookId) {
+        List<Map<String, Object>> rows = finEntriesMapper.sumBalanceChangeByAccount(bookId);
+        Map<Long, BigDecimal> map = new HashMap<>();
+        if (rows != null) {
+            for (Map<String, Object> row : rows) {
+                Long accountId = ((Number) row.get("account_id")).longValue();
+                BigDecimal netAmount = (BigDecimal) row.get("net_amount");
+                map.put(accountId, netAmount != null ? netAmount : BigDecimal.ZERO);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 转换为 DTO 并计算当前余额
+     * 资产/支出类：currentBalance = initialBalance + (借方 - 贷方)
+     * 负债/权益/收入类：currentBalance = initialBalance + (贷方 - 借方) = initialBalance - (借方 - 贷方)
+     */
+    private SubjectTreeDTO convertToDTOWithBalance(FinAccounts account, Map<Long, BigDecimal> balanceChangeMap) {
+        SubjectTreeDTO dto = convertToDTO(account);
+
+        BigDecimal initial = account.getInitialBalance() != null ? account.getInitialBalance() : BigDecimal.ZERO;
+        BigDecimal netChange = balanceChangeMap.getOrDefault(account.getId(), BigDecimal.ZERO);
+
+        String direction = account.getBalanceDirection();
+        if ("DEBIT".equals(direction)) {
+            // 资产/支出类：借增贷减
+            dto.setCurrentBalance(initial.add(netChange));
+        } else {
+            // 负债/权益/收入类：贷增借减
+            dto.setCurrentBalance(initial.subtract(netChange));
+        }
+
+        return dto;
+    }
+
+    /**
+     * 递归汇总父节点余额：非叶子节点的余额 = 所有子节点余额之和
+     */
+    private void sumChildrenBalance(SubjectTreeDTO node) {
+        if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+            // 先递归处理子节点
+            node.getChildren().forEach(this::sumChildrenBalance);
+            // 父节点余额 = 子节点余额之和
+            BigDecimal sum = node.getChildren().stream()
+                    .map(child -> child.getCurrentBalance() != null ? child.getCurrentBalance() : BigDecimal.ZERO)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            node.setCurrentBalance(sum);
+        }
     }
 
     @Override
