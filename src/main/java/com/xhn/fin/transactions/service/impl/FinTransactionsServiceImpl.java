@@ -127,6 +127,7 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
         transaction.setBookId(dto.getBookId());
         transaction.setUserId(userId);
         transaction.setCreatedBy(userId);
+        transaction.setAmount(totalDebit); // 单边金额（借贷平衡，取借方总额）
 
         boolean saved = this.save(transaction);
         if (!saved) {

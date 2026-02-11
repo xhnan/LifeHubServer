@@ -43,11 +43,22 @@ public class FinBooksController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "根据ID删除账簿")
-    public ResponseResult<Boolean> delete(
+    public Mono<ResponseResult<Boolean>> delete(
             @Parameter(description = "账簿ID") @PathVariable Long id
     ) {
-        boolean result = finBooksService.removeById(id);
-        return result ? ResponseResult.success(true) : ResponseResult.error("删除失败");
+        return SecurityUtils.getCurrentUserId()
+                .flatMap(userId -> {
+                    FinBooks book = finBooksService.getById(id);
+                    if (book == null) {
+                        return Mono.just(ResponseResult.<Boolean>error("账本不存在"));
+                    }
+                    if (!userId.equals(book.getOwnerId())) {
+                        return Mono.just(ResponseResult.<Boolean>error("只有账本创建者才能删除"));
+                    }
+                    boolean result = finBooksService.removeById(id);
+                    return Mono.just(result ? ResponseResult.success(true) : ResponseResult.<Boolean>error("删除失败"));
+                })
+                .switchIfEmpty(Mono.just(ResponseResult.error("用户未登录")));
     }
 
     @PutMapping
