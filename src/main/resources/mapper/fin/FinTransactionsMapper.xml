@@ -12,4 +12,65 @@
         created_at
     </sql>
 
+    <!-- 查询交易流水明细（扁平结果，含分录、科目、标签） -->
+    <select id="selectTransactionDetails" resultType="com.xhn.fin.transactions.dto.TransactionFlatVO">
+        SELECT
+            t.id          AS transId,
+            t.trans_date  AS transDate,
+            t.description,
+            t.amount,
+            e.id          AS entryId,
+            e.account_id  AS accountId,
+            a.name        AS accountName,
+            a.icon        AS accountIcon,
+            a.account_type AS accountType,
+            e.direction,
+            e.amount      AS entryAmount,
+            e.memo,
+            tag.id        AS tagId,
+            tag.tag_name  AS tagName,
+            tag.color     AS tagColor,
+            tag.icon      AS tagIcon
+        FROM fin_transactions t
+        LEFT JOIN fin_entries e ON t.id = e.trans_id
+        LEFT JOIN fin_accounts a ON e.account_id = a.id
+        LEFT JOIN fin_trans_tags tt ON t.id = tt.trans_id
+        LEFT JOIN fin_tags tag ON tt.tag_id = tag.id
+        WHERE t.book_id = #{bookId}
+        <if test="startDate != null">
+            AND t.trans_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND t.trans_date &lt;= #{endDate}
+        </if>
+        AND t.id IN (
+            SELECT sub.id FROM (
+                SELECT id FROM fin_transactions
+                WHERE book_id = #{bookId}
+                <if test="startDate != null">
+                    AND trans_date &gt;= #{startDate}
+                </if>
+                <if test="endDate != null">
+                    AND trans_date &lt;= #{endDate}
+                </if>
+                ORDER BY trans_date DESC
+                LIMIT #{size} OFFSET #{offset}
+            ) sub
+        )
+        ORDER BY t.trans_date DESC, t.id DESC
+    </select>
+
+    <!-- 统计交易明细总数 -->
+    <select id="countTransactionDetails" resultType="long">
+        SELECT COUNT(*)
+        FROM fin_transactions
+        WHERE book_id = #{bookId}
+        <if test="startDate != null">
+            AND trans_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND trans_date &lt;= #{endDate}
+        </if>
+    </select>
+
 </mapper>

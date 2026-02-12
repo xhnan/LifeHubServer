@@ -8,6 +8,8 @@ import com.xhn.fin.entries.service.FinEntriesService;
 import com.xhn.fin.transtags.model.FinTransTags;
 import com.xhn.fin.transtags.service.FinTransTagsService;
 import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
+import com.xhn.fin.transactions.dto.TransactionDetailDTO;
+import com.xhn.fin.transactions.dto.TransactionFlatVO;
 import com.xhn.fin.transactions.mapper.FinTransactionsMapper;
 import com.xhn.fin.transactions.model.FinTransactions;
 import com.xhn.fin.transactions.service.FinTransactionsService;
@@ -218,5 +220,245 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
                 .totalExpense(totalExpense)
                 .balance(balance)
                 .build();
+    }
+
+    @Override
+    public MonthlyStatisticsDTO getMonthlyStatistics(Long bookId, int year, int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        LocalDateTime monthStart = ym.atDay(1).atStartOfDay();
+        LocalDateTime monthEnd = ym.atEndOfMonth().atTime(23, 59, 59);
+
+        log.info("查询月度收支统计，bookId={}, 时间范围：{} 到 {}", bookId, monthStart, monthEnd);
+
+        BigDecimal totalIncome = finEntriesMapper.sumIncomeByMonth(bookId, monthStart, monthEnd);
+        if (totalIncome == null) totalIncome = BigDecimal.ZERO;
+
+        BigDecimal totalExpense = finEntriesMapper.sumExpenseByMonth(bookId, monthStart, monthEnd);
+        if (totalExpense == null) totalExpense = BigDecimal.ZERO;
+
+        return MonthlyStatisticsDTO.builder()
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .balance(totalIncome.subtract(totalExpense))
+                .build();
+    }
+
+    @Override
+    public TransactionDetailDTO getTransactionDetails(Long bookId, String startDate, String endDate, int pageNum, int pageSize) {
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            try {
+                start = LocalDate.parse(startDate).atStartOfDay();
+            } catch (Exception e) {
+                log.warn("开始日期格式错误: {}", startDate);
+            }
+        }
+        if (endDate != null && !endDate.trim().isEmpty()) {
+            try {
+                end = LocalDate.parse(endDate).atTime(23, 59, 59);
+            } catch (Exception e) {
+                log.warn("结束日期格式错误: {}", endDate);
+            }
+        }
+
+        long offset = (long) (pageNum - 1) * pageSize;
+        long total = baseMapper.countTransactionDetails(bookId, start, end);
+        List<TransactionFlatVO> flatList = baseMapper.selectTransactionDetails(bookId, start, end, offset, pageSize);
+
+        // 按 transId 分组组装
+        // LinkedHashMap 保持插入顺序（SQL 已按 trans_date DESC 排序）
+        java.util.LinkedHashMap<Long, List<TransactionFlatVO>> groupedByTrans = new java.util.LinkedHashMap<>();
+        for (TransactionFlatVO vo : flatList) {
+            groupedByTrans.computeIfAbsent(vo.getTransId(), k -> new ArrayList<>()).add(vo);
+        }
+
+        // 组装每笔交易
+        List<TransactionDetailDTO.TransactionItem> items = new ArrayList<>();
+        for (var entry : groupedByTrans.entrySet()) {
+            List<TransactionFlatVO> rows = entry.getValue();
+            TransactionFlatVO first = rows.get(0);
+
+            // 去重分录
+            java.util.LinkedHashMap<Long, TransactionFlatVO> entryMap = new java.util.LinkedHashMap<>();
+            // 去重标签
+            java.util.LinkedHashMap<Long, TransactionDetailDTO.TagInfo> tagMap = new java.util.LinkedHashMap<>();
+
+            for (TransactionFlatVO row : rows) {
+                if (row.getEntryId() != null) {
+                    entryMap.putIfAbsent(row.getEntryId(), row);
+                }
+                if (row.getTagId() != null) {
+                    tagMap.computeIfAbsent(row.getTagId(), k ->
+                            TransactionDetailDTO.TagInfo.builder()
+                                    .tagId(row.getTagId())
+                                    .tagName(row.getTagName())
+                                    .color(row.getTagColor())
+                                    .icon(row.getTagIcon())
+                                    .build()
+                    );
+                }
+            }
+
+            // 判断交易类型和提取显示信息
+            List<TransactionFlatVO> uniqueEntries = new ArrayList<>(entryMap.values());
+            String transType = resolveTransType(uniqueEntries);
+            BigDecimal displayAmount = resolveDisplayAmount(uniqueEntries, transType);
+            String categoryName = null;
+            String categoryIcon = null;
+            String targetAccountName = null;
+            String targetAccountIcon = null;
+
+            if ("EXPENSE".equals(transType)) {
+                // 支出：主科目=EXPENSE类，对方=ASSET类
+                for (TransactionFlatVO e : uniqueEntries) {
+                    if ("EXPENSE".equals(e.getAccountType())) {
+                        categoryName = e.getAccountName();
+                        categoryIcon = e.getAccountIcon();
+                    } else if ("ASSET".equals(e.getAccountType()) || "LIABILITY".equals(e.getAccountType())) {
+                        targetAccountName = e.getAccountName();
+                        targetAccountIcon = e.getAccountIcon();
+                    }
+                }
+            } else if ("INCOME".equals(transType)) {
+                // 收入：主科目=INCOME类，对方=ASSET类
+                for (TransactionFlatVO e : uniqueEntries) {
+                    if ("INCOME".equals(e.getAccountType())) {
+                        categoryName = e.getAccountName();
+                        categoryIcon = e.getAccountIcon();
+                    } else if ("ASSET".equals(e.getAccountType()) || "LIABILITY".equals(e.getAccountType())) {
+                        targetAccountName = e.getAccountName();
+                        targetAccountIcon = e.getAccountIcon();
+                    }
+                }
+            } else if ("TRANSFER".equals(transType)) {
+                // 转账：借方=转入方，贷方=转出方
+                for (TransactionFlatVO e : uniqueEntries) {
+                    if ("DEBIT".equals(e.getDirection())) {
+                        categoryName = e.getAccountName();
+                        categoryIcon = e.getAccountIcon();
+                    } else {
+                        targetAccountName = e.getAccountName();
+                        targetAccountIcon = e.getAccountIcon();
+                    }
+                }
+            } else {
+                // 其他：取第一条分录
+                if (!uniqueEntries.isEmpty()) {
+                    categoryName = uniqueEntries.get(0).getAccountName();
+                    categoryIcon = uniqueEntries.get(0).getAccountIcon();
+                }
+            }
+
+            items.add(TransactionDetailDTO.TransactionItem.builder()
+                    .transId(first.getTransId())
+                    .transDate(first.getTransDate())
+                    .transType(transType)
+                    .displayAmount(displayAmount)
+                    .description(first.getDescription())
+                    .categoryName(categoryName)
+                    .categoryIcon(categoryIcon)
+                    .targetAccountName(targetAccountName)
+                    .targetAccountIcon(targetAccountIcon)
+                    .tags(new ArrayList<>(tagMap.values()))
+                    .build());
+        }
+
+        // 按日期分组
+        java.util.LinkedHashMap<LocalDate, List<TransactionDetailDTO.TransactionItem>> dailyMap = new java.util.LinkedHashMap<>();
+        for (TransactionDetailDTO.TransactionItem item : items) {
+            LocalDate date = item.getTransDate().toLocalDate();
+            dailyMap.computeIfAbsent(date, k -> new ArrayList<>()).add(item);
+        }
+
+        List<TransactionDetailDTO.DailyGroup> dailyGroups = new ArrayList<>();
+        for (var dailyEntry : dailyMap.entrySet()) {
+            List<TransactionDetailDTO.TransactionItem> dayItems = dailyEntry.getValue();
+            BigDecimal dailyIncome = BigDecimal.ZERO;
+            BigDecimal dailyExpense = BigDecimal.ZERO;
+
+            for (TransactionDetailDTO.TransactionItem item : dayItems) {
+                if ("INCOME".equals(item.getTransType()) && item.getDisplayAmount() != null) {
+                    dailyIncome = dailyIncome.add(item.getDisplayAmount().abs());
+                } else if ("EXPENSE".equals(item.getTransType()) && item.getDisplayAmount() != null) {
+                    dailyExpense = dailyExpense.add(item.getDisplayAmount().abs());
+                }
+            }
+
+            dailyGroups.add(TransactionDetailDTO.DailyGroup.builder()
+                    .date(dailyEntry.getKey())
+                    .dailyIncome(dailyIncome)
+                    .dailyExpense(dailyExpense)
+                    .transactions(dayItems)
+                    .build());
+        }
+
+        TransactionDetailDTO result = new TransactionDetailDTO();
+        result.setDailyGroups(dailyGroups);
+        result.setTotal(total);
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+        return result;
+    }
+
+    /**
+     * 根据分录的科目类型判断交易类型
+     */
+    private String resolveTransType(List<TransactionFlatVO> entries) {
+        boolean hasExpense = false;
+        boolean hasIncome = false;
+        boolean hasAsset = false;
+        boolean hasLiability = false;
+
+        for (TransactionFlatVO e : entries) {
+            if (e.getAccountType() == null) continue;
+            switch (e.getAccountType()) {
+                case "EXPENSE" -> hasExpense = true;
+                case "INCOME" -> hasIncome = true;
+                case "ASSET" -> hasAsset = true;
+                case "LIABILITY" -> hasLiability = true;
+            }
+        }
+
+        if (hasExpense) return "EXPENSE";
+        if (hasIncome) return "INCOME";
+        // 资产之间或资产与负债之间的转移 = 转账
+        if (hasAsset && !hasExpense && !hasIncome) return "TRANSFER";
+        return "OTHER";
+    }
+
+    /**
+     * 根据交易类型计算显示金额
+     * 支出为负数，收入为正数，转账为正数（转入金额）
+     */
+    private BigDecimal resolveDisplayAmount(List<TransactionFlatVO> entries, String transType) {
+        if ("EXPENSE".equals(transType)) {
+            // 取 EXPENSE 科目的借方金额，显示为负数
+            for (TransactionFlatVO e : entries) {
+                if ("EXPENSE".equals(e.getAccountType()) && "DEBIT".equals(e.getDirection())) {
+                    return e.getEntryAmount().negate();
+                }
+            }
+        } else if ("INCOME".equals(transType)) {
+            // 取 INCOME 科目的贷方金额，显示为正数
+            for (TransactionFlatVO e : entries) {
+                if ("INCOME".equals(e.getAccountType()) && "CREDIT".equals(e.getDirection())) {
+                    return e.getEntryAmount();
+                }
+            }
+        } else if ("TRANSFER".equals(transType)) {
+            // 取借方金额
+            for (TransactionFlatVO e : entries) {
+                if ("DEBIT".equals(e.getDirection())) {
+                    return e.getEntryAmount();
+                }
+            }
+        }
+        // fallback: 取交易主表金额
+        if (!entries.isEmpty()) {
+            return entries.get(0).getAmount();
+        }
+        return BigDecimal.ZERO;
     }
 }
