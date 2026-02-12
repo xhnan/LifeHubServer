@@ -63,13 +63,41 @@ public interface FinEntriesMapper extends BaseMapper<FinEntries> {
 
     /**
      * 按科目分组统计指定账本的每个科目净变动额
-     * 资产/支出类科目：借方为正，贷方为负
-     * 负债/权益/收入类科目：贷方为正，借方为负
-     * 返回的是原始 借方-贷方 的差值，调用方根据科目方向自行处理
      *
      * @param bookId 账本ID
      * @return 每个科目的 [account_id, net_amount] 列表
      */
     List<Map<String, Object>> sumBalanceChangeByAccount(@Param("bookId") Long bookId);
+
+    /**
+     * 按支出科目分组统计指定时间范围内的支出排行
+     */
+    List<Map<String, Object>> sumExpenseByCategory(@Param("bookId") Long bookId,
+                                                    @Param("startDate") LocalDateTime startDate,
+                                                    @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 按收入科目分组统计指定时间范围内的收入排行
+     */
+    List<Map<String, Object>> sumIncomeByCategory(@Param("bookId") Long bookId,
+                                                   @Param("startDate") LocalDateTime startDate,
+                                                   @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 按标签分组统计指定时间范围内的支出
+     */
+    List<Map<String, Object>> sumExpenseByTag(@Param("bookId") Long bookId,
+                                              @Param("startDate") LocalDateTime startDate,
+                                              @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 查询各资产科目余额明细
+     */
+    List<Map<String, Object>> listAssetAccountBalances(@Param("bookId") Long bookId);
+
+    /**
+     * 查询各负债科目余额明细
+     */
+    List<Map<String, Object>> listLiabilityAccountBalances(@Param("bookId") Long bookId);
 
 }

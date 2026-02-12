@@ -7,14 +7,11 @@ import com.xhn.fin.entries.model.FinEntries;
 import com.xhn.fin.entries.service.FinEntriesService;
 import com.xhn.fin.transtags.model.FinTransTags;
 import com.xhn.fin.transtags.service.FinTransTagsService;
-import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
-import com.xhn.fin.transactions.dto.TransactionDetailDTO;
-import com.xhn.fin.transactions.dto.TransactionFlatVO;
+import com.xhn.fin.transactions.dto.*;
 import com.xhn.fin.transactions.mapper.FinTransactionsMapper;
 import com.xhn.fin.transactions.model.FinTransactions;
 import com.xhn.fin.transactions.service.FinTransactionsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xhn.fin.transactions.dto.TransactionEntryDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 财务交易服务实现类
@@ -401,6 +399,151 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
         result.setPageSize(pageSize);
         return result;
     }
+
+    @Override
+    public YearlyTrendDTO getYearlyTrend(Long bookId, int year) {
+        List<YearlyTrendDTO.MonthData> months = new ArrayList<>();
+        for (int m = 1; m <= 12; m++) {
+            YearMonth ym = YearMonth.of(year, m);
+            LocalDateTime start = ym.atDay(1).atStartOfDay();
+            LocalDateTime end = ym.atEndOfMonth().atTime(23, 59, 59);
+
+            BigDecimal income = finEntriesMapper.sumIncomeByMonth(bookId, start, end);
+            BigDecimal expense = finEntriesMapper.sumExpenseByMonth(bookId, start, end);
+            if (income == null) income = BigDecimal.ZERO;
+            if (expense == null) expense = BigDecimal.ZERO;
+
+            months.add(YearlyTrendDTO.MonthData.builder()
+                    .month(m)
+                    .income(income)
+                    .expense(expense)
+                    .balance(income.subtract(expense))
+                    .build());
+        }
+        return YearlyTrendDTO.builder().year(year).months(months).build();
+    }
+
+    @Override
+    public CategoryRankDTO getCategoryRank(Long bookId, String type, int year, int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        LocalDateTime start = ym.atDay(1).atStartOfDay();
+        LocalDateTime end = ym.atEndOfMonth().atTime(23, 59, 59);
+
+        List<Map<String, Object>> rows;
+        if ("INCOME".equalsIgnoreCase(type)) {
+            rows = finEntriesMapper.sumIncomeByCategory(bookId, start, end);
+        } else {
+            rows = finEntriesMapper.sumExpenseByCategory(bookId, start, end);
+        }
+
+        BigDecimal total = BigDecimal.ZERO;
+        List<CategoryRankDTO.CategoryItem> items = new ArrayList<>();
+        for (Map<String, Object> row : rows) {
+            BigDecimal amount = toBigDecimal(row.get("total_amount"));
+            total = total.add(amount);
+            items.add(CategoryRankDTO.CategoryItem.builder()
+                    .accountId(toLong(row.get("account_id")))
+                    .accountName((String) row.get("account_name"))
+                    .accountIcon((String) row.get("account_icon"))
+                    .amount(amount)
+                    .build());
+        }
+
+        // 计算占比
+        for (CategoryRankDTO.CategoryItem item : items) {
+            if (total.compareTo(BigDecimal.ZERO) > 0) {
+                item.setPercentage(item.getAmount()
+                        .multiply(new BigDecimal("100"))
+                        .divide(total, 1, java.math.RoundingMode.HALF_UP));
+            } else {
+                item.setPercentage(BigDecimal.ZERO);
+            }
+        }
+
+        return CategoryRankDTO.builder()
+                .type(type.toUpperCase())
+                .total(total)
+                .categories(items)
+                .build();
+    }
+
+    @Override
+    public TagStatisticsDTO getTagStatistics(Long bookId, int year, int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        LocalDateTime start = ym.atDay(1).atStartOfDay();
+        LocalDateTime end = ym.atEndOfMonth().atTime(23, 59, 59);
+
+        List<Map<String, Object>> rows = finEntriesMapper.sumExpenseByTag(bookId, start, end);
+
+        BigDecimal total = BigDecimal.ZERO;
+        List<TagStatisticsDTO.TagItem> items = new ArrayList<>();
+        for (Map<String, Object> row : rows) {
+            BigDecimal amount = toBigDecimal(row.get("total_amount"));
+            total = total.add(amount);
+            items.add(TagStatisticsDTO.TagItem.builder()
+                    .tagId(toLong(row.get("tag_id")))
+                    .tagName((String) row.get("tag_name"))
+                    .color((String) row.get("tag_color"))
+                    .icon((String) row.get("tag_icon"))
+                    .amount(amount)
+                    .count(((Number) row.get("trans_count")).intValue())
+                    .build());
+        }
+
+        for (TagStatisticsDTO.TagItem item : items) {
+            if (total.compareTo(BigDecimal.ZERO) > 0) {
+                item.setPercentage(item.getAmount()
+                        .multiply(new BigDecimal("100"))
+                        .divide(total, 1, java.math.RoundingMode.HALF_UP));
+            } else {
+                item.setPercentage(BigDecimal.ZERO);
+            }
+        }
+
+        return TagStatisticsDTO.builder().total(total).tags(items).build();
+    }
+
+    @Override
+    public AccountBalanceDTO getAccountBalances(Long bookId, String accountType) {
+        List<Map<String, Object>> rows;
+        if ("LIABILITY".equalsIgnoreCase(accountType)) {
+            rows = finEntriesMapper.listLiabilityAccountBalances(bookId);
+        } else {
+            rows = finEntriesMapper.listAssetAccountBalances(bookId);
+        }
+
+        BigDecimal total = BigDecimal.ZERO;
+        List<AccountBalanceDTO.AccountItem> items = new ArrayList<>();
+        for (Map<String, Object> row : rows) {
+            BigDecimal balance = toBigDecimal(row.get("balance"));
+            total = total.add(balance);
+            items.add(AccountBalanceDTO.AccountItem.builder()
+                    .accountId(toLong(row.get("account_id")))
+                    .accountName((String) row.get("account_name"))
+                    .accountIcon((String) row.get("account_icon"))
+                    .balance(balance)
+                    .build());
+        }
+
+        return AccountBalanceDTO.builder()
+                .accountType(accountType.toUpperCase())
+                .total(total)
+                .accounts(items)
+                .build();
+    }
+
+    private BigDecimal toBigDecimal(Object obj) {
+        if (obj == null) return BigDecimal.ZERO;
+        if (obj instanceof BigDecimal) return (BigDecimal) obj;
+        return new BigDecimal(obj.toString());
+    }
+
+    private Long toLong(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof Long) return (Long) obj;
+        return ((Number) obj).longValue();
+    }
+
 
     /**
      * 根据分录的科目类型判断交易类型

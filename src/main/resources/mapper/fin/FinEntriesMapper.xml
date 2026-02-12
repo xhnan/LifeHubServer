@@ -110,4 +110,124 @@
         GROUP BY e.account_id
     </select>
 
+    <!-- 按科目分组统计指定时间范围内的支出排行 -->
+    <select id="sumExpenseByCategory" resultType="java.util.Map">
+        SELECT a.id AS account_id,
+               a.name AS account_name,
+               a.icon AS account_icon,
+               COALESCE(SUM(
+                   CASE
+                       WHEN e.direction = 'DEBIT' THEN e.amount
+                       WHEN e.direction = 'CREDIT' THEN -e.amount
+                       ELSE 0
+                   END
+               ), 0) AS total_amount
+        FROM fin_entries e
+        INNER JOIN fin_accounts a ON e.account_id = a.id
+        INNER JOIN fin_transactions t ON e.trans_id = t.id
+        WHERE a.account_type = 'EXPENSE'
+          AND e.book_id = #{bookId}
+          AND t.trans_date &gt;= #{startDate}
+          AND t.trans_date &lt;= #{endDate}
+        GROUP BY a.id, a.name, a.icon
+        HAVING SUM(CASE WHEN e.direction = 'DEBIT' THEN e.amount WHEN e.direction = 'CREDIT' THEN -e.amount ELSE 0 END) > 0
+        ORDER BY total_amount DESC
+    </select>
+
+    <!-- 按科目分组统计指定时间范围内的收入排行 -->
+    <select id="sumIncomeByCategory" resultType="java.util.Map">
+        SELECT a.id AS account_id,
+               a.name AS account_name,
+               a.icon AS account_icon,
+               COALESCE(SUM(
+                   CASE
+                       WHEN e.direction = 'CREDIT' THEN e.amount
+                       WHEN e.direction = 'DEBIT' THEN -e.amount
+                       ELSE 0
+                   END
+               ), 0) AS total_amount
+        FROM fin_entries e
+        INNER JOIN fin_accounts a ON e.account_id = a.id
+        INNER JOIN fin_transactions t ON e.trans_id = t.id
+        WHERE a.account_type = 'INCOME'
+          AND e.book_id = #{bookId}
+          AND t.trans_date &gt;= #{startDate}
+          AND t.trans_date &lt;= #{endDate}
+        GROUP BY a.id, a.name, a.icon
+        HAVING SUM(CASE WHEN e.direction = 'CREDIT' THEN e.amount WHEN e.direction = 'DEBIT' THEN -e.amount ELSE 0 END) > 0
+        ORDER BY total_amount DESC
+    </select>
+
+    <!-- 按标签分组统计指定时间范围内的支出 -->
+    <select id="sumExpenseByTag" resultType="java.util.Map">
+        SELECT tag.id AS tag_id,
+               tag.tag_name,
+               tag.color AS tag_color,
+               tag.icon AS tag_icon,
+               COALESCE(SUM(
+                   CASE
+                       WHEN e.direction = 'DEBIT' THEN e.amount
+                       WHEN e.direction = 'CREDIT' THEN -e.amount
+                       ELSE 0
+                   END
+               ), 0) AS total_amount,
+               COUNT(DISTINCT t.id) AS trans_count
+        FROM fin_entries e
+        INNER JOIN fin_accounts a ON e.account_id = a.id
+        INNER JOIN fin_transactions t ON e.trans_id = t.id
+        INNER JOIN fin_trans_tags tt ON t.id = tt.trans_id
+        INNER JOIN fin_tags tag ON tt.tag_id = tag.id
+        WHERE a.account_type = 'EXPENSE'
+          AND e.book_id = #{bookId}
+          AND t.trans_date &gt;= #{startDate}
+          AND t.trans_date &lt;= #{endDate}
+        GROUP BY tag.id, tag.tag_name, tag.color, tag.icon
+        HAVING SUM(CASE WHEN e.direction = 'DEBIT' THEN e.amount WHEN e.direction = 'CREDIT' THEN -e.amount ELSE 0 END) > 0
+        ORDER BY total_amount DESC
+    </select>
+
+    <!-- 查询各资产科目余额明细 -->
+    <select id="listAssetAccountBalances" resultType="java.util.Map">
+        SELECT a.id AS account_id,
+               a.name AS account_name,
+               a.icon AS account_icon,
+               COALESCE(a.initial_balance, 0) + COALESCE(SUM(
+                   CASE
+                       WHEN e.direction = 'DEBIT' THEN e.amount
+                       WHEN e.direction = 'CREDIT' THEN -e.amount
+                       ELSE 0
+                   END
+               ), 0) AS balance
+        FROM fin_accounts a
+        LEFT JOIN fin_entries e ON a.id = e.account_id AND e.book_id = #{bookId}
+        WHERE a.account_type = 'ASSET'
+          AND a.is_leaf = true
+          AND a.is_archived = false
+          AND a.book_id = #{bookId}
+        GROUP BY a.id, a.name, a.icon, a.initial_balance, a.sort_order
+        ORDER BY a.sort_order ASC, a.id ASC
+    </select>
+
+    <!-- 查询各负债科目余额明细 -->
+    <select id="listLiabilityAccountBalances" resultType="java.util.Map">
+        SELECT a.id AS account_id,
+               a.name AS account_name,
+               a.icon AS account_icon,
+               COALESCE(a.initial_balance, 0) + COALESCE(SUM(
+                   CASE
+                       WHEN e.direction = 'CREDIT' THEN e.amount
+                       WHEN e.direction = 'DEBIT' THEN -e.amount
+                       ELSE 0
+                   END
+               ), 0) AS balance
+        FROM fin_accounts a
+        LEFT JOIN fin_entries e ON a.id = e.account_id AND e.book_id = #{bookId}
+        WHERE a.account_type = 'LIABILITY'
+          AND a.is_leaf = true
+          AND a.is_archived = false
+          AND a.book_id = #{bookId}
+        GROUP BY a.id, a.name, a.icon, a.initial_balance, a.sort_order
+        ORDER BY a.sort_order ASC, a.id ASC
+    </select>
+
 </mapper>

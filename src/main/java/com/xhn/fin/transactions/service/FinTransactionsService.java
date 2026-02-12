@@ -2,9 +2,13 @@ package com.xhn.fin.transactions.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xhn.fin.transactions.dto.AccountBalanceDTO;
+import com.xhn.fin.transactions.dto.CategoryRankDTO;
 import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
+import com.xhn.fin.transactions.dto.TagStatisticsDTO;
 import com.xhn.fin.transactions.dto.TransactionDetailDTO;
 import com.xhn.fin.transactions.dto.TransactionEntryDTO;
+import com.xhn.fin.transactions.dto.YearlyTrendDTO;
 import com.xhn.fin.transactions.model.FinTransactions;
 
 /**
@@ -57,7 +61,6 @@ public interface FinTransactionsService extends IService<FinTransactions> {
 
     /**
      * 查询交易明细（流水账视图），支持时间范围筛选
-     * 按日期分组，每笔交易展示收支方向、金额、科目、标签等信息
      *
      * @param bookId    账本ID
      * @param startDate 开始日期 (yyyy-MM-dd)，可选
@@ -67,5 +70,44 @@ public interface FinTransactionsService extends IService<FinTransactions> {
      * @return 流水账视图
      */
     TransactionDetailDTO getTransactionDetails(Long bookId, String startDate, String endDate, int pageNum, int pageSize);
+
+    /**
+     * 获取年度收支趋势（按月统计）
+     *
+     * @param bookId 账本ID
+     * @param year   年份
+     * @return 12个月的收入/支出/结余趋势
+     */
+    YearlyTrendDTO getYearlyTrend(Long bookId, int year);
+
+    /**
+     * 获取分类排行（支出或收入按科目分类）
+     *
+     * @param bookId 账本ID
+     * @param type   EXPENSE 或 INCOME
+     * @param year   年份
+     * @param month  月份 (1-12)
+     * @return 分类排行
+     */
+    CategoryRankDTO getCategoryRank(Long bookId, String type, int year, int month);
+
+    /**
+     * 获取标签统计（按标签分组的支出统计）
+     *
+     * @param bookId 账本ID
+     * @param year   年份
+     * @param month  月份 (1-12)
+     * @return 标签统计
+     */
+    TagStatisticsDTO getTagStatistics(Long bookId, int year, int month);
+
+    /**
+     * 获取资产/负债各科目余额明细
+     *
+     * @param bookId      账本ID
+     * @param accountType ASSET 或 LIABILITY
+     * @return 科目余额明细
+     */
+    AccountBalanceDTO getAccountBalances(Long bookId, String accountType);
 
 }
