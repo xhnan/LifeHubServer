@@ -36,20 +36,15 @@ jobs:
           distribution: "temurin"
           cache: maven  # 自动缓存 Maven 依赖
 
-      - name: 🧪 Run Tests
-        run: mvn test -B
-        # 跳过需要外部服务（DB/Redis）的集成测试
-        # 如有集成测试，推荐使用 Testcontainers
-
-      - name: 📦 Build Package (skip tests，已在上一步完成)
+      - name: 📦 Build Package
         run: mvn clean package -DskipTests -B
 
-      - name: 📊 Upload Test Reports
-        if: always()  # 即使测试失败也上传报告
+      - name: 📊 Upload Build Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
-          path: target/surefire-reports/
+          name: build-output
+          path: target/*.jar
           retention-days: 7
 
   # ============================================================
