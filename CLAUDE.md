@@ -4,9 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-LifeHubServer is a reactive Spring Boot application implementing a comprehensive RBAC (Role-Based Access Control) system with user management, permission control, and menu-based navigation.
+LifeHubServer is a reactive Spring Boot application serving as a comprehensive personal finance management platform with:
+- **Financial Management**: Multi-ledger accounting system with transaction tracking, budget management, and asset analysis
+- **RBAC System**: Complete Role-Based Access Control with user management, permission control, and menu-based navigation
+- **AI Integration**: Code generation and AI-powered features
 
-**Tech Stack**: Spring Boot 3.5.9, Java 17, Spring WebFlux (reactive), Spring Security, MyBatis-Plus, PostgreSQL, Redis, JWT authentication
+**Tech Stack**: Spring Boot 3.5.9, Java 17, Spring WebFlux (reactive), Spring Security, MyBatis-Plus, PostgreSQL, Redis, JWT authentication, gRPC
+
+**Project Structure**:
+```
+com.xhn/
+├── base/           # Base infrastructure (aspects, exceptions, utils, constants)
+├── sys/            # System management (RBAC, users, roles, permissions, menus, apps)
+├── fin/            # Financial management (ledgers, accounts, transactions, budgets, tags)
+├── auth/           # Authentication (login, JWT)
+├── ai/             # AI features
+├── grpc/           # gRPC services
+├── response/       # API response wrappers
+└── test/           # Test utilities
+```
 
 ## Development Commands
 
@@ -68,6 +84,15 @@ Database (PostgreSQL)
 - `/public/**` - Public resources
 - `/ws/**` - WebSocket endpoints
 
+### API Path Conventions
+Different modules use different path prefixes:
+- `/auth/**` - Authentication (login, logout)
+- `/sys/**` - System management (users, roles, permissions, menus)
+- `/fin/**` - Financial management (ledgers, accounts, transactions)
+- `/app/**` - Application-specific endpoints (mobile app APIs)
+- `/grpc/**` - gRPC related endpoints
+- `/ai/**` - AI features
+
 ### Database Schema Patterns
 
 **Common Conventions:**
@@ -93,7 +118,45 @@ User ←→ UserRole ←→ Role ←→ RolePermission ←→ Permission
 - User role information cached after login for performance
 - Configuration: `application-dev.properties`
 
+### Controller Logging Aspect
+The application includes `ControllerLogAspect` (`com.xhn.base.aspect.ControllerLogAspect`) which automatically logs:
+- Method entry with parameters
+- Method exit with return values
+- Execution time
+- Errors
+
+**Note**: Controllers do NOT need `@Slf4j` annotation - the aspect dynamically creates loggers for each controller class.
+
+Long responses (>1024 chars) are automatically truncated to avoid log flooding.
+
 ## Adding New Features
+
+### 0. Module Structure Reference
+
+**System Module** (`com.xhn.sys`):
+- `user/` - User management
+- `role/` - Role management
+- `permission/` - Permission management
+- `menu/` - Menu/navigation management
+- `app/` - Application management
+- `userapp/` - User-application assignments
+- `userrole/` - User-role assignments
+- `rolepermission/` - Role-permission assignments
+- `permissionmenu/` - Permission-menu assignments
+- `permissionapi/` - Permission-API mappings
+- `userconfig/` - User-specific configurations
+- `template/` - Template management
+
+**Financial Module** (`com.xhn.fin`):
+- `books/` - Ledger/book management (账本)
+- `bookmembers/` - Book member management (账本成员)
+- `accounts/` - Account management with subject tree (账户及科目)
+- `entries/` - Accounting entries (会计科目)
+- `transactions/` - Transaction records with rich statistics (交易记录)
+- `tags/` - Tag management (标签)
+- `transtags/` - Transaction-tag associations (交易标签关联)
+- `budgets/` - Budget management (预算)
+- `prices/` - Price/exchange rate management (价格/汇率)
 
 ### 1. Adding a New System Module
 Follow the existing structure in `src/main/java/com/xhn/sys/`:
@@ -106,6 +169,8 @@ sys/
 │   ├── service/impl/    # Service implementation
 │   └── controller/      # REST controller
 ```
+
+For financial modules, follow the same structure under `com.xhn.fin/`.
 
 ### 2. Creating CRUD Endpoints
 Reference existing controllers (e.g., `SysRoleController`, `SysPermissionController`):
@@ -164,6 +229,15 @@ List<YourEntity> selectCustomDataByUserId(Long userId);
 - `SecurityUtils` - Get current user info in reactive context
 - `JwtUtil` - JWT token operations
 - `ResponseResult` - Standard API response wrapper
+- `ControllerLogAspect` - Automatic controller logging (no @Slf4j needed in controllers)
+
+**Base Packages**:
+- `com.xhn.base.aspect` - Cross-cutting concerns (logging)
+- `com.xhn.base.config` - Spring configuration classes
+- `com.xhn.base.constants` - Application constants
+- `com.xhn.base.exception` - Custom exceptions
+- `com.xhn.base.security` - Security utilities
+- `com.xhn.base.utils` - Utility classes
 
 ## Configuration Files
 
@@ -175,6 +249,18 @@ List<YourEntity> selectCustomDataByUserId(Long userId);
 ## Database Connection
 
 **Development Database**: PostgreSQL at `120.78.0.54:6252/LifeHub`
+
+## Additional Services
+
+### gRPC Service
+The application includes gRPC support for service-to-service communication:
+- Health check endpoint available via `HealthTestController`
+- gRPC server configuration in base config
+
+### AI Integration
+The `ai` module provides AI-powered features:
+- `CodeController` - Code generation and AI-assisted development
+- Integration with AI models for intelligent code suggestions
 
 ## Common Patterns
 
@@ -217,3 +303,38 @@ SecurityUtils.getCurrentUserId()
         return yourService.doSomething(userId);
     })
 ```
+
+## Financial Module Features
+
+### Transaction Statistics Endpoints
+The `FinTransactionsController` provides rich analytics:
+- **Yearly Trend**: `/transactions/yearly-trend` - Monthly income/expense trends
+- **Category Ranking**: `/transactions/category-rank` - Top spending categories
+- **Tag Statistics**: `/transactions/tag-statistics` - Spending by tags
+- **Monthly Statistics**: `/transactions/monthly-stats` - Monthly summaries
+- **Account Balance**: `/transactions/account-balance` - Asset/Liability balances by account
+
+### Book Asset Summary
+The `FinBooksController` provides:
+- **Asset Summary**: `/books/{id}/asset-summary` - Total assets and liabilities
+
+### Account Subject Tree
+The `FinAccountsController` provides:
+- **Subject Tree**: `/accounts/subject-tree` - Hierarchical account structure with balances
+
+### DTOs for Statistics
+Key DTOs in `com.xhn.fin.transactions.dto`:
+- `YearlyTrendDTO` - Monthly income/expense data
+- `CategoryRankDTO` - Category-based ranking
+- `TagStatisticsDTO` - Tag-based statistics
+- `MonthlyStatisticsDTO` - Monthly aggregated data
+- `AccountBalanceDTO` - Account balance details
+- `TransactionDetailDTO` - Detailed transaction information
+- `TransactionEntryDTO` - Transaction with entry/subject details
+
+### User Configuration
+The `SysUserConfigController` allows storing user-specific settings as key-value pairs, useful for:
+- User preferences
+- UI settings
+- Feature flags
+- Custom configurations

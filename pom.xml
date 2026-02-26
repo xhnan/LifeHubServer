@@ -160,6 +160,18 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>1.3.2</version>
         </dependency>
+
+        <!-- XML解析（企业微信回调使用XML格式） -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+
+        <!-- Apache Commons Codec（Base64、加密等） -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

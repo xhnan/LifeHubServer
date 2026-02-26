@@ -37,3 +37,6 @@ build/
 
 /docs
 nul
+
+### CI/CD ###
+.env

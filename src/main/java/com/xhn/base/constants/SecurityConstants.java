@@ -29,7 +29,8 @@ public class SecurityConstants {
             "/webjars/**",  // Swagger webjars
             "/v3/api-docs/**",  // OpenAPI 3.0 docs
             "/swagger-resources/**",  // Swagger resources
-            "/actuator/**"  // Actuator endpoints (可选)
+            "/actuator/**",  // Actuator endpoints (可选)
+            "/wechat/callback/**"  // 企业微信回调接口
     };
 
     /** Spring Security 角色前缀 */
