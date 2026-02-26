@@ -11,8 +11,9 @@ on:
       - develop
 
 env:
-  # Docker 镜像名称，使用 GitHub Container Registry
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/lifehubserver
+  # 腾讯云镜像仓库
+  REGISTRY: ccr.ccs.tencentyun.com
+  IMAGE_NAME: ccr.ccs.tencentyun.com/lifehub/lifehubserver
   JAVA_VERSION: "17"
   # 服务器部署目录（固定路径）
   DEPLOY_PATH: /usr/local/lifehub/server
@@ -48,17 +49,13 @@ jobs:
           retention-days: 7
 
   # ============================================================
-  # JOB 2: 构建 Docker 镜像并推送（仅 main 分支）
+  # JOB 2: 构建 Docker 镜像并推送到腾讯云（仅 main 分支）
   # ============================================================
   build-and-push-image:
     name: 🐳 Build & Push Docker Image
     runs-on: ubuntu-latest
-    needs: build-and-test  # 依赖 build-and-test 成功
+    needs: build-and-test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    permissions:
-      contents: read
-      packages: write  # 推送到 GitHub Container Registry 需要此权限
 
     steps:
       - name: 📥 Checkout Code
@@ -67,32 +64,21 @@ jobs:
       - name: 🔧 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 🔑 Login to GitHub Container Registry
+      - name: 🔑 登录腾讯云镜像仓库
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
 
-      - name: 🏷️ Extract Docker Metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            # 最新提交的 SHA（短）
-            type=sha,prefix=sha-,format=short
-            # latest 标签
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: 🐳 Build & Push Image
+      - name: 🐳 构建并推送镜像
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # 启用 GitHub Actions 缓存加速构建
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -106,12 +92,9 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     environment:
-      name: production  # GitHub Environments 可配置需要审批
+      name: production
 
     steps:
-      - name: 📥 Checkout Code（获取 docker-compose.yml）
-        uses: actions/checkout@v4
-
       - name: 🚀 Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -123,18 +106,18 @@ jobs:
             set -e
 
             echo "📂 进入部署目录..."
-            cd ${{ env.DEPLOY_PATH }}
+            cd /usr/local/lifehub/server
 
-            echo "🔑 登录 GitHub Container Registry..."
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "🔑 登录腾讯云镜像仓库..."
+            docker login ccr.ccs.tencentyun.com -u ${{ secrets.TCR_USERNAME }} -p ${{ secrets.TCR_PASSWORD }}
 
             echo "⬇️ 拉取最新镜像..."
-            docker pull ${{ env.IMAGE_NAME }}:latest
+            docker pull ccr.ccs.tencentyun.com/lifehub/lifehubserver:latest
 
             echo "🔄 更新 .env 中的镜像版本..."
-            sed -i "s|DOCKER_IMAGE=.*|DOCKER_IMAGE=${{ env.IMAGE_NAME }}:latest|" .env
+            sed -i "s|DOCKER_IMAGE=.*|DOCKER_IMAGE=ccr.ccs.tencentyun.com/lifehub/lifehubserver:latest|" .env
 
-            echo "♻️ 重启服务（零宕机滚动更新）..."
+            echo "♻️ 重启服务..."
             docker compose up -d --remove-orphans
 
             echo "🧹 清理旧镜像..."
