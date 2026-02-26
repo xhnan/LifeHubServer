@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 空配置，用于禁用 Nacos 客户端自带的 logback 配置 -->
+    <!-- 避免 appender 重复定义的冲突错误 -->
+</configuration>
