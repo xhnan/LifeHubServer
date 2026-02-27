@@ -191,11 +191,19 @@
         </dependency>
 
         <!-- ========== Nacos 配置中心 ========== -->
-        <!-- 仅 prod 环境生效（bootstrap-prod.properties 中启用） -->
-        <!-- dev 环境通过 bootstrap-dev.properties 禁用，不会连接 Nacos -->
+        <!-- 仅 prod 环境生效（application-prod.properties 中启用） -->
+        <!-- dev 环境通过 application-dev.properties 禁用，不会连接 Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- ========== Nacos 服务注册中心 ========== -->
+        <!-- 仅 prod 环境生效（application-prod.properties 中启用） -->
+        <!-- dev 环境通过 application-dev.properties 禁用，不会注册到 Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
     </dependencies>
 
