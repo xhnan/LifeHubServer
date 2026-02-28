@@ -214,7 +214,8 @@ public class WeChatApiClient {
      * @return 解密后的随机字符串
      */
     public String verifyUrl(String msgEncrypt, WxCrypto wxCrypto) {
-        return wxCrypto.decrypt(msgEncrypt);
+//        return wxCrypto.decrypt(msgEncrypt);
+        return "";
     }
 
     /**
@@ -236,8 +237,8 @@ public class WeChatApiClient {
                 nonce
         );
 
-        String encrypt = wxCrypto.encrypt(content, String.valueOf(agentId));
-        String signature = WxSignature.generate(wxCrypto.getToken(), String.valueOf(timestamp), nonce);
+        String encrypt = "";
+        String signature = WxSignature.generate("", String.valueOf(timestamp), nonce);
 
         return String.format(
                 "<xml><Encrypt><![CDATA[%s]]></Encrypt><MsgSignature><![CDATA[%s]]></MsgSignature><TimeStamp>%s</TimeStamp><Nonce><![CDATA[%s]]></Nonce></xml>",
