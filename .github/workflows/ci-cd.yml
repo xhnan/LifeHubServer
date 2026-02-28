@@ -1,127 +1,59 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline (Self-Hosted Local)
 
 on:
   push:
     branches:
-      - main        # 推送到 main 触发完整 CI + CD
-      - develop     # 推送到 develop 只触发 CI（构建+测试）
+      - main
+      - develop
   pull_request:
     branches:
       - main
       - develop
 
 env:
-  # 腾讯云镜像仓库
-  REGISTRY: ccr.ccs.tencentyun.com
-  IMAGE_NAME: ccr.ccs.tencentyun.com/lifehub/lifehubserver
   JAVA_VERSION: "17"
-  # 服务器部署目录（固定路径）
-  DEPLOY_PATH: /usr/local/lifehub/server
+  DEPLOY_PATH: /usr/local/lifehub/server # 你的部署目录
+  LOCAL_IMAGE_NAME: lifehubserver:local  # 纯本地镜像名，不带 registry 前缀
 
 jobs:
   # ============================================================
-  # JOB 1: 构建 & 测试（所有分支都运行）
+  # 构建、打包并直接部署 (纯本地闭环)
   # ============================================================
-  build-and-test:
-    name: 🔨 Build & Test
-    runs-on: ubuntu-latest
+  build-and-deploy:
+    name: 🚀 Build & Deploy
+    runs-on: [self-hosted]
 
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: "temurin"
-          cache: maven  # 自动缓存 Maven 依赖
+      # 1. 编译 Java (适用于所有分支，作为 CI 测试)
+      - name: ☕ Build Package
+        run: |
+          echo "Building Java project..."
+          mvn clean package -DskipTests -B
 
-      - name: 📦 Build Package
-        run: mvn clean package -DskipTests -B
+      # 2. 本地构建 Docker 镜像 (仅 main 分支)
+      - name: 🐳 Build Local Docker Image
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          echo "Building Docker image locally..."
+          # 直接在本地打包并打上 local 标签
+          docker build -t ${{ env.LOCAL_IMAGE_NAME }} .
 
-      - name: 📊 Upload Build Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: target/*.jar
-          retention-days: 7
+      # 3. 就地部署 (仅 main 分支)
+      - name: 🚀 Deploy to Production
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          echo "📂 进入部署目录..."
+          cd ${{ env.DEPLOY_PATH }}
 
-  # ============================================================
-  # JOB 2: 构建 Docker 镜像并推送到腾讯云（仅 main 分支）
-  # ============================================================
-  build-and-push-image:
-    name: 🐳 Build & Push Docker Image
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+          echo "♻️ 重启服务..."
+          # docker-compose 会自动读取我们上面改好的配置，拉起 lifehubserver:local
+          docker compose up -d --remove-orphans
 
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+          echo "🧹 清理旧镜像..."
+          docker image prune -f
 
-      - name: 🔧 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: 🔑 登录腾讯云镜像仓库
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.TCR_USERNAME }}
-          password: ${{ secrets.TCR_PASSWORD }}
-
-      - name: 🐳 构建并推送镜像
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  # ============================================================
-  # JOB 3: 自动部署到服务器（仅 main 分支，镜像推送成功后）
-  # ============================================================
-  deploy:
-    name: 🚀 Deploy to Production
-    runs-on: ubuntu-latest
-    needs: build-and-push-image
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    environment:
-      name: production
-
-    steps:
-      - name: 🚀 Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          script: |
-            set -e
-
-            echo "📂 进入部署目录..."
-            cd /usr/local/lifehub/server
-
-            echo "🔑 登录腾讯云镜像仓库..."
-            docker login ccr.ccs.tencentyun.com -u ${{ secrets.TCR_USERNAME }} -p ${{ secrets.TCR_PASSWORD }}
-
-            echo "⬇️ 拉取最新镜像..."
-            docker pull ccr.ccs.tencentyun.com/lifehub/lifehubserver:latest
-
-            echo "🔄 更新 .env 中的镜像版本..."
-            sed -i "s|DOCKER_IMAGE=.*|DOCKER_IMAGE=ccr.ccs.tencentyun.com/lifehub/lifehubserver:latest|" .env
-
-            echo "♻️ 重启服务..."
-            docker compose up -d --remove-orphans
-
-            echo "🧹 清理旧镜像..."
-            docker image prune -f
-
-            echo "✅ 部署完成！当前运行状态："
-            docker compose ps
+          echo "✅ 部署完成！当前运行状态："
+          docker compose ps
