@@ -46,9 +46,6 @@ public class CallbackEvent {
     @JacksonXmlProperty(localName = "MediaId")
     private String mediaId;
 
-    @JacksonXmlProperty(localName = "CreateTime")
-    private Long createTime2;
-
     @JacksonXmlProperty(localName = "Title")
     private String title;
 
