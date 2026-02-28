@@ -5,11 +5,12 @@ WORKDIR /app
 
 # 先复制 pom.xml，利用 Docker 层缓存加速依赖下载
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+COPY settings.xml .
+RUN mvn -s settings.xml dependency:go-offline -B
 
 # 复制源码并构建（跳过测试以加速镜像构建，测试在 CI 中单独运行）
 COPY src ./src
-RUN mvn clean package -DskipTests -B
+RUN mvn -s settings.xml clean package -DskipTests -B
 
 # ===== 运行阶段 =====
 FROM eclipse-temurin:17-jre-alpine
