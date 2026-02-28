@@ -1,6 +1,7 @@
 package com.xhn.wechat.callback.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.xhn.base.exception.ApplicationException;
 import com.xhn.wechat.app.model.BaseWeChatAppConfig;
 import com.xhn.wechat.app.service.WeChatAppConfigService;
 import com.xhn.wechat.callback.handler.MessageHandler;
@@ -121,7 +122,7 @@ public class WeChatCallbackController {
                         BaseWeChatAppConfig appConfig = appConfigService.getByAgentId(agentId);
                         if (appConfig == null) {
                             log.error("App config not found for agentId: {}", agentId);
-                            throw new RuntimeException("App config not found");
+                            throw new ApplicationException("App config not found");
                         }
 
                         // 解析XML获取encrypt
@@ -131,7 +132,7 @@ public class WeChatCallbackController {
                         String signature = WxSignature.generateUrlSignature(appConfig.getToken(), timestamp, nonce, callbackXml.getEncrypt());
                         if (!signature.equals(msgSignature)) {
                             log.error("Signature verification failed");
-                            throw new RuntimeException("Signature verification failed");
+                            throw new ApplicationException("Signature verification failed");
                         }
 
                         // 解密消息
