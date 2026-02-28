@@ -49,6 +49,10 @@ public class BaseWeChatAppConfig {
     @TableField("is_enabled")
     private Integer isEnabled;
 
+    @Schema(description = "消息处理器Bean名称（完整类名）")
+    @TableField("handler_bean_name")
+    private String handlerBeanName;
+
     @Schema(description = "创建时间")
     @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;

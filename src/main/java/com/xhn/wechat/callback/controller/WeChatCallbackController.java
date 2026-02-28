@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets;
 public class WeChatCallbackController {
 
     private final WeChatAppConfigService appConfigService;
-    private final MessageHandler messageHandler;
+    private final MessageHandlerFactory messageHandlerFactory;
     private final WeChatMessageService messageService;
     private final XmlMapper xmlMapper = new XmlMapper();
 
@@ -147,8 +147,12 @@ public class WeChatCallbackController {
                         // 保存接收到的消息
                         saveReceivedMessage(appConfig.getId(), event);
 
+                        // 根据应用类型获取对应的处理器
+                        var handler = messageHandlerFactory.getHandler(appConfig);
+                        log.info("Using message handler: {} for app: {}", handler.getType(), appConfig.getAppName());
+
                         // 处理消息并生成回复
-                        String replyContent = messageHandler.handleEvent(event, appConfig);
+                        String replyContent = handler.handleEvent(event, appConfig);
 
                         if (replyContent != null && !replyContent.isEmpty()) {
                             // 构造回复消息
@@ -247,6 +251,9 @@ public class WeChatCallbackController {
         @com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty(localName = "Encrypt")
         private String encrypt;
 
+        @com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty(localName = "AgentID")
+        private Long agentId;
+
         public String getToUserName() {
             return toUserName;
         }
@@ -285,6 +292,14 @@ public class WeChatCallbackController {
 
         public void setEncrypt(String encrypt) {
             this.encrypt = encrypt;
+        }
+
+        public Long getAgentId() {
+            return agentId;
+        }
+
+        public void setAgentId(Long agentId) {
+            this.agentId = agentId;
         }
     }
 }
