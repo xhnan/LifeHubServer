@@ -5,20 +5,12 @@ on:
     branches:
       - main
       - develop
-  pull_request:
-    branches:
-      - main
-      - develop
 
 env:
-  JAVA_VERSION: "17"
-  DEPLOY_PATH: /usr/local/lifehub/server # 你的部署目录
-  LOCAL_IMAGE_NAME: lifehubserver:local  # 纯本地镜像名，不带 registry 前缀
+  DEPLOY_PATH: /usr/local/lifehub/server
+  LOCAL_IMAGE_NAME: lifehubserver:local
 
 jobs:
-  # ============================================================
-  # 构建、打包并直接部署 (纯本地闭环)
-  # ============================================================
   build-and-deploy:
     name: 🚀 Build & Deploy
     runs-on: [self-hosted]
@@ -27,21 +19,16 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      # 1. 编译 Java (适用于所有分支，作为 CI 测试)
-      - name: ☕ Build Package
-        run: |
-          echo "Building Java project..."
-          mvn clean package -DskipTests -B
+      # 🌟 删掉了本地的 mvn clean package 步骤，直接进入 Docker 构建
+      # Dockerfile 里面的 builder 阶段会自动帮我们下载依赖并编译
 
-      # 2. 本地构建 Docker 镜像 (仅 main 分支)
       - name: 🐳 Build Local Docker Image
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           echo "Building Docker image locally..."
-          # 直接在本地打包并打上 local 标签
+          # 让 Docker 去处理一切（编译 + 打包镜像）
           docker build -t ${{ env.LOCAL_IMAGE_NAME }} .
 
-      # 3. 就地部署 (仅 main 分支)
       - name: 🚀 Deploy to Production
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
@@ -49,11 +36,10 @@ jobs:
           cd ${{ env.DEPLOY_PATH }}
 
           echo "♻️ 重启服务..."
-          # docker-compose 会自动读取我们上面改好的配置，拉起 lifehubserver:local
           docker compose up -d --remove-orphans
 
           echo "🧹 清理旧镜像..."
           docker image prune -f
 
-          echo "✅ 部署完成！当前运行状态："
+          echo "✅ 部署完成！"
           docker compose ps
