@@ -4,7 +4,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.xhn.base.exception.ApplicationException;
 import com.xhn.wechat.app.model.BaseWeChatAppConfig;
 import com.xhn.wechat.app.service.WeChatAppConfigService;
-import com.xhn.wechat.callback.handler.MessageHandler;
+
+import com.xhn.wechat.callback.handler.MessageHandlerFactory;
 import com.xhn.wechat.client.crypto.WxCrypto;
 import com.xhn.wechat.client.crypto.WxSignature;
 import com.xhn.wechat.client.dto.CallbackEvent;
