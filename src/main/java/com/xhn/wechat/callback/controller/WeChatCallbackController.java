@@ -94,7 +94,6 @@ public class WeChatCallbackController {
      * @param msgSignature 签名
      * @param timestamp  时间戳
      * @param nonce      随机字符串
-     * @param exchange   ServerWebExchange
      * @return 回复消息
      */
     @PostMapping(value = "/{agentId}", produces = MediaType.APPLICATION_XML_VALUE)
