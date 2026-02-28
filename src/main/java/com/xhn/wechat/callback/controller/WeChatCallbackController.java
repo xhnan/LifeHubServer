@@ -70,10 +70,10 @@ public class WeChatCallbackController {
                 throw new RuntimeException("App config not found");
             }
 
-            // 验证签名
-            String signature = WxSignature.generate(appConfig.getToken(), timestamp, nonce);
+            // 验证签名（URL验证需要包含echostr参数）
+            String signature = WxSignature.generateUrlSignature(appConfig.getToken(), timestamp, nonce, echostr);
             if (!signature.equals(msgSignature)) {
-                log.error("Signature verification failed");
+                log.error("Signature verification failed: expected={}, actual={}", signature, msgSignature);
                 throw new RuntimeException("Signature verification failed");
             }
 
@@ -124,15 +124,15 @@ public class WeChatCallbackController {
                             throw new RuntimeException("App config not found");
                         }
 
-                        // 验证签名
-                        String signature = WxSignature.generate(appConfig.getToken(), timestamp, nonce);
+                        // 解析XML获取encrypt
+                        CallbackXml callbackXml = xmlMapper.readValue(body, CallbackXml.class);
+
+                        // 验证签名（接收消息时签名需要包含encrypt参数）
+                        String signature = WxSignature.generateUrlSignature(appConfig.getToken(), timestamp, nonce, callbackXml.getEncrypt());
                         if (!signature.equals(msgSignature)) {
                             log.error("Signature verification failed");
                             throw new RuntimeException("Signature verification failed");
                         }
-
-                        // 解析XML
-                        CallbackXml callbackXml = xmlMapper.readValue(body, CallbackXml.class);
 
                         // 解密消息
                         WxCrypto wxCrypto = new WxCrypto(appConfig.getToken(), appConfig.getEncodingAesKey());
