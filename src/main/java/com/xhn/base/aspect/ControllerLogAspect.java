@@ -56,7 +56,8 @@ public class ControllerLogAspect {
         Object result = joinPoint.proceed();
 
         // 处理 Mono 返回值
-        if (result instanceof Mono<?> mono) {
+        if (result instanceof Mono) {
+            Mono<?> mono = (Mono<?>) result;
             return mono.doOnSuccess(data -> {
                 long cost = System.currentTimeMillis() - startTime;
                 log.info("<<< {} 耗时: {}ms 返回: {}", methodName, cost, toJson(data));
@@ -67,7 +68,8 @@ public class ControllerLogAspect {
         }
 
         // 处理 Flux 返回值
-        if (result instanceof Flux<?> flux) {
+        if (result instanceof Flux) {
+            Flux<?> flux = (Flux<?>) result;
             return flux.collectList().flatMapMany(list -> {
                 long cost = System.currentTimeMillis() - startTime;
                 log.info("<<< {} 耗时: {}ms 返回元素数: {}", methodName, cost, list.size());

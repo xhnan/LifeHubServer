@@ -194,6 +194,13 @@
             <artifactId>commons-codec</artifactId>
         </dependency>
 
+        <!-- MinIO Java SDK for object storage -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.12</version>
+        </dependency>
+
         <!-- ========== Nacos 配置中心 ========== -->
         <!-- 仅 prod 环境生效（application-prod.properties 中启用） -->
         <!-- dev 环境通过 application-dev.properties 禁用，不会连接 Nacos -->

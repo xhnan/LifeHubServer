@@ -557,10 +557,18 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
         for (TransactionFlatVO e : entries) {
             if (e.getAccountType() == null) continue;
             switch (e.getAccountType()) {
-                case "EXPENSE" -> hasExpense = true;
-                case "INCOME" -> hasIncome = true;
-                case "ASSET" -> hasAsset = true;
-                case "LIABILITY" -> hasLiability = true;
+                case "EXPENSE":
+                    hasExpense = true;
+                    break;
+                case "INCOME":
+                    hasIncome = true;
+                    break;
+                case "ASSET":
+                    hasAsset = true;
+                    break;
+                case "LIABILITY":
+                    hasLiability = true;
+                    break;
             }
         }
 
