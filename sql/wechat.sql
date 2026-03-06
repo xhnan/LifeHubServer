@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS wechat_message (
     from_user       VARCHAR(100),
     to_user         VARCHAR(100),
     content         TEXT,
-    msg_id          VARCHAR(100),
+    msg_id          VARCHAR(255),
     status          VARCHAR(20),
     error_code      VARCHAR(20),
     error_msg       VARCHAR(500),

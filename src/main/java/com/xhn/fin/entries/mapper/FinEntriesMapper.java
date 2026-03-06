@@ -100,4 +100,11 @@ public interface FinEntriesMapper extends BaseMapper<FinEntries> {
      */
     List<Map<String, Object>> listLiabilityAccountBalances(@Param("bookId") Long bookId);
 
+
+    /**
+     * Count 30-day usage for expense payment accounts.
+     */
+    List<Map<String, Object>> countExpensePaymentUsage(@Param("bookId") Long bookId,
+                                                       @Param("startDate") LocalDateTime startDate,
+                                                       @Param("endDate") LocalDateTime endDate);
 }

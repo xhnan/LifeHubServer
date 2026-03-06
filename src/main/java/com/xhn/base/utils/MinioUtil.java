@@ -55,6 +55,10 @@ public class MinioUtil {
      */
     public String uploadFile(String bucketName, String objectName, MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
+            // 记录上传前日志
+            log.info("Starting file upload - bucket: {}, object: {}, size: {}, contentType: {}",
+                    bucketName, objectName, file.getSize(), file.getContentType());
+
             // 检查存储桶是否存在
             bucketExists(bucketName);
 
@@ -66,10 +70,13 @@ public class MinioUtil {
                     .contentType(file.getContentType())
                     .build());
 
-            log.info("File uploaded successfully: {}/{}", bucketName, objectName);
+            // 记录上传完成日志
+            log.info("File uploaded successfully - bucket: {}, object: {}, size: {}",
+                    bucketName, objectName, file.getSize());
             return objectName;
         } catch (Exception e) {
-            log.error("File upload error: {}", e.getMessage());
+            log.error("File upload error - bucket: {}, object: {}, error: {}",
+                    bucketName, objectName, e.getMessage(), e);
             throw new RuntimeException("文件上传失败", e);
         }
     }
@@ -87,6 +94,10 @@ public class MinioUtil {
     public String uploadFile(String bucketName, String objectName, InputStream inputStream,
                              long size, String contentType) {
         try {
+            // 记录上传前日志
+            log.info("Starting file upload - bucket: {}, object: {}, size: {}, contentType: {}",
+                    bucketName, objectName, size, contentType);
+
             // 检查存储桶是否存在
             bucketExists(bucketName);
 
@@ -98,10 +109,13 @@ public class MinioUtil {
                     .contentType(contentType)
                     .build());
 
-            log.info("File uploaded successfully: {}/{}", bucketName, objectName);
+            // 记录上传完成日志
+            log.info("File uploaded successfully - bucket: {}, object: {}, size: {}",
+                    bucketName, objectName, size);
             return objectName;
         } catch (Exception e) {
-            log.error("File upload error: {}", e.getMessage());
+            log.error("File upload error - bucket: {}, object: {}, error: {}",
+                    bucketName, objectName, e.getMessage(), e);
             throw new RuntimeException("文件上传失败", e);
         }
     }

@@ -15,10 +15,11 @@ public class CorsConfig {
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // 允许的请求源
-        config.addAllowedOrigin("http://hub.xhnya.top");
-        config.addAllowedOrigin("https://hub.xhnya.top");
-        config.addAllowedOrigin("http://localhost:*");
+        // 允许的请求源（使用 allowedOriginPattern 支持模式和通配符）
+        config.addAllowedOriginPattern("http://hub.xhnya.top");
+        config.addAllowedOriginPattern("https://hub.xhnya.top");
+        config.addAllowedOriginPattern("http://localhost:*");
+        config.addAllowedOriginPattern("http://127.0.0.1:*");
 
         // 允许携带凭证（cookie等）
         config.setAllowCredentials(true);

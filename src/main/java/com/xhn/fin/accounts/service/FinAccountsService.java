@@ -2,6 +2,7 @@ package com.xhn.fin.accounts.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
 
@@ -116,4 +117,13 @@ public interface FinAccountsService extends IService<FinAccounts> {
      * @return 是否成功
      */
     boolean initDefaultAccounts(Long bookId);
+
+    /**
+     * 获取账本的科目分类
+     * 按支出/收入分类，每类包含发生科目和付款/收款科目
+     *
+     * @param bookId 账本ID
+     * @return 科目分类数据
+     */
+    SubjectCategoriesDTO getSubjectCategories(Long bookId);
 }

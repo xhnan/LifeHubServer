@@ -1,6 +1,8 @@
 package com.xhn.fin.accounts.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xhn.fin.accounts.dto.AccountSubjectDTO;
+import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.mapper.FinAccountsMapper;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -677,5 +681,84 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         setBalanceDirectionByAccountType(account);
 
         return account;
+    }
+
+    @Override
+    public SubjectCategoriesDTO getSubjectCategories(Long bookId) {
+        LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FinAccounts::getBookId, bookId);
+        queryWrapper.eq(FinAccounts::getIsLeaf, true);
+
+        List<FinAccounts> allAccounts = this.list(queryWrapper);
+
+        List<AccountSubjectDTO> allSubjects = allAccounts.stream()
+                .map(this::convertToAccountSubjectDTO)
+                .collect(Collectors.toList());
+
+        List<AccountSubjectDTO> expenseOccurrence = new ArrayList<>();
+        List<AccountSubjectDTO> expensePayment = new ArrayList<>();
+        List<AccountSubjectDTO> incomeOccurrence = new ArrayList<>();
+        List<AccountSubjectDTO> incomeReceipt = new ArrayList<>();
+
+        for (AccountSubjectDTO subject : allSubjects) {
+            String accountType = subject.getAccountType();
+            if ("EXPENSE".equals(accountType)) {
+                expenseOccurrence.add(subject);
+            } else if ("INCOME".equals(accountType)) {
+                incomeOccurrence.add(subject);
+            } else if ("ASSET".equals(accountType)) {
+                expensePayment.add(subject);
+                incomeReceipt.add(subject);
+            }
+        }
+
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(30);
+        Map<Long, Integer> usageMap = new HashMap<>();
+
+        List<Map<String, Object>> usageRows = finEntriesMapper.countExpensePaymentUsage(bookId, startDate, endDate);
+        for (Map<String, Object> row : usageRows) {
+            Object accountId = row.get("account_id");
+            Object usageCount = row.get("usage_count");
+            if (accountId instanceof Number && usageCount instanceof Number) {
+                usageMap.put(((Number) accountId).longValue(), ((Number) usageCount).intValue());
+            }
+        }
+
+        // Expense payment order: pinned first (sortWeight > 0), then 30-day usage desc.
+        expensePayment.sort(
+                Comparator.comparing((AccountSubjectDTO s) -> s.getSortWeight() != null && s.getSortWeight() > 0)
+                        .reversed()
+                        .thenComparing((AccountSubjectDTO s) -> usageMap.getOrDefault(s.getId(), 0), Comparator.reverseOrder())
+                        .thenComparing((AccountSubjectDTO s) -> s.getSortWeight() == null ? 0 : s.getSortWeight(), Comparator.reverseOrder())
+                        .thenComparing(AccountSubjectDTO::getId)
+        );
+
+        SubjectCategoriesDTO.ExpenseCategories expense = SubjectCategoriesDTO.ExpenseCategories.builder()
+                .occurrenceSubjects(expenseOccurrence)
+                .paymentSubjects(expensePayment)
+                .build();
+
+        SubjectCategoriesDTO.IncomeCategories income = SubjectCategoriesDTO.IncomeCategories.builder()
+                .occurrenceSubjects(incomeOccurrence)
+                .receiptSubjects(incomeReceipt)
+                .build();
+
+        return SubjectCategoriesDTO.builder()
+                .expense(expense)
+                .income(income)
+                .allSubjects(allSubjects)
+                .build();
+    }
+
+    private AccountSubjectDTO convertToAccountSubjectDTO(FinAccounts account) {
+        return AccountSubjectDTO.builder()
+                .id(account.getId())
+                .name(account.getName())
+                .code(account.getCode())
+                .accountType(account.getAccountType())
+                .icon(account.getIcon())
+                .sortWeight(account.getSortWeight())
+                .build();
     }
 }

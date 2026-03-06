@@ -84,4 +84,8 @@ public class BaseFinAccounts {
     @Schema(description = "排序")
     @TableField("sort_order")
     private Long sortOrder;
+
+    @Schema(description = "用户设置的排序，倒序")
+    @TableField("sort_weight")
+    private Integer sortWeight;
 }

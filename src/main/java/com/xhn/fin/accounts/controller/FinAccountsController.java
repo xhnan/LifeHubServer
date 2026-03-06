@@ -1,5 +1,6 @@
 package com.xhn.fin.accounts.controller;
 
+import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
 import com.xhn.fin.accounts.service.FinAccountsService;
@@ -120,5 +121,14 @@ public class FinAccountsController {
     ) {
         List<SubjectTreeDTO> subjects = finAccountsService.getSubjectsByParentIdAndBookId(parentId, bookId);
         return ResponseResult.success(subjects);
+    }
+
+    @GetMapping("/categories")
+    @Operation(summary = "获取账本的科目分类（按支出/收入分类）")
+    public ResponseResult<SubjectCategoriesDTO> getSubjectCategories(
+            @Parameter(description = "账本ID") @RequestParam Long bookId
+    ) {
+        SubjectCategoriesDTO categories = finAccountsService.getSubjectCategories(bookId);
+        return ResponseResult.success(categories);
     }
 }

@@ -13,7 +13,7 @@ env:
 jobs:
   build-and-deploy:
     name: 🚀 Build & Deploy
-    runs-on: [self-hosted]
+    runs-on: [self-hosted,Java-env]
 
     steps:
       - name: 📥 Checkout Code
