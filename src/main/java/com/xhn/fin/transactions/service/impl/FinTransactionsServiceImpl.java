@@ -744,6 +744,7 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
                     transTagsList.add(transTag);
                 }
                 boolean tagsSaved = finTransTagsService.saveBatch(transTagsList);
+                
                 log.info("创建新标签关联成功, transId={}, count={}", transId, transTagsList.size());
             }
 
