@@ -7,6 +7,7 @@ import com.xhn.fin.bookmembers.service.FinBookMembersService;
 import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
 import com.xhn.fin.transactions.dto.TransactionEntryDTO;
 import com.xhn.fin.transactions.dto.TransactionEntryResponseDTO;
+import com.xhn.fin.transactions.dto.UpdateTransactionDTO;
 import com.xhn.fin.transactions.model.FinTransactions;
 import com.xhn.fin.transactions.service.FinTransactionsService;
 import com.xhn.response.ResponseResult;
@@ -75,6 +76,31 @@ public class FinTransactionsController {
                     }
                 })
                 .switchIfEmpty(Mono.just(ResponseResult.<TransactionEntryResponseDTO>error("用户未登录")));
+    }
+
+    @PutMapping("/with-entries/{id}")
+    @Operation(summary = "修改交易记录及分录（复式记账）", description = "更新交易主表和分录表，自动校验借贷平衡，会删除旧行分录并创建新分录")
+    public Mono<ResponseResult<Boolean>> updateWithEntries(
+            @Parameter(description = "交易记录ID") @PathVariable Long id,
+            @RequestBody UpdateTransactionDTO dto
+    ) {
+        return SecurityUtils.getCurrentUserId()
+                .flatMap(userId -> {
+                    try {
+                        boolean result = finTransactionsService.updateTransactionWithEntries(id, dto, userId);
+                        if (result) {
+                            return Mono.just(ResponseResult.<Boolean>success(true));
+                        } else {
+                            return Mono.just(ResponseResult.<Boolean>error("修改失败或无权限"));
+                        }
+                    } catch (IllegalArgumentException e) {
+                        return Mono.just(ResponseResult.<Boolean>error(e.getMessage()));
+                    } catch (RuntimeException e) {
+                        log.error("修改交易及分录失败", e);
+                        return Mono.just(ResponseResult.<Boolean>error("修改失败：" + e.getMessage()));
+                    }
+                })
+                .switchIfEmpty(Mono.just(ResponseResult.<Boolean>error("用户未登录")));
     }
 
     @DeleteMapping("/{id}")

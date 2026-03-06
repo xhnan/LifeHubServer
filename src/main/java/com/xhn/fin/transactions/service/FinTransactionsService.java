@@ -2,13 +2,7 @@ package com.xhn.fin.transactions.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.xhn.fin.transactions.dto.AccountBalanceDTO;
-import com.xhn.fin.transactions.dto.CategoryRankDTO;
-import com.xhn.fin.transactions.dto.MonthlyStatisticsDTO;
-import com.xhn.fin.transactions.dto.TagStatisticsDTO;
-import com.xhn.fin.transactions.dto.TransactionDetailDTO;
-import com.xhn.fin.transactions.dto.TransactionEntryDTO;
-import com.xhn.fin.transactions.dto.YearlyTrendDTO;
+import com.xhn.fin.transactions.dto.*;
 import com.xhn.fin.transactions.model.FinTransactions;
 
 /**
@@ -118,5 +112,17 @@ public interface FinTransactionsService extends IService<FinTransactions> {
      * @return 是否删除成功
      */
     boolean deleteTransactionWithEntries(Long transId, Long userId);
+
+    /**
+     * 修改交易记录（包括分录和标签）
+     * 在一个事务中更新交易主表和分录表，自动校验借贷平衡
+     *
+     * @param transId 交易记录ID（必填）
+     * @param dto 修改交易及分录请求 DTO
+     * @param userId 当前用户 ID
+     * @return 是否修改成功
+     * @throws IllegalArgumentException 如果借贷不平衡或分录为空
+     */
+    boolean updateTransactionWithEntries(Long transId, UpdateTransactionDTO dto, Long userId);
 
 }

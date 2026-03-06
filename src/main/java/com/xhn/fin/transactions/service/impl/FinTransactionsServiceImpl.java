@@ -615,6 +615,152 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public boolean updateTransactionWithEntries(Long transId, UpdateTransactionDTO dto, Long userId) {
+        // 1. 参数校验
+        if (transId == null) {
+            throw new IllegalArgumentException("交易记录ID不能为空");
+        }
+        if (dto == null) {
+            throw new IllegalArgumentException("修改请求不能为空");
+        }
+        if (dto.getEntries() == null || dto.getEntries().isEmpty()) {
+            throw new IllegalArgumentException("分录列表不能为空");
+        }
+
+        // 2. 查询原交易记录
+        FinTransactions existingTransaction = this.getById(transId);
+        if (existingTransaction == null) {
+            log.warn("修改交易失败：交易记录不存在, transId={}", transId);
+            return false;
+        }
+
+        // 3. 验证用户是否有权限修改该交易
+        if (!existingTransaction.getUserId().equals(userId)) {
+            log.warn("修改交易失败：无权限修改他人的交易记录, transId={}, userId={}, transactionUserId={}",
+                    transId, userId, existingTransaction.getUserId());
+            return false;
+        }
+
+        log.info("开始修改交易记录及其关联数据, transId={}, userId={}, bookId={}",
+                transId, userId, existingTransaction.getBookId());
+
+        try {
+            // 4. 校验借贷平衡
+            BigDecimal totalDebit = BigDecimal.ZERO;
+            BigDecimal totalCredit = BigDecimal.ZERO;
+
+            for (TransactionEntryDTO.EntryRequest entry : dto.getEntries()) {
+                // 校验金额格式
+                BigDecimal amount;
+                try {
+                    amount = new BigDecimal(entry.getAmount());
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("分录金额格式错误: " + entry.getAmount());
+                }
+                // 校验金额必须为正数
+                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new IllegalArgumentException("分录金额必须为正数");
+                }
+
+                if ("DEBIT".equalsIgnoreCase(entry.getDirection())) {
+                    totalDebit = totalDebit.add(amount);
+                } else if ("CREDIT".equalsIgnoreCase(entry.getDirection())) {
+                    totalCredit = totalCredit.add(amount);
+                } else {
+                    throw new IllegalArgumentException("分录方向必须为 DEBIT 或 CREDIT");
+                }
+            }
+
+            // 借贷平衡校验（允许 0.01 的舍入误差）
+            if (totalDebit.subtract(totalCredit).abs().compareTo(new BigDecimal("0.01")) > 0) {
+                throw new IllegalArgumentException("借贷不平衡：借方总额=" + totalDebit + "，贷方总额=" + totalCredit);
+            }
+
+            // 5. 删除旧的分录
+            LambdaQueryWrapper<FinEntries> oldEntriesWrapper = new LambdaQueryWrapper<>();
+            oldEntriesWrapper.eq(FinEntries::getTransId, transId);
+            boolean oldEntriesDeleted = finEntriesService.remove(oldEntriesWrapper);
+            log.info("删除旧分录, transId={}, deleted={}", transId, oldEntriesDeleted);
+
+            // 6. 删除旧的标签关联
+            LambdaQueryWrapper<FinTransTags> oldTagsWrapper = new LambdaQueryWrapper<>();
+            oldTagsWrapper.eq(FinTransTags::getTransId, transId);
+            boolean oldTagsDeleted = finTransTagsService.remove(oldTagsWrapper);
+            log.info("删除旧标签关联, transId={}, deleted={}", transId, oldTagsDeleted);
+
+            // 7. 更新交易主表
+            FinTransactions transaction = new FinTransactions();
+            transaction.setId(transId);
+            transaction.setTransDate(dto.getTransDate() != null ? dto.getTransDate() : existingTransaction.getTransDate());
+            transaction.setDescription(dto.getDescription() != null ? dto.getDescription() : existingTransaction.getDescription());
+            transaction.setAttachmentId(dto.getAttachmentId() != null ? dto.getAttachmentId() : existingTransaction.getAttachmentId());
+            transaction.setAmount(totalDebit); // 更新单边金额
+
+            boolean transactionUpdated = this.updateById(transaction);
+            if (!transactionUpdated) {
+                throw new RuntimeException("更新交易主表失败");
+            }
+            log.info("更新交易主表成功, transId={}", transId);
+
+            // 8. 创建新的分录表
+            List<FinEntries> entries = new ArrayList<>();
+            for (TransactionEntryDTO.EntryRequest entryReq : dto.getEntries()) {
+                FinEntries entry = new FinEntries();
+                entry.setTransId(transId);
+                entry.setAccountId(entryReq.getAccountId());
+                entry.setDirection(entryReq.getDirection().toUpperCase());
+                entry.setAmount(new BigDecimal(entryReq.getAmount()));
+                entry.setMemo(entryReq.getMemo());
+                entry.setBookId(existingTransaction.getBookId());
+                entry.setUserId(userId);
+
+                // 可选字段
+                if (entryReq.getQuantity() != null) {
+                    entry.setQuantity(new BigDecimal(entryReq.getQuantity()));
+                }
+                if (entryReq.getPrice() != null) {
+                    entry.setPrice(new BigDecimal(entryReq.getPrice()));
+                }
+                if (entryReq.getCommodityCode() != null) {
+                    entry.setCommodityCode(entryReq.getCommodityCode());
+                }
+
+                entries.add(entry);
+            }
+
+            boolean entriesSaved = finEntriesService.saveBatch(entries);
+            if (!entriesSaved) {
+                throw new RuntimeException("保存新分录表失败");
+            }
+            log.info("创建新分录表成功, transId={}, count={}", transId, entries.size());
+
+            // 9. 创建新的标签关联
+            if (dto.getTagIds() != null && !dto.getTagIds().isEmpty()) {
+                List<FinTransTags> transTagsList = new ArrayList<>();
+                for (Long tagId : dto.getTagIds()) {
+                    FinTransTags transTag = new FinTransTags();
+                    transTag.setTransId(transId);
+                    transTag.setTagId(tagId);
+                    transTagsList.add(transTag);
+                }
+                boolean tagsSaved = finTransTagsService.saveBatch(transTagsList);
+                log.info("创建新标签关联成功, transId={}, count={}", transId, transTagsList.size());
+            }
+
+            log.info("成功修改交易记录及其所有关联数据, transId={}", transId);
+            return true;
+
+        } catch (IllegalArgumentException e) {
+            log.warn("修改交易记录失败，参数校验不通过: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("修改交易记录时发生异常, transId={}, userId={}", transId, userId, e);
+            throw new RuntimeException("修改交易记录失败：" + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteTransactionWithEntries(Long transId, Long userId) {
         // 1. 查询交易记录是否存在
         FinTransactions transaction = this.getById(transId);
