@@ -34,6 +34,7 @@ public class AuthController {
     public ResponseResult<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse response = authService.login(loginRequest);
         return ResponseResult.success(response);
+
     }
 
 }
