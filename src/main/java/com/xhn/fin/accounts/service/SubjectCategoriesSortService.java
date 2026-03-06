@@ -1,18 +1,10 @@
-package com.xhn.fin.accounts.advice;
+package com.xhn.fin.accounts.service;
 
 import com.xhn.fin.accounts.dto.AccountSubjectDTO;
 import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.mapper.SubjectCategorySortMapper;
-import com.xhn.response.ResponseResult;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.MethodParameter;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,48 +16,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
+@Service
 @RequiredArgsConstructor
-public class SubjectCategoriesSortAdvice implements ResponseBodyAdvice<Object> {
-
-    private static final String TARGET_PATH = "/fin/accounts/categories";
+public class SubjectCategoriesSortService {
 
     private final SubjectCategorySortMapper sortMapper;
 
-    @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
-    }
-
-    @Override
-    public Object beforeBodyWrite(Object body,
-                                  MethodParameter returnType,
-                                  MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                  ServerHttpRequest request,
-                                  ServerHttpResponse response) {
-        if (!(body instanceof ResponseResult)) {
-            return body;
-        }
-        ResponseResult<?> responseResult = (ResponseResult<?>) body;
-
-        String path = request.getURI().getPath();
-        if (path == null || !path.endsWith(TARGET_PATH)) {
-            return body;
-        }
-
-        Object data = responseResult.getData();
-        if (!(data instanceof SubjectCategoriesDTO)) {
-            return body;
-        }
-        SubjectCategoriesDTO categories = (SubjectCategoriesDTO) data;
-        if (categories.getExpense() == null) {
-            return body;
-        }
-
-        Long bookId = parseBookId(request);
-        if (bookId == null) {
-            return body;
+    public SubjectCategoriesDTO sortForBook(Long bookId, SubjectCategoriesDTO categories) {
+        if (bookId == null || categories == null || categories.getExpense() == null) {
+            return categories;
         }
 
         LocalDateTime endDate = LocalDateTime.now();
@@ -83,7 +42,7 @@ public class SubjectCategoriesSortAdvice implements ResponseBodyAdvice<Object> {
                 .comparing((AccountSubjectDTO s) -> isPinned(s)).reversed()
                 .thenComparing((AccountSubjectDTO s) -> expensePaymentUsageMap.getOrDefault(s.getId(), 0), Comparator.reverseOrder())
                 .thenComparing((AccountSubjectDTO s) -> safeSortWeight(s), Comparator.reverseOrder())
-                .thenComparing(SubjectCategoriesSortAdvice::safeId)
+                .thenComparing(SubjectCategoriesSortService::safeId)
         );
         expense.setPaymentSubjects(payment);
 
@@ -92,16 +51,16 @@ public class SubjectCategoriesSortAdvice implements ResponseBodyAdvice<Object> {
                 : new ArrayList<>(expense.getOccurrenceSubjects());
 
         List<AccountSubjectDTO> pinned = occurrenceDefault.stream()
-                .filter(SubjectCategoriesSortAdvice::isPinned)
+                .filter(SubjectCategoriesSortService::isPinned)
                 .sorted(Comparator.comparing((AccountSubjectDTO s) -> safeSortWeight(s), Comparator.reverseOrder())
-                        .thenComparing(SubjectCategoriesSortAdvice::safeId))
+                        .thenComparing(SubjectCategoriesSortService::safeId))
                 .collect(Collectors.toList());
 
         List<AccountSubjectDTO> nonPinned = occurrenceDefault.stream()
                 .filter(s -> !isPinned(s))
                 .sorted(Comparator.comparing((AccountSubjectDTO s) -> expenseOccurrenceUsageMap.getOrDefault(s.getId(), 0), Comparator.reverseOrder())
                         .thenComparing((AccountSubjectDTO s) -> safeSortWeight(s), Comparator.reverseOrder())
-                        .thenComparing(SubjectCategoriesSortAdvice::safeId))
+                        .thenComparing(SubjectCategoriesSortService::safeId))
                 .collect(Collectors.toList());
 
         List<AccountSubjectDTO> top4 = new ArrayList<>();
@@ -117,7 +76,7 @@ public class SubjectCategoriesSortAdvice implements ResponseBodyAdvice<Object> {
         }
         expense.setOccurrenceSubjects(occurrenceResult);
 
-        return body;
+        return categories;
     }
 
     private static Map<Long, Integer> toUsageMap(List<Map<String, Object>> rows) {
@@ -154,20 +113,5 @@ public class SubjectCategoriesSortAdvice implements ResponseBodyAdvice<Object> {
 
     private static long safeId(AccountSubjectDTO subject) {
         return subject == null || subject.getId() == null ? Long.MAX_VALUE : subject.getId();
-    }
-
-    private Long parseBookId(ServerHttpRequest request) {
-        String value = UriComponentsBuilder.fromUri(request.getURI())
-                .build()
-                .getQueryParams()
-                .getFirst("bookId");
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        try {
-            return Long.parseLong(value);
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 }

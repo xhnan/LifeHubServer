@@ -4,6 +4,7 @@ import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
 import com.xhn.fin.accounts.service.FinAccountsService;
+import com.xhn.fin.accounts.service.SubjectCategoriesSortService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhn.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,9 @@ public class FinAccountsController {
 
     @Autowired
     private FinAccountsService finAccountsService;
+
+    @Autowired
+    private SubjectCategoriesSortService subjectCategoriesSortService;
 
     @PostMapping
     @Operation(summary = "新增账户")
@@ -129,6 +133,7 @@ public class FinAccountsController {
             @Parameter(description = "账本ID") @RequestParam Long bookId
     ) {
         SubjectCategoriesDTO categories = finAccountsService.getSubjectCategories(bookId);
+        categories = subjectCategoriesSortService.sortForBook(bookId, categories);
         return ResponseResult.success(categories);
     }
 }
