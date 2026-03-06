@@ -110,4 +110,13 @@ public interface FinTransactionsService extends IService<FinTransactions> {
      */
     AccountBalanceDTO getAccountBalances(Long bookId, String accountType);
 
+    /**
+     * 删除交易记录（包括关联的分录和标签）
+     *
+     * @param transId 交易ID
+     * @param userId  当前用户ID
+     * @return 是否删除成功
+     */
+    boolean deleteTransactionWithEntries(Long transId, Long userId);
+
 }

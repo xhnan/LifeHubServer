@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhn.fin.accounts.mapper.SubjectCategorySortMapper">
+
+    <select id="countExpensePaymentUsage" resultType="java.util.Map">
+        SELECT e.account_id,
+               COUNT(DISTINCT e.trans_id) AS usage_count
+        FROM fin_entries e
+        INNER JOIN fin_accounts a ON e.account_id = a.id
+        INNER JOIN fin_transactions t ON e.trans_id = t.id
+        WHERE a.account_type = 'ASSET'
+          AND e.book_id = #{bookId}
+          AND t.trans_date &gt;= #{startDate}
+          AND t.trans_date &lt;= #{endDate}
+          AND EXISTS (
+              SELECT 1
+              FROM fin_entries ee
+              INNER JOIN fin_accounts ae ON ee.account_id = ae.id
+              WHERE ee.trans_id = e.trans_id
+                AND ee.book_id = e.book_id
+                AND ae.account_type = 'EXPENSE'
+          )
+        GROUP BY e.account_id
+    </select>
+
+    <select id="countExpenseOccurrenceUsage" resultType="java.util.Map">
+        SELECT e.account_id,
+               COUNT(DISTINCT e.trans_id) AS usage_count
+        FROM fin_entries e
+        INNER JOIN fin_accounts a ON e.account_id = a.id
+        INNER JOIN fin_transactions t ON e.trans_id = t.id
+        WHERE a.account_type = 'EXPENSE'
+          AND e.book_id = #{bookId}
+          AND t.trans_date &gt;= #{startDate}
+          AND t.trans_date &lt;= #{endDate}
+        GROUP BY e.account_id
+    </select>
+
+</mapper>

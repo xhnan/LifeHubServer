@@ -612,4 +612,55 @@ public class FinTransactionsServiceImpl extends ServiceImpl<FinTransactionsMappe
         }
         return BigDecimal.ZERO;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteTransactionWithEntries(Long transId, Long userId) {
+        // 1. 查询交易记录是否存在
+        FinTransactions transaction = this.getById(transId);
+        if (transaction == null) {
+            log.warn("删除交易失败：交易记录不存在, transId={}", transId);
+            return false;
+        }
+
+        // 2. 验证用户是否有权限删除该交易
+        if (!transaction.getUserId().equals(userId)) {
+            log.warn("删除交易失败：无权限删除他人的交易记录, transId={}, userId={}, transactionUserId={}",
+                    transId, userId, transaction.getUserId());
+            return false;
+        }
+
+        log.info("开始删除交易记录及其关联数据, transId={}, userId={}, bookId={}",
+                transId, userId, transaction.getBookId());
+
+        try {
+            // 3. 删除交易与标签的关联关系
+            LambdaQueryWrapper<FinTransTags> transTagsWrapper = new LambdaQueryWrapper<>();
+            transTagsWrapper.eq(FinTransTags::getTransId, transId);
+            boolean transTagsDeleted = finTransTagsService.remove(transTagsWrapper);
+            log.info("删除交易标签关联, transId={}, deleted={}", transId, transTagsDeleted);
+
+            // 4. 删除交易分录
+            LambdaQueryWrapper<FinEntries> entriesWrapper = new LambdaQueryWrapper<>();
+            entriesWrapper.eq(FinEntries::getTransId, transId);
+            boolean entriesDeleted = finEntriesService.remove(entriesWrapper);
+            log.info("删除交易分录, transId={}, deleted={}", transId, entriesDeleted);
+
+            // 5. 删除交易主记录
+            boolean transactionDeleted = this.removeById(transId);
+            log.info("删除交易主记录, transId={}, deleted={}", transId, transactionDeleted);
+
+            if (transactionDeleted) {
+                log.info("成功删除交易记录及其所有关联数据, transId={}", transId);
+            } else {
+                log.error("删除交易主记录失败, transId={}", transId);
+            }
+
+            return transactionDeleted;
+
+        } catch (Exception e) {
+            log.error("删除交易记录时发生异常, transId={}, userId={}", transId, userId, e);
+            throw new RuntimeException("删除交易记录失败：" + e.getMessage(), e);
+        }
+    }
 }

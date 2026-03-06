@@ -78,15 +78,25 @@ public class FinTransactionsController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "根据ID删除财务交易记录")
-    public ResponseResult<Boolean> delete(
-            @Parameter(description = "财务交易记录ID") @PathVariable Long id,
-            @Parameter(description = "账本ID") @RequestParam Long bookId
+    @Operation(summary = "删除交易记录（包括关联的分录和标签）", description = "软删除交易记录及其所有关联数据（分录、标签关联），只能删除自己创建的交易")
+    public Mono<ResponseResult<Boolean>> delete(
+            @Parameter(description = "交易记录ID") @PathVariable Long id
     ) {
-        LambdaQueryWrapper<FinTransactions> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(FinTransactions::getId, id).eq(FinTransactions::getBookId, bookId);
-        boolean result = finTransactionsService.remove(wrapper);
-        return result ? ResponseResult.success(true) : ResponseResult.error("删除失败或无权限");
+        return SecurityUtils.getCurrentUserId()
+                .flatMap(userId -> {
+                    try {
+                        boolean result = finTransactionsService.deleteTransactionWithEntries(id, userId);
+                        if (result) {
+                            return Mono.just(ResponseResult.<Boolean>success(true));
+                        } else {
+                            return Mono.just(ResponseResult.<Boolean>error("删除失败或无权限"));
+                        }
+                    } catch (Exception e) {
+                        log.error("删除交易记录失败, transId={}", id, e);
+                        return Mono.just(ResponseResult.<Boolean>error("删除失败：" + e.getMessage()));
+                    }
+                })
+                .switchIfEmpty(Mono.just(ResponseResult.<Boolean>error("用户未登录")));
     }
 
     @PutMapping
