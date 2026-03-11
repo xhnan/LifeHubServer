@@ -718,28 +718,6 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
             }
         }
 
-        LocalDateTime endDate = LocalDateTime.now();
-        LocalDateTime startDate = endDate.minusDays(30);
-        Map<Long, Integer> usageMap = new HashMap<>();
-
-        List<Map<String, Object>> usageRows = finEntriesMapper.countExpensePaymentUsage(bookId, startDate, endDate);
-        for (Map<String, Object> row : usageRows) {
-            Object accountId = row.get("account_id");
-            Object usageCount = row.get("usage_count");
-            if (accountId instanceof Number && usageCount instanceof Number) {
-                usageMap.put(((Number) accountId).longValue(), ((Number) usageCount).intValue());
-            }
-        }
-
-        // Expense payment order: pinned first (sortWeight > 0), then 30-day usage desc.
-        expensePayment.sort(
-                Comparator.comparing((AccountSubjectDTO s) -> s.getSortWeight() != null && s.getSortWeight() > 0)
-                        .reversed()
-                        .thenComparing((AccountSubjectDTO s) -> usageMap.getOrDefault(s.getId(), 0), Comparator.reverseOrder())
-                        .thenComparing((AccountSubjectDTO s) -> s.getSortWeight() == null ? 0 : s.getSortWeight(), Comparator.reverseOrder())
-                        .thenComparing(AccountSubjectDTO::getId)
-        );
-
         SubjectCategoriesDTO.ExpenseCategories expense = SubjectCategoriesDTO.ExpenseCategories.builder()
                 .occurrenceSubjects(expenseOccurrence)
                 .paymentSubjects(expensePayment)
