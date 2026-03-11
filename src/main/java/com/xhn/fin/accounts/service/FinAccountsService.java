@@ -2,6 +2,7 @@ package com.xhn.fin.accounts.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xhn.fin.accounts.dto.BalanceAdjustmentDTO;
 import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
@@ -126,4 +127,14 @@ public interface FinAccountsService extends IService<FinAccounts> {
      * @return 科目分类数据
      */
     SubjectCategoriesDTO getSubjectCategories(Long bookId);
+
+    /**
+     * 调整账户余额
+     * 通过创建一笔余额调整交易来实现
+     *
+     * @param dto 余额调整请求
+     * @param userId 操作用户ID
+     * @return 交易记录ID
+     */
+    Long adjustBalance(BalanceAdjustmentDTO dto, Long userId);
 }

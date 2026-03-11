@@ -109,7 +109,7 @@ public class FinBooksController {
     }
 
     @GetMapping("/{bookId}/asset-summary")
-    @Operation(summary = "查询账本资产概览（总资产、总负债、净资产）")
+    @Operation(summary = "查询账本资产概览（总资产、总负债、净资产，流动资产）")
     public ResponseResult<BookAssetSummaryDTO> getAssetSummary(
             @Parameter(description = "账本ID") @PathVariable Long bookId
     ) {

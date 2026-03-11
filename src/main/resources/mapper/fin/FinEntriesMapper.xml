@@ -250,4 +250,66 @@
         ORDER BY a.sort_order ASC, a.id ASC
     </select>
 
+    <!-- 统计流动资产余额（可用余额） -->
+    <!-- 流动资产 = 初始余额 + 借方金额 - 贷方金额 -->
+    <select id="sumLiquidAssetBalance" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+            (SELECT COALESCE(SUM(a.initial_balance), 0)
+             FROM fin_accounts a
+             WHERE a.account_type = 'ASSET'
+               AND a.is_archived = false
+               AND a.is_leaf = true
+               AND a.book_id = #{bookId})
+            +
+            (SELECT COALESCE(SUM(
+                CASE
+                    WHEN e.direction = 'DEBIT' THEN e.amount
+                    WHEN e.direction = 'CREDIT' THEN -e.amount
+                    ELSE 0
+                END
+            ), 0)
+             FROM fin_entries e
+             INNER JOIN fin_accounts a ON e.account_id = a.id
+             WHERE a.account_type = 'ASSET'
+               AND a.is_archived = false
+               AND a.is_leaf = true
+               AND e.book_id = #{bookId})
+        , 0)
+    </select>
+
+    <!-- 查询账户当前余额（不带锁，在Service层用@Transactional隔离） -->
+    <select id="getAccountBalance" resultType="java.math.BigDecimal">
+        SELECT COALESCE(acc.initial_balance, 0) + COALESCE(
+            (SELECT SUM(
+                CASE
+                    <!-- 资产类：借方增加，贷方减少 -->
+                    WHEN acc.account_type = 'ASSET' AND e.direction = 'DEBIT' THEN e.amount
+                    WHEN acc.account_type = 'ASSET' AND e.direction = 'CREDIT' THEN -e.amount
+                    <!-- 负债权益收入类：贷方增加，借方减少 -->
+                    WHEN acc.account_type IN ('LIABILITY', 'EQUITY', 'INCOME') AND e.direction = 'CREDIT' THEN e.amount
+                    WHEN acc.account_type IN ('LIABILITY', 'EQUITY', 'INCOME') AND e.direction = 'DEBIT' THEN -e.amount
+                    <!-- 支出类：借方增加，贷方减少 -->
+                    WHEN acc.account_type = 'EXPENSE' AND e.direction = 'DEBIT' THEN e.amount
+                    WHEN acc.account_type = 'EXPENSE' AND e.direction = 'CREDIT' THEN -e.amount
+                    ELSE 0
+                END
+            )
+            FROM fin_entries e
+            WHERE e.account_id = acc.id), 0) AS balance
+        FROM fin_accounts acc
+        WHERE acc.id = #{accountId}
+    </select>
+
+    <!-- 根据账本ID和名称查找权益类账户 -->
+    <select id="findEquityAccountByName" resultType="java.lang.Long">
+        SELECT a.id
+        FROM fin_accounts a
+        WHERE a.book_id = #{bookId}
+          AND a.account_type = 'EQUITY'
+          AND a.name = #{name}
+          AND a.is_leaf = true
+          AND a.is_archived = false
+        LIMIT 1
+    </select>
+
 </mapper>

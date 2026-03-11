@@ -1,5 +1,7 @@
 package com.xhn.fin.accounts.controller;
 
+import com.xhn.base.utils.SecurityUtils;
+import com.xhn.fin.accounts.dto.BalanceAdjustmentDTO;
 import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
@@ -10,8 +12,11 @@ import com.xhn.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -135,5 +140,25 @@ public class FinAccountsController {
         SubjectCategoriesDTO categories = finAccountsService.getSubjectCategories(bookId);
         categories = subjectCategoriesSortService.sortForBook(bookId, categories);
         return ResponseResult.success(categories);
+    }
+
+    @PostMapping("/adjust-balance")
+    @Operation(summary = "调整账户余额")
+    public Mono<ResponseResult<Long>> adjustBalance(
+            @Valid @RequestBody BalanceAdjustmentDTO dto
+    ) {
+        return SecurityUtils.getCurrentUserId()
+                .map(userId -> {
+                    try {
+                        Long transId = finAccountsService.adjustBalance(dto, userId);
+                        return transId != null
+                                ? ResponseResult.success(transId)
+                                : ResponseResult.<Long>error("目标余额与当前余额相同，无需调整");
+                    } catch (IllegalArgumentException e) {
+                        return ResponseResult.<Long>error(e.getMessage());
+                    } catch (Exception e) {
+                        return ResponseResult.<Long>error("余额调整失败: " + e.getMessage());
+                    }
+                });
     }
 }

@@ -29,4 +29,7 @@ public class BookAssetSummaryDTO {
 
     @Schema(description = "净资产（总资产 - 总负债）")
     private BigDecimal netAssets;
+
+    @Schema(description = "可用余额")
+    private BigDecimal availableBalance;
 }

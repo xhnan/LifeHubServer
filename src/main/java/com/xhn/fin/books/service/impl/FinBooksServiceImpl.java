@@ -55,11 +55,14 @@ public class FinBooksServiceImpl extends ServiceImpl<FinBooksMapper, FinBooks> i
         BigDecimal totalAssets = finEntriesMapper.sumAssetBalance(bookId);
         BigDecimal totalLiabilities = finEntriesMapper.sumLiabilityBalance(bookId);
         BigDecimal netAssets = totalAssets.subtract(totalLiabilities);
+        // 设置可用余额，流动账户的钱相加（所有未归档的资产类账户余额）
+        BigDecimal availableBalance = finEntriesMapper.sumLiquidAssetBalance(bookId);
 
         return BookAssetSummaryDTO.builder()
                 .totalAssets(totalAssets)
                 .totalLiabilities(totalLiabilities)
                 .netAssets(netAssets)
+                .availableBalance(availableBalance)
                 .build();
     }
 }

@@ -107,4 +107,32 @@ public interface FinEntriesMapper extends BaseMapper<FinEntries> {
     List<Map<String, Object>> countExpensePaymentUsage(@Param("bookId") Long bookId,
                                                        @Param("startDate") LocalDateTime startDate,
                                                        @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 统计指定账本的流动资产余额（可用余额）
+     * 流动资产 = 初始余额 + 借方金额 - 贷方金额
+     * 只统计未归档的叶子节点账户
+     *
+     * @param bookId 账本ID
+     * @return 可用余额（流动资产总额）
+     */
+    BigDecimal sumLiquidAssetBalance(@Param("bookId") Long bookId);
+
+    /**
+     * 查询指定账户的当前余额
+     * 余额 = 初始余额 + 借方金额 - 贷方金额（资产类）/ 初始余额 + 贷方金额 - 借方金额（负债权益类）
+     *
+     * @param accountId 账户ID
+     * @return 当前余额
+     */
+    BigDecimal getAccountBalance(@Param("accountId") Long accountId);
+
+    /**
+     * 根据账本ID和名称查找权益类账户（用于余额调整）
+     *
+     * @param bookId 账本ID
+     * @param name 账户名称（如"余额调整"、"期初余额"等）
+     * @return 账户ID
+     */
+    Long findEquityAccountByName(@Param("bookId") Long bookId, @Param("name") String name);
 }

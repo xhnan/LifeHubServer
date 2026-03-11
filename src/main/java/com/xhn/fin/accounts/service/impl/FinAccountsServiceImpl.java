@@ -2,12 +2,15 @@ package com.xhn.fin.accounts.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xhn.fin.accounts.dto.AccountSubjectDTO;
+import com.xhn.fin.accounts.dto.BalanceAdjustmentDTO;
 import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.mapper.FinAccountsMapper;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
 import com.xhn.fin.accounts.service.FinAccountsService;
 import com.xhn.fin.entries.mapper.FinEntriesMapper;
+import com.xhn.fin.transactions.dto.TransactionEntryDTO;
+import com.xhn.fin.transactions.service.FinTransactionsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,9 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
 
     @Autowired
     private FinEntriesMapper finEntriesMapper;
+
+    @Autowired
+    private FinTransactionsService finTransactionsService;
 
     @Override
     public boolean saveAccount(FinAccounts finAccounts) {
@@ -761,4 +767,93 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
                 .sortWeight(account.getSortWeight())
                 .build();
     }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long adjustBalance(BalanceAdjustmentDTO dto, Long userId) {
+        log.info("开始余额调整, accountId={}, targetBalance={}, userId={}",
+                dto.getAccountId(), dto.getTargetBalance(), userId);
+
+        FinAccounts account = this.getById(dto.getAccountId());
+        if (account == null) {
+            throw new IllegalArgumentException("账户不存在: " + dto.getAccountId());
+        }
+
+        String accountType = account.getAccountType();
+        if (!"ASSET".equals(accountType) && !"LIABILITY".equals(accountType)) {
+            throw new IllegalArgumentException("仅支持资产类或负债类账户余额调整，当前账户类型: " + accountType);
+        }
+
+        BigDecimal currentBalance = finEntriesMapper.getAccountBalance(dto.getAccountId());
+        if (currentBalance == null) {
+            currentBalance = account.getInitialBalance() != null ? account.getInitialBalance() : BigDecimal.ZERO;
+        }
+
+        BigDecimal diff = dto.getTargetBalance().subtract(currentBalance);
+        if (diff.compareTo(BigDecimal.ZERO) == 0) {
+            log.info("目标余额与当前余额相同，无需调整");
+            return null;
+        }
+
+        Long equityAccountId = dto.getEquityAccountId();
+        if (equityAccountId == null) {
+            equityAccountId = finEntriesMapper.findEquityAccountByName(account.getBookId(), "余额调整");
+            if (equityAccountId == null) {
+                throw new IllegalArgumentException("未找到余额调整权益科目，请先初始化账本科目或手动指定权益科目ID");
+            }
+        } else {
+            FinAccounts equityAccount = this.getById(equityAccountId);
+            if (equityAccount == null) {
+                throw new IllegalArgumentException("指定的权益科目不存在: " + equityAccountId);
+            }
+            if (!"EQUITY".equals(equityAccount.getAccountType())) {
+                throw new IllegalArgumentException("指定科目不是权益类科目: " + equityAccount.getAccountType());
+            }
+            if (!account.getBookId().equals(equityAccount.getBookId())) {
+                throw new IllegalArgumentException("权益科目与调整账户不在同一账本");
+            }
+        }
+
+        TransactionEntryDTO transactionDto = new TransactionEntryDTO();
+        transactionDto.setTransDate(LocalDateTime.now());
+        transactionDto.setDescription(dto.getDescription() != null ? dto.getDescription() : "余额调整");
+        transactionDto.setBookId(account.getBookId());
+
+        List<TransactionEntryDTO.EntryRequest> entries = new ArrayList<>();
+        BigDecimal amount = diff.abs();
+
+        if ("ASSET".equals(accountType)) {
+            if (diff.compareTo(BigDecimal.ZERO) > 0) {
+                entries.add(createEntry(dto.getAccountId(), "DEBIT", amount, "余额调整-增加"));
+                entries.add(createEntry(equityAccountId, "CREDIT", amount, "余额调整-增加"));
+            } else {
+                entries.add(createEntry(equityAccountId, "DEBIT", amount, "余额调整-减少"));
+                entries.add(createEntry(dto.getAccountId(), "CREDIT", amount, "余额调整-减少"));
+            }
+        } else {
+            if (diff.compareTo(BigDecimal.ZERO) > 0) {
+                entries.add(createEntry(equityAccountId, "DEBIT", amount, "余额调整-增加"));
+                entries.add(createEntry(dto.getAccountId(), "CREDIT", amount, "余额调整-增加"));
+            } else {
+                entries.add(createEntry(dto.getAccountId(), "DEBIT", amount, "余额调整-减少"));
+                entries.add(createEntry(equityAccountId, "CREDIT", amount, "余额调整-减少"));
+            }
+        }
+
+        transactionDto.setEntries(entries);
+        Long transId = finTransactionsService.createTransactionWithEntries(transactionDto, userId);
+
+        log.info("余额调整成功, accountId={}, currentBalance={}, targetBalance={}, diff={}, transId={}",
+                dto.getAccountId(), currentBalance, dto.getTargetBalance(), diff, transId);
+        return transId;
+    }
+
+    private TransactionEntryDTO.EntryRequest createEntry(Long accountId, String direction, BigDecimal amount, String memo) {
+        TransactionEntryDTO.EntryRequest entry = new TransactionEntryDTO.EntryRequest();
+        entry.setAccountId(accountId);
+        entry.setDirection(direction);
+        entry.setAmount(amount.toPlainString());
+        entry.setMemo(memo);
+        return entry;
+    }
+
 }
