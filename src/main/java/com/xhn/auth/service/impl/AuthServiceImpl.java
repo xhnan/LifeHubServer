@@ -94,6 +94,9 @@ public class AuthServiceImpl implements AuthService {
         long tokenTtlMillis = jwtUtil.getExpirationMillis();
         Duration tokenTtl = jwtUtil.getExpirationDuration();
 
+        //refreshToken
+        String refreshToken = jwtUtil.generateToken(user.getUserId());
+
         // 7. 保存用户角色到Redis中（异步操作，不阻塞登录流程）
         List<SysRole> roles = sysUserRoleService.getRolesByUserId(user.getUserId());
         if (roles != null && !roles.isEmpty()) {
@@ -142,7 +145,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 8. 返回登录响应
-        return new LoginResponse(token, tokenTtlMillis, username, "");
+        LoginResponse loginResponse = new LoginResponse(token, tokenTtlMillis, username, "");
+        loginResponse.setRefreshToken(refreshToken);
+        return loginResponse;
     }
 
     @Override
@@ -156,11 +161,108 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse refreshToken(String token) {
-        // TODO: 实现token刷新逻辑
-        // 1. 验证旧token
-        // 2. 生成新token
-        throw new UnsupportedOperationException("token刷新功能暂未实现");
+    public LoginResponse refreshToken(String refreshToken) {
+        // 1. 验证refreshToken不为空
+        if (!StringUtils.hasText(refreshToken)) {
+            throw new ApplicationException("RefreshToken不能为空");
+        }
+
+        // 2. 验证refreshToken是否有效（未过期）
+        if (!jwtUtil.validateToken(refreshToken)) {
+            log.warn("RefreshToken无效或已过期");
+            throw new ApplicationException("RefreshToken无效或已过期，请重新登录");
+        }
+
+        // 3. 从refreshToken中获取用户ID
+        Long userId;
+        try {
+            userId = jwtUtil.getUserIdFromToken(refreshToken);
+        } catch (Exception e) {
+            log.error("从RefreshToken中获取用户ID失败", e);
+            throw new ApplicationException("Token解析失败，请重新登录");
+        }
+
+        // 4. 查询用户信息
+        SysUser user = sysUserService.lambdaQuery()
+                .eq(SysUser::getUserId, userId)
+                .one();
+
+        if (user == null) {
+            log.warn("用户不存在，用户ID: {}", userId);
+            throw new ApplicationException("用户不存在");
+        }
+
+        // 5. 检查用户状态
+        if ("inactive".equals(user.getStatus())) {
+            log.warn("用户账户未激活，用户ID: {}", userId);
+            throw new ApplicationException("用户账户未激活");
+        }
+
+        if ("banned".equals(user.getStatus())) {
+            log.warn("用户账户已被封禁，用户ID: {}", userId);
+            throw new ApplicationException("用户账户已被封禁");
+        }
+
+        // 6. 生成新的accessToken（使用正常的过期时间）
+        String newAccessToken = jwtUtil.generateToken(userId);
+
+        // 7. 可选：生成新的refreshToken（刷新后旧refreshToken仍然有效，也可以选择轮换）
+        String newRefreshToken = jwtUtil.generateToken(userId);
+
+        // 8. 更新Redis中的角色和权限缓存（使用accessToken的过期时间）
+        List<SysRole> roles = sysUserRoleService.getRolesByUserId(userId);
+        if (roles != null && !roles.isEmpty()) {
+            List<String> roleCodes = roles.stream()
+                    .map(SysRole::getRoleCode)
+                    .collect(Collectors.toList());
+
+            // 使用accessToken的过期时间
+            long accessTokenTtlMillis = jwtUtil.getExpirationMillis();
+            Duration accessTokenTtl = jwtUtil.getExpirationDuration();
+
+            // 8.1 缓存角色列表
+            String rolesKey = RedisKeys.userRolesKey(userId);
+            reactiveRedisTemplate.opsForValue()
+                    .set(rolesKey, roleCodes, accessTokenTtl)
+                    .doOnSuccess(v -> log.info("用户角色已更新到Redis，用户ID: {}, 角色列表: {}, ttl: {}ms", userId, roleCodes, accessTokenTtlMillis))
+                    .doOnError(e -> log.error("更新用户角色到Redis失败，用户ID: {}", userId, e))
+                    .onErrorResume(e -> {
+                        log.warn("Redis操作失败(roles)，继续刷新流程，用户ID: {}", userId);
+                        return Mono.empty();
+                    })
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
+
+            // 8.2 计算并缓存 authorities
+            List<String> authorities = roleCodes.stream()
+                    .filter(rc -> rc != null && !rc.isBlank())
+                    .map(rc -> SecurityConstants.ROLE_PREFIX + rc)
+                    .collect(Collectors.toList());
+
+            if (roleCodes.contains(SecurityConstants.SUPER_ADMIN_ROLE_CODE)) {
+                authorities.add(SecurityConstants.ALL_PERMISSIONS_AUTHORITY);
+            }
+
+            String authoritiesKey = RedisKeys.userPermsKey(userId);
+            reactiveRedisTemplate.opsForValue()
+                    .set(authoritiesKey, authorities, accessTokenTtl)
+                    .doOnSuccess(v -> log.info("用户权限(authorities)已更新到Redis，用户ID: {}, authorities: {}, ttl: {}ms", userId, authorities, accessTokenTtlMillis))
+                    .doOnError(e -> log.error("更新用户权限(authorities)到Redis失败，用户ID: {}", userId, e))
+                    .onErrorResume(e -> {
+                        log.warn("Redis操作失败(authorities)，继续刷新流程，用户ID: {}", userId);
+                        return Mono.empty();
+                    })
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
+        }
+
+        // 9. 返回刷新后的响应
+        long accessTokenTtlMillis = jwtUtil.getExpirationMillis();
+        log.info("Token刷新成功，用户ID: {}, 用户名: {}, accessToken过期时间: {}ms", userId, user.getUsername(), accessTokenTtlMillis);
+
+        LoginResponse response = new LoginResponse(newAccessToken, accessTokenTtlMillis, user.getUsername(), user.getAvatarUrl() != null ? user.getAvatarUrl() : "");
+        response.setRefreshToken(newRefreshToken);
+        return response;
     }
 
     

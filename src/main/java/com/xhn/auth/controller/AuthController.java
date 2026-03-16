@@ -37,4 +37,11 @@ public class AuthController {
 
     }
 
+    //根据刷新token获取新的访问token
+    @PostMapping("/refresh")
+    public ResponseResult<LoginResponse> refreshToken(@RequestBody String refreshToken) {
+        LoginResponse response = authService.refreshToken(refreshToken);
+        return ResponseResult.success(response);
+    }
+
 }

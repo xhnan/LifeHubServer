@@ -24,6 +24,9 @@ public class LoginResponse {
      */
     private String tokenType = "Bearer";
 
+
+    private String refreshToken;
+
     /**
      * 过期时间（毫秒）
      */

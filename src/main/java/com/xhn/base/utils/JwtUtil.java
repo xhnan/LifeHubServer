@@ -33,6 +33,9 @@ public class JwtUtil {
     @Value("${jwt.expiration:86400000}")
     private long expiration; // 默认24小时,可配置
 
+    @Value("${jwt.refresh-expiration:604800000}")
+    private long refreshExpiration; // 默认7天,可配置
+
     /**
      * 获取token有效期（毫秒）
      */
@@ -45,6 +48,20 @@ public class JwtUtil {
      */
     public java.time.Duration getExpirationDuration() {
         return java.time.Duration.ofMillis(expiration);
+    }
+
+    /**
+     * 获取刷新token有效期（毫秒）
+     */
+    public long getRefreshExpirationMillis() {
+        return refreshExpiration;
+    }
+
+    /**
+     * 获取刷新token有效期（Duration）
+     */
+    public java.time.Duration getRefreshExpirationDuration() {
+        return java.time.Duration.ofMillis(refreshExpiration);
     }
 
     /**
@@ -87,8 +104,20 @@ public class JwtUtil {
      * @return JWT token
      */
     public String generateToken(Long userId, Map<String, Object> claims) {
+        return generateToken(userId, claims, expiration);
+    }
+
+    /**
+     * 生成Token(包含自定义声明和过期时间)
+     *
+     * @param userId 用户ID
+     * @param claims 自定义声明
+     * @param expirationMillis 过期时间(毫秒)
+     * @return JWT token
+     */
+    public String generateToken(Long userId, Map<String, Object> claims, long expirationMillis) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+        Date expiryDate = new Date(now.getTime() + expirationMillis);
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))
@@ -118,6 +147,31 @@ public class JwtUtil {
             throw e;
         } catch (JwtException e) {
             log.error("Token解析失败: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * 解析Token（允许过期的token）
+     * 用于token刷新场景，即使token过期也能解析出claims
+     *
+     * @param token JWT token
+     * @return Claims对象
+     * @throws JwtException token签名无效
+     */
+    public Claims parseTokenAllowExpired(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            // Token过期，但仍可获取claims
+            log.debug("Token已过期，但签名有效，返回claims");
+            return e.getClaims();
+        } catch (JwtException e) {
+            log.error("Token解析失败（签名无效）: {}", e.getMessage());
             throw e;
         }
     }
@@ -199,20 +253,23 @@ public class JwtUtil {
 
     /**
      * 刷新Token(保留原有的claims)
+     * 使用更长的过期时间(refreshExpiration)
+     * 允许传入已过期的token
      *
      * @param token 旧的JWT token
      * @return 新的JWT token
      */
     public String refreshToken(String token) {
         try {
-            Claims claims = parseToken(token);
+            Claims claims = parseTokenAllowExpired(token);
             Long userId = Long.valueOf(claims.getSubject());
 
             // 移除标准的时间相关声明,使用新的时间
             claims.remove(Claims.ISSUED_AT);
             claims.remove(Claims.EXPIRATION);
 
-            return generateToken(userId, new HashMap<>(claims));
+            // 使用更长的刷新token过期时间
+            return generateToken(userId, new HashMap<>(claims), refreshExpiration);
         } catch (Exception e) {
             log.error("刷新Token失败", e);
             throw new JwtException("无法刷新Token", e);
