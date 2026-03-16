@@ -712,7 +712,8 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
                 expenseOccurrence.add(subject);
             } else if ("INCOME".equals(accountType)) {
                 incomeOccurrence.add(subject);
-            } else if ("ASSET".equals(accountType)) {
+            } else if ("ASSET".equals(accountType) || "LIABILITY".equals(accountType)) {
+                // 资产和负债都可以作为付款/收款账户
                 expensePayment.add(subject);
                 incomeReceipt.add(subject);
             }

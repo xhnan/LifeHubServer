@@ -32,7 +32,8 @@ public class SecurityConstants {
             "/actuator/**",  // Actuator endpoints (可选)
             "/wechat/callback/**",  // 企业微信回调接口
             "/sys/app-version/quick-publish",  // 快速发布接口（使用 API-Key 验证）
-            "/app/app-version/**"  // 客户端版本检查接口
+            "/app/app-version/**",  // 客户端版本检查接口
+            "/health/mcp/**"
     };
 
     /** Spring Security 角色前缀 */
