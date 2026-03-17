@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhn.health.dailysummaries.mapper.HealthyDailySummariesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xhn.health.dailysummaries.model.HealthyDailySummaries">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="total_steps" property="totalSteps"/>
+        <result column="active_calories_kcal" property="activeCaloriesKcal"/>
+        <result column="resting_calories_kcal" property="restingCaloriesKcal"/>
+        <result column="total_distance_meters" property="totalDistanceMeters"/>
+        <result column="active_minutes" property="activeMinutes"/>
+        <result column="daily_context_embedding" property="dailyContextEmbedding" typeHandler="com.xhn.base.mybatis.handler.VectorTypeHandler"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, record_date, total_steps, active_calories_kcal, resting_calories_kcal,
+        total_distance_meters, active_minutes, daily_context_embedding, created_at, updated_at
+    </sql>
+
+</mapper>

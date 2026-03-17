@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xhn.base.mybatis.handler.VectorTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * 每日整体活动与消耗汇总表（healthy_daily_summaries）基础实体。
  */
 @Data
-@TableName("healthy_daily_summaries")
+@TableName(value = "healthy_daily_summaries", autoResultMap = true)
 @Schema(description = "每日整体活动与消耗汇总表")
 public class BaseHealthyDailySummaries {
 
@@ -54,7 +55,7 @@ public class BaseHealthyDailySummaries {
     private Integer activeMinutes;
 
     @Schema(description = "当日活动自然语言总结向量（vector 文本，1024 维）")
-    @TableField("daily_context_embedding")
+    @TableField(value = "daily_context_embedding", typeHandler = VectorTypeHandler.class)
     private List<Double> dailyContextEmbedding;
 
     @Schema(description = "创建时间")

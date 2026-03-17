@@ -1,0 +1,930 @@
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1
++ C:\Program Files\Java\jdk-1.8='C:\Program Files\Java\jdk-17'; C:\User ...
++ ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\.codex\tmp\arg0\codex-arg0vhupN1 : 无法将“C:\Users\93095\.codex\tmp\arg0\codex-arg0vhupN1”项识别为 cmd
+let、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 63
++ ... Java\jdk-17'; C:\Users\93095\.codex\tmp\arg0\codex-arg0vhupN1;D:\IDE\ ...
++                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\...odex-arg0vhupN1:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda : 无法将“D:\IDE\Anaconda”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 111
++ ... \Users\93095\.codex\tmp\arg0\codex-arg0vhupN1;D:\IDE\Anaconda;D:\IDE\ ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Library\mingw-w64\bin : 无法将“D:\IDE\Anaconda\Library\mingw-w64\bin”项识别为 cmdlet、函数、脚本文件
+或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 127
++ ... 0vhupN1;D:\IDE\Anaconda;D:\IDE\Anaconda\Library\mingw-w64\bin;D:\IDE\ ...
++                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Library\mingw-w64\bin:String) [], CommandNotFoundExcept 
+   ion
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Library\usr\bin : 无法将“D:\IDE\Anaconda\Library\usr\bin”项识别为 cmdlet、函数、脚本文件或可运行程序
+的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 165
++ ... naconda\Library\mingw-w64\bin;D:\IDE\Anaconda\Library\usr\bin;D:\IDE\ ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Library\usr\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Library\bin : 无法将“D:\IDE\Anaconda\Library\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。
+请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 197
++ ... n;D:\IDE\Anaconda\Library\usr\bin;D:\IDE\Anaconda\Library\bin;D:\IDE\ ...
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Library\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Scripts : 无法将“D:\IDE\Anaconda\Scripts”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名
+称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 225
++ ... y\usr\bin;D:\IDE\Anaconda\Library\bin;D:\IDE\Anaconda\Scripts;D:\IDE\ ...
++                                           ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Scripts:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\bin : 无法将“D:\IDE\Anaconda\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写
+，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 249
++ ... conda\Library\bin;D:\IDE\Anaconda\Scripts;D:\IDE\Anaconda\bin;D:\IDE\ ...
++                                               ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\condabin : 无法将“D:\IDE\Anaconda\condabin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查
+名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 269
++ ... Anaconda\Scripts;D:\IDE\Anaconda\bin;D:\IDE\Anaconda\condabin;C:\Prog ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\condabin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 312
++ ... E\Anaconda\bin;D:\IDE\Anaconda\condabin;C:\Program Files (x86)\Python ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 355
++ ... Program Files (x86)\Python37-32\Scripts;C:\Program Files (x86)\Python ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 372
++ ... on37-32\Scripts;C:\Program Files (x86)\Python37-32;C:\Program Files\C ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\AI\CUDA\bin : 无法将“D:\IDE\AI\CUDA\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，
+如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 423
++ ... am Files\Common Files\Oracle\Java\javapath;D:\IDE\AI\CUDA\bin;D:\IDE\ ...
++                                                ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\AI\CUDA\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\AI\CUDA\libnvvp : 无法将“D:\IDE\AI\CUDA\libnvvp”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称
+的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 442
++ ... racle\Java\javapath;D:\IDE\AI\CUDA\bin;D:\IDE\AI\CUDA\libnvvp;C:\Prog ...
++                                            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\AI\CUDA\libnvvp:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 465
++ ... javapath;D:\IDE\AI\CUDA\bin;D:\IDE\AI\CUDA\libnvvp;C:\Program Files\J ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Python312\Scripts : 无法将“C:\Python312\Scripts”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼
+写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 499
++ ... ibnvvp;C:\Program Files\Java\jdk-1.8\bin;C:\Python312\Scripts;C:\Pyth ...
++                                              ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Python312\Scripts:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Python312 : 无法将“C:\Python312”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径
+，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 520
++ ... gram Files\Java\jdk-1.8\bin;C:\Python312\Scripts;C:\Python312;C:\Prog ...
++                                                      ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Python312:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 551
++ ... 8\bin;C:\Python312\Scripts;C:\Python312;C:\Program Files (x86)\Common ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 609
++ ... x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\system32 : 无法将“C:\WINDOWS\system32”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写
+，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 648
++ ... s (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WIND ...
++                                               ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\system32:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS : 无法将“C:\WINDOWS”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 668
++ ... mon Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WIND ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\System32\Wbem : 无法将“C:\WINDOWS\System32\Wbem”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查
+名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 679
++ ... apath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WIND ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\System32\Wbem:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\System32\WindowsPowerShell\v1.0 : 无法将“C:\WINDOWS\System32\WindowsPowerShell\v1.0”项识别为 cmdlet、函数
+、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 704
++ ... DOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WIND ...
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\Syst...PowerShell\v1.0:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\System32\OpenSSH : 无法将“C:\WINDOWS\System32\OpenSSH”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。
+请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 747
++ ... S\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Prog ...
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\System32\OpenSSH:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 793
++ ... rShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files (x86)\NVIDIA ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 830
++ ... rogram Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\d ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\ProgramData\chocolatey\bin : 无法将“C:\ProgramData\chocolatey\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 854
++ ... \Common;C:\Program Files\dotnet;C:\ProgramData\chocolatey\bin;C:\Prog ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\ProgramData\chocolatey\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 884
++ ... Program Files\dotnet;C:\ProgramData\chocolatey\bin;C:\Program Files\G ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\apache-maven-3.6.3\bin : 无法将“D:\IDE\apache-maven-3.6.3\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 909
++ ... ey\bin;C:\Program Files\Git\cmd;D:\IDE\apache-maven-3.6.3\bin;D:\IDE\ ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\apache-maven-3.6.3\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\FlutterSDK\flutter\bin : 无法将“D:\IDE\FlutterSDK\flutter\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 939
++ ... d;D:\IDE\apache-maven-3.6.3\bin;D:\IDE\FlutterSDK\flutter\bin;C:\Prog ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\FlutterSDK\flutter\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 969
++ ... ache-maven-3.6.3\bin;D:\IDE\FlutterSDK\flutter\bin;C:\Program Files\N ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\xShell : 无法将“D:\IDE\xShell”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路
+径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1029
++ ... iles\NVIDIA Corporation\Nsight Compute 2024.3.1;D:\IDE\xShell;D:\IDE\ ...
++                                                     ~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\xShell:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\???web?????????\dll : 无法将“D:\IDE\???web?????????\dll”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请
+检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1043
++ ... ght Compute 2024.3.1;D:\IDE\xShell;D:\IDE\???web?????????\dll;C:\Prog ...
++                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\???web?????????\dll:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1070
++ ...  2024.3.1;D:\IDE\xShell;D:\IDE\???web?????????\dll;C:\Program Files\D ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1115
++ ... ?\dll;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\N ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 1188
++ ... s\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\Program Files (x86)\Window ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1237
++ ...  (x86)\Windows Kits\10\Windows Performance Toolkit;C:\Program Files\G ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1261
++ ... indows Performance Toolkit;C:\Program Files\Go\bin;C:\Program Files\n ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\AndroidSdk\platform-tools : 无法将“D:\IDE\AndroidSdk\platform-tools”项识别为 cmdlet、函数、脚本文件或可运行程
+序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1285
++ ... \bin;C:\Program Files\nodejs;D:\IDE\AndroidSdk\platform-tools;C:\Prog ...
++                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\AndroidSdk\platform-tools:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1318
++ ... gram Files\nodejs;D:\IDE\AndroidSdk\platform-tools;C:\Program Files\W ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+%PNPM_HOME% : 无法将“%PNPM_HOME%”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，
+请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1345
++ ... roidSdk\platform-tools;C:\Program Files\WireGuard;%PNPM_HOME%;C:\User ...
++                                                       ~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (%PNPM_HOME%:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\.pnpm-global\bin : 无法将“C:\Users\93095\.pnpm-global\bin”项识别为 cmdlet、函数、脚本文件或可运行程序
+的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1357
++ ... m Files\WireGuard;%PNPM_HOME%;C:\Users\93095\.pnpm-global\bin;C:\User ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\.pnpm-global\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\pnpm : 无法将“C:\Users\93095\AppData\Local\pnpm”项识别为 cmdlet、函数、脚本文件或可运行
+程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1389
++ ... sers\93095\.pnpm-global\bin;C:\Users\93095\AppData\Local\pnpm;C:\User ...
++                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\AppData\Local\pnpm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\Microsoft\WindowsApps : 无法将“C:\Users\93095\AppData\Local\Microsoft\WindowsApps”项识别
+为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1423
++ ... \Local\pnpm;C:\Users\93095\AppData\Local\Microsoft\WindowsApps;D:\IDE ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\...oft\WindowsApps:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Microsoft : 无法将“D:\IDE\Microsoft”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果
+包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1474
++ ... rs\93095\AppData\Local\Microsoft\WindowsApps;D:\IDE\Microsoft VS Code ...
++                                                  ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Microsoft:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\IntelliJ : 无法将“D:\IDE\IntelliJ”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1503
++ ... soft\WindowsApps;D:\IDE\Microsoft VS Code\bin;D:\IDE\IntelliJ IDEA 20 ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\IntelliJ:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\WebStorm : 无法将“D:\IDE\WebStorm”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1537
++ ... VS Code\bin;D:\IDE\IntelliJ IDEA 2024.1.6\bin;D:\IDE\WebStorm 2024.1. ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\WebStorm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\PyCharm : 无法将“D:\IDE\PyCharm”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括
+路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1566
++ ... IDEA 2024.1.6\bin;D:\IDE\WebStorm 2024.1.6\bin;D:\IDE\PyCharm 2024.1. ...
++                                                    ~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\PyCharm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\DataGrip : 无法将“D:\IDE\DataGrip”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1594
++ ... torm 2024.1.6\bin;D:\IDE\PyCharm 2024.1.6\bin;D:\IDE\DataGrip 2024.1. ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\DataGrip:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+%DevEco : 无法将“%DevEco”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路
+径正确，然后再试一次。
+所在位置 行:1 字符: 1623
++ ... IDE\PyCharm 2024.1.6\bin;D:\IDE\DataGrip 2024.1.5\bin;%DevEco Studio% ...
++                                                           ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (%DevEco:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\Programs\Ollama : 无法将“C:\Users\93095\AppData\Local\Programs\Ollama”项识别为 cmdlet、
+函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1639
++ ... ;%DevEco Studio%;C:\Users\93095\AppData\Local\Programs\Ollama;C:\User ...
++                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\...Programs\Ollama:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\go\bin : 无法将“C:\Users\93095\go\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的
+拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1684
++ ... ers\93095\AppData\Local\Programs\Ollama;C:\Users\93095\go\bin;C:\User ...
++                                             ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\go\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Roaming\npm : 无法将“C:\Users\93095\AppData\Roaming\npm”项识别为 cmdlet、函数、脚本文件或可运
+行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1706
++ ... lama;C:\Users\93095\go\bin;C:\Users\93095\AppData\Roaming\npm;D:\IDE\ ...
++                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\AppData\Roaming\npm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Antigravity\bin : 无法将“D:\IDE\Antigravity\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称
+的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1741
++ ... bin;C:\Users\93095\AppData\Roaming\npm;D:\IDE\Antigravity\bin;D:\IDE\ ...
++                                            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Antigravity\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Kiro\bin : 无法将“D:\IDE\Kiro\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1764
++ ... 95\AppData\Roaming\npm;D:\IDE\Antigravity\bin;D:\IDE\Kiro\bin;C:\User ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Kiro\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\.local\bin : 无法将“C:\Users\93095\.local\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检
+查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1780
++ ... IDE\Antigravity\bin;D:\IDE\Kiro\bin;C:\Users\93095\.local\bin;D:\Soft ...
++                                         ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\.local\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\SoftWare\Windsurf\bin : 无法将“D:\SoftWare\Windsurf\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查
+名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1806
++ ... E\Kiro\bin;C:\Users\93095\.local\bin;D:\SoftWare\Windsurf\bin;C:\User ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\SoftWare\Windsurf\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\OpenAI\Codex\bin : 无法将“C:\Users\93095\AppData\Local\OpenAI\Codex\bin”项识别为 cmdlet
+、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1831
++ ... re\Windsurf\bin;C:\Users\93095\AppData\Local\OpenAI\Codex\bin;C:\Prog ...
++                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\...penAI\Codex\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 1877
++ ... \bin;C:\Users\93095\AppData\Local\OpenAI\Codex\bin;C:\Program Files\W ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda : 无法将“D:\IDE\Anaconda”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2052
++ ... \Users\93095\.codex\tmp\arg0\codex-arg0vhupN1;D:\IDE\Anaconda;D:\IDE\ ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Library\mingw-w64\bin : 无法将“D:\IDE\Anaconda\Library\mingw-w64\bin”项识别为 cmdlet、函数、脚本文件
+或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2068
++ ... 0vhupN1;D:\IDE\Anaconda;D:\IDE\Anaconda\Library\mingw-w64\bin;D:\IDE\ ...
++                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Library\mingw-w64\bin:String) [], CommandNotFoundExcept 
+   ion
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Library\usr\bin : 无法将“D:\IDE\Anaconda\Library\usr\bin”项识别为 cmdlet、函数、脚本文件或可运行程序
+的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2106
++ ... naconda\Library\mingw-w64\bin;D:\IDE\Anaconda\Library\usr\bin;D:\IDE\ ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Library\usr\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Library\bin : 无法将“D:\IDE\Anaconda\Library\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。
+请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2138
++ ... n;D:\IDE\Anaconda\Library\usr\bin;D:\IDE\Anaconda\Library\bin;D:\IDE\ ...
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Library\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\Scripts : 无法将“D:\IDE\Anaconda\Scripts”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名
+称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2166
++ ... y\usr\bin;D:\IDE\Anaconda\Library\bin;D:\IDE\Anaconda\Scripts;D:\IDE\ ...
++                                           ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\Scripts:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\bin : 无法将“D:\IDE\Anaconda\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写
+，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2190
++ ... conda\Library\bin;D:\IDE\Anaconda\Scripts;D:\IDE\Anaconda\bin;D:\IDE\ ...
++                                               ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Anaconda\condabin : 无法将“D:\IDE\Anaconda\condabin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查
+名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2210
++ ... Anaconda\Scripts;D:\IDE\Anaconda\bin;D:\IDE\Anaconda\condabin;C:\Prog ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Anaconda\condabin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 2253
++ ... E\Anaconda\bin;D:\IDE\Anaconda\condabin;C:\Program Files (x86)\Python ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 2296
++ ... Program Files (x86)\Python37-32\Scripts;C:\Program Files (x86)\Python ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2313
++ ... on37-32\Scripts;C:\Program Files (x86)\Python37-32;C:\Program Files\C ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\AI\CUDA\bin : 无法将“D:\IDE\AI\CUDA\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，
+如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2364
++ ... am Files\Common Files\Oracle\Java\javapath;D:\IDE\AI\CUDA\bin;D:\IDE\ ...
++                                                ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\AI\CUDA\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\AI\CUDA\libnvvp : 无法将“D:\IDE\AI\CUDA\libnvvp”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称
+的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2383
++ ... racle\Java\javapath;D:\IDE\AI\CUDA\bin;D:\IDE\AI\CUDA\libnvvp;C:\Prog ...
++                                            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\AI\CUDA\libnvvp:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2406
++ ... javapath;D:\IDE\AI\CUDA\bin;D:\IDE\AI\CUDA\libnvvp;C:\Program Files\J ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Python312\Scripts : 无法将“C:\Python312\Scripts”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼
+写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2440
++ ... ibnvvp;C:\Program Files\Java\jdk-1.8\bin;C:\Python312\Scripts;C:\Pyth ...
++                                              ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Python312\Scripts:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Python312 : 无法将“C:\Python312”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径
+，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2461
++ ... gram Files\Java\jdk-1.8\bin;C:\Python312\Scripts;C:\Python312;C:\Prog ...
++                                                      ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Python312:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 2492
++ ... 8\bin;C:\Python312\Scripts;C:\Python312;C:\Program Files (x86)\Common ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 2550
++ ... x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\system32 : 无法将“C:\WINDOWS\system32”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写
+，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2589
++ ... s (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WIND ...
++                                               ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\system32:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS : 无法将“C:\WINDOWS”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2609
++ ... mon Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WIND ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\System32\Wbem : 无法将“C:\WINDOWS\System32\Wbem”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查
+名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2620
++ ... apath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WIND ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\System32\Wbem:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\System32\WindowsPowerShell\v1.0 : 无法将“C:\WINDOWS\System32\WindowsPowerShell\v1.0”项识别为 cmdlet、函数
+、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2645
++ ... DOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WIND ...
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\Syst...PowerShell\v1.0:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\WINDOWS\System32\OpenSSH : 无法将“C:\WINDOWS\System32\OpenSSH”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。
+请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2688
++ ... S\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Prog ...
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\WINDOWS\System32\OpenSSH:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 2734
++ ... rShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files (x86)\NVIDIA ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2771
++ ... rogram Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\d ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\ProgramData\chocolatey\bin : 无法将“C:\ProgramData\chocolatey\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2795
++ ... \Common;C:\Program Files\dotnet;C:\ProgramData\chocolatey\bin;C:\Prog ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\ProgramData\chocolatey\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2825
++ ... Program Files\dotnet;C:\ProgramData\chocolatey\bin;C:\Program Files\G ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\apache-maven-3.6.3\bin : 无法将“D:\IDE\apache-maven-3.6.3\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2850
++ ... ey\bin;C:\Program Files\Git\cmd;D:\IDE\apache-maven-3.6.3\bin;D:\IDE\ ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\apache-maven-3.6.3\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\FlutterSDK\flutter\bin : 无法将“D:\IDE\FlutterSDK\flutter\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2880
++ ... d;D:\IDE\apache-maven-3.6.3\bin;D:\IDE\FlutterSDK\flutter\bin;C:\Prog ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\FlutterSDK\flutter\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2910
++ ... ache-maven-3.6.3\bin;D:\IDE\FlutterSDK\flutter\bin;C:\Program Files\N ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\xShell : 无法将“D:\IDE\xShell”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路
+径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2970
++ ... iles\NVIDIA Corporation\Nsight Compute 2024.3.1;D:\IDE\xShell;D:\IDE\ ...
++                                                     ~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\xShell:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\???web?????????\dll : 无法将“D:\IDE\???web?????????\dll”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请
+检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 2984
++ ... ght Compute 2024.3.1;D:\IDE\xShell;D:\IDE\???web?????????\dll;C:\Prog ...
++                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\???web?????????\dll:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3011
++ ...  2024.3.1;D:\IDE\xShell;D:\IDE\???web?????????\dll;C:\Program Files\D ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3056
++ ... ?\dll;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\N ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+x86 : 无法将“x86”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。
+所在位置 行:1 字符: 3129
++ ... s\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\Program Files (x86)\Window ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (x86:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3178
++ ...  (x86)\Windows Kits\10\Windows Performance Toolkit;C:\Program Files\G ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3202
++ ... indows Performance Toolkit;C:\Program Files\Go\bin;C:\Program Files\n ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\AndroidSdk\platform-tools : 无法将“D:\IDE\AndroidSdk\platform-tools”项识别为 cmdlet、函数、脚本文件或可运行程
+序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3226
++ ... \bin;C:\Program Files\nodejs;D:\IDE\AndroidSdk\platform-tools;C:\Prog ...
++                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\AndroidSdk\platform-tools:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3259
++ ... gram Files\nodejs;D:\IDE\AndroidSdk\platform-tools;C:\Program Files\W ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+%PNPM_HOME% : 无法将“%PNPM_HOME%”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，
+请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3286
++ ... roidSdk\platform-tools;C:\Program Files\WireGuard;%PNPM_HOME%;C:\User ...
++                                                       ~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (%PNPM_HOME%:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\.pnpm-global\bin : 无法将“C:\Users\93095\.pnpm-global\bin”项识别为 cmdlet、函数、脚本文件或可运行程序
+的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3298
++ ... m Files\WireGuard;%PNPM_HOME%;C:\Users\93095\.pnpm-global\bin;C:\User ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\.pnpm-global\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\pnpm : 无法将“C:\Users\93095\AppData\Local\pnpm”项识别为 cmdlet、函数、脚本文件或可运行
+程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3330
++ ... sers\93095\.pnpm-global\bin;C:\Users\93095\AppData\Local\pnpm;C:\User ...
++                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\AppData\Local\pnpm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\Microsoft\WindowsApps : 无法将“C:\Users\93095\AppData\Local\Microsoft\WindowsApps”项识别
+为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3364
++ ... \Local\pnpm;C:\Users\93095\AppData\Local\Microsoft\WindowsApps;D:\IDE ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\...oft\WindowsApps:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Microsoft : 无法将“D:\IDE\Microsoft”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果
+包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3415
++ ... rs\93095\AppData\Local\Microsoft\WindowsApps;D:\IDE\Microsoft VS Code ...
++                                                  ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Microsoft:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\IntelliJ : 无法将“D:\IDE\IntelliJ”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3444
++ ... soft\WindowsApps;D:\IDE\Microsoft VS Code\bin;D:\IDE\IntelliJ IDEA 20 ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\IntelliJ:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\WebStorm : 无法将“D:\IDE\WebStorm”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3478
++ ... VS Code\bin;D:\IDE\IntelliJ IDEA 2024.1.6\bin;D:\IDE\WebStorm 2024.1. ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\WebStorm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\PyCharm : 无法将“D:\IDE\PyCharm”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括
+路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3507
++ ... IDEA 2024.1.6\bin;D:\IDE\WebStorm 2024.1.6\bin;D:\IDE\PyCharm 2024.1. ...
++                                                    ~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\PyCharm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\DataGrip : 无法将“D:\IDE\DataGrip”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3535
++ ... torm 2024.1.6\bin;D:\IDE\PyCharm 2024.1.6\bin;D:\IDE\DataGrip 2024.1. ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\DataGrip:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+%DevEco : 无法将“%DevEco”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路
+径正确，然后再试一次。
+所在位置 行:1 字符: 3564
++ ... IDE\PyCharm 2024.1.6\bin;D:\IDE\DataGrip 2024.1.5\bin;%DevEco Studio% ...
++                                                           ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (%DevEco:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\Programs\Ollama : 无法将“C:\Users\93095\AppData\Local\Programs\Ollama”项识别为 cmdlet、
+函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3580
++ ... ;%DevEco Studio%;C:\Users\93095\AppData\Local\Programs\Ollama;C:\User ...
++                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\...Programs\Ollama:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\go\bin : 无法将“C:\Users\93095\go\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的
+拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3625
++ ... ers\93095\AppData\Local\Programs\Ollama;C:\Users\93095\go\bin;C:\User ...
++                                             ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\go\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Roaming\npm : 无法将“C:\Users\93095\AppData\Roaming\npm”项识别为 cmdlet、函数、脚本文件或可运
+行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3647
++ ... lama;C:\Users\93095\go\bin;C:\Users\93095\AppData\Roaming\npm;D:\IDE\ ...
++                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\AppData\Roaming\npm:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Antigravity\bin : 无法将“D:\IDE\Antigravity\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称
+的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3682
++ ... bin;C:\Users\93095\AppData\Roaming\npm;D:\IDE\Antigravity\bin;D:\IDE\ ...
++                                            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Antigravity\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\IDE\Kiro\bin : 无法将“D:\IDE\Kiro\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3705
++ ... 95\AppData\Roaming\npm;D:\IDE\Antigravity\bin;D:\IDE\Kiro\bin;C:\User ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\IDE\Kiro\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\.local\bin : 无法将“C:\Users\93095\.local\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检
+查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3721
++ ... IDE\Antigravity\bin;D:\IDE\Kiro\bin;C:\Users\93095\.local\bin;D:\Soft ...
++                                         ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\.local\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+D:\SoftWare\Windsurf\bin : 无法将“D:\SoftWare\Windsurf\bin”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查
+名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3747
++ ... E\Kiro\bin;C:\Users\93095\.local\bin;D:\SoftWare\Windsurf\bin;C:\User ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\SoftWare\Windsurf\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Users\93095\AppData\Local\OpenAI\Codex\bin : 无法将“C:\Users\93095\AppData\Local\OpenAI\Codex\bin”项识别为 cmdlet
+、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3772
++ ... re\Windsurf\bin;C:\Users\93095\AppData\Local\OpenAI\Codex\bin;C:\Prog ...
++                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\93095\...penAI\Codex\bin:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+C:\Program : 无法将“C:\Program”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 行:1 字符: 3818
++ ... \bin;C:\Users\93095\AppData\Local\OpenAI\Codex\bin;C:\Program Files\W ...
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 

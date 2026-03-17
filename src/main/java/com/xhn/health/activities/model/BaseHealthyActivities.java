@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xhn.base.mybatis.handler.VectorTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * 单次主动运动与锻炼记录明细表（healthy_activities）基础实体。
  */
 @Data
-@TableName("healthy_activities")
+@TableName(value = "healthy_activities", autoResultMap = true)
 @Schema(description = "单次主动运动与锻炼记录明细表")
 public class BaseHealthyActivities {
 
@@ -49,7 +50,7 @@ public class BaseHealthyActivities {
     private String description;
 
     @Schema(description = "运动详情向量（vector 文本，512 维）")
-    @TableField("activity_embedding")
+    @TableField(value = "activity_embedding", typeHandler = VectorTypeHandler.class)
     private List<Double> activityEmbedding;
 
     @Schema(description = "数据写入时间")

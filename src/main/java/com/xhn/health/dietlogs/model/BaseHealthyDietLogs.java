@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xhn.base.mybatis.handler.VectorTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * 饮食记录与营养摄入明细表（healthy_diet_logs）基础实体。
  */
 @Data
-@TableName("healthy_diet_logs")
+@TableName(value = "healthy_diet_logs", autoResultMap = true)
 @Schema(description = "饮食记录与营养摄入明细表")
 public class BaseHealthyDietLogs {
 
@@ -57,7 +58,7 @@ public class BaseHealthyDietLogs {
     private BigDecimal fatG;
 
     @Schema(description = "食物明细向量（vector 文本，256 维）")
-    @TableField("food_embedding")
+    @TableField(value = "food_embedding", typeHandler = VectorTypeHandler.class)
     private List<Double> foodEmbedding;
 
     @Schema(description = "数据写入时间")

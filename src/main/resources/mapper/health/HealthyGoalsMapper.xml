@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhn.health.goals.mapper.HealthyGoalsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xhn.health.goals.model.HealthyGoals">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="goal_type" property="goalType"/>
+        <result column="target_value" property="targetValue"/>
+        <result column="deadline" property="deadline"/>
+        <result column="status" property="status"/>
+        <result column="goal_embedding" property="goalEmbedding" typeHandler="com.xhn.base.mybatis.handler.VectorTypeHandler"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, goal_type, target_value, deadline, status, goal_embedding, created_at
+    </sql>
+
+</mapper>

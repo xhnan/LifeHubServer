@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xhn.base.mybatis.handler.VectorTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * 用户健康目标与里程碑表（healthy_goals）基础实体。
  */
 @Data
-@TableName("healthy_goals")
+@TableName(value = "healthy_goals", autoResultMap = true)
 @Schema(description = "用户健康目标与里程碑表")
 public class BaseHealthyGoals {
 
@@ -46,7 +47,7 @@ public class BaseHealthyGoals {
     private String status;
 
     @Schema(description = "目标语义向量（vector 文本，1024 维）")
-    @TableField("goal_embedding")
+    @TableField(value = "goal_embedding", typeHandler = VectorTypeHandler.class)
     private List<Double> goalEmbedding;
 
     @Schema(description = "数据写入时间")

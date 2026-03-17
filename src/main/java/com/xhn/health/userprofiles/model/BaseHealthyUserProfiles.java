@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xhn.base.mybatis.handler.VectorTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * 健康助手特化的用户画像扩展表（healthy_user_profiles）基础实体。
  */
 @Data
-@TableName("healthy_user_profiles")
+@TableName(value = "healthy_user_profiles", autoResultMap = true)
 @Schema(description = "健康助手特化的用户画像扩展表")
 public class BaseHealthyUserProfiles {
 
@@ -50,7 +51,7 @@ public class BaseHealthyUserProfiles {
     private BigDecimal targetWeightKg;
 
     @Schema(description = "健康特征与偏好的向量表示（vector 文本，1024 维）")
-    @TableField("health_profile_embedding")
+    @TableField(value = "health_profile_embedding", typeHandler = VectorTypeHandler.class)
     private List<Double> healthProfileEmbedding;
 
     @Schema(description = "创建时间")

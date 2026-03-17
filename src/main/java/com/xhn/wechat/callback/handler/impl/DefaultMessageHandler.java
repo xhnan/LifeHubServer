@@ -9,11 +9,25 @@ import com.xhn.wechat.message.model.BaseWeChatMessage;
 import com.xhn.wechat.message.service.WeChatMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.deepseek.DeepSeekChatModel;
+import org.springframework.ai.deepseek.DeepSeekChatOptions;
+import org.springframework.ai.deepseek.api.DeepSeekApi;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 默认消息处理器
  * 通用的回复逻辑
+ *
  * @author xhn
  * @date 2026-02-28
  */
@@ -24,6 +38,9 @@ public class DefaultMessageHandler implements MessageHandler {
 
     private final WeChatApiClient weChatApiClient;
     private final WeChatMessageService messageService;
+
+    private final DeepSeekChatModel chatModel;
+
 
     @Override
     public String handleEvent(CallbackEvent event, BaseWeChatAppConfig appConfig) {
@@ -54,7 +71,18 @@ public class DefaultMessageHandler implements MessageHandler {
 
         log.info("Received text message from {}: {}", fromUser, content);
 
-        String reply = generateReply(content, fromUser);
+//        String reply = generateReply(content, fromUser);
+
+        UserMessage userMessage = new UserMessage(content);
+        SystemMessage systemMessage = new SystemMessage("你是我的人工智能助手,请你用最快的速度回复我,并且回复的内容要简洁明了");
+        List<Message> messages = new ArrayList<>();
+        messages.add(systemMessage);
+        messages.add(userMessage);
+        var prompt = new Prompt(messages);
+        ChatResponse call = chatModel.call(prompt);
+        Generation result = call.getResult();
+        String reply = result.getOutput().getText();
+
         sendReplyAsync(appConfig, fromUser, reply);
 
         return "success";

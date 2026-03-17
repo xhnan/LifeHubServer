@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhn.health.psychology.dailymoods.mapper.HealthPsyDailyMoodsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xhn.health.psychology.dailymoods.model.HealthPsyDailyMoods">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="mood_score" property="moodScore"/>
+        <result column="primary_emotion" property="primaryEmotion"/>
+        <result column="journal_text" property="journalText"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, mood_score, primary_emotion, journal_text, record_date, created_at
+    </sql>
+
+</mapper>
