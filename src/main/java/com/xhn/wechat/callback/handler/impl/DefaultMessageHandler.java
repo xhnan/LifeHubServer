@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 默认消息处理器
@@ -79,12 +80,26 @@ public class DefaultMessageHandler implements MessageHandler {
         messages.add(systemMessage);
         messages.add(userMessage);
         var prompt = new Prompt(messages);
-        ChatResponse call = chatModel.call(prompt);
-        Generation result = call.getResult();
-        String reply = result.getOutput().getText();
-
-        sendReplyAsync(appConfig, fromUser, reply);
-
+//        ChatResponse call = chatModel.call(prompt);
+//        Generation result = call.getResult();
+//        String reply = result.getOutput().getText();
+//
+//        sendReplyAsync(appConfig, fromUser, reply);
+        chatModel.stream(prompt)
+                .collectList() // 将流式碎片合并
+                .map(responses -> {
+                    // 合并所有回复文本
+                    return responses.stream()
+                            .map(res -> res.getResult().getOutput().getText())
+                            .collect(Collectors.joining());
+                })
+                .subscribe(reply -> {
+                    // 在成功获取完整回复后，异步发送
+                    sendReplyAsync(appConfig, fromUser, reply);
+                }, error -> {
+                    // 错误处理逻辑
+                    log.error("AI 调用失败", error);
+                });
         return "success";
     }
 
