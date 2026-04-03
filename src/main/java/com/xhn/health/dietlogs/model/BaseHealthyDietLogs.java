@@ -17,7 +17,7 @@ import java.util.List;
  * 饮食记录与营养摄入明细表（healthy_diet_logs）基础实体。
  */
 @Data
-@TableName(value = "healthy_diet_logs", autoResultMap = true)
+@TableName(value = "health_diet_logs", autoResultMap = true)
 @Schema(description = "饮食记录与营养摄入明细表")
 public class BaseHealthyDietLogs {
 

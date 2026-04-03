@@ -18,7 +18,7 @@ import java.util.List;
  * 用户健康目标与里程碑表（healthy_goals）基础实体。
  */
 @Data
-@TableName(value = "healthy_goals", autoResultMap = true)
+@TableName(value = "health_goals", autoResultMap = true)
 @Schema(description = "用户健康目标与里程碑表")
 public class BaseHealthyGoals {
 

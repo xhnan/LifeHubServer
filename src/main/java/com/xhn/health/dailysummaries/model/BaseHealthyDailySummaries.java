@@ -18,7 +18,7 @@ import java.util.List;
  * 每日整体活动与消耗汇总表（healthy_daily_summaries）基础实体。
  */
 @Data
-@TableName(value = "healthy_daily_summaries", autoResultMap = true)
+@TableName(value = "health_daily_summaries", autoResultMap = true)
 @Schema(description = "每日整体活动与消耗汇总表")
 public class BaseHealthyDailySummaries {
 

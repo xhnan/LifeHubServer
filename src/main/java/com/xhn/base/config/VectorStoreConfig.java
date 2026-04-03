@@ -90,44 +90,44 @@ public class VectorStoreConfig {
         );
     }
 
-    /** healthy_user_profiles -> health_profile_embedding (1024) */
+    /** health_user_profiles -> health_profile_embedding (1024) */
     @Bean(name = "profileVectorStore")
     public PgVectorStore profileVectorStore(
             JdbcTemplate jdbcTemplate,
             @Qualifier("profileEmbeddingModel") EmbeddingModel embeddingModel) {
-        return buildStore(jdbcTemplate, embeddingModel, 1024, "healthy_user_profiles");
+        return buildStore(jdbcTemplate, embeddingModel, 1024, "health_user_profiles");
     }
 
-    /** healthy_daily_summaries -> daily_context_embedding (1024) */
+    /** health_daily_summaries -> daily_context_embedding (1024) */
     @Bean(name = "summaryVectorStore")
     public PgVectorStore summaryVectorStore(
             JdbcTemplate jdbcTemplate,
             @Qualifier("summaryGoalEmbeddingModel") EmbeddingModel embeddingModel) {
-        return buildStore(jdbcTemplate, embeddingModel, 1024, "healthy_daily_summaries");
+        return buildStore(jdbcTemplate, embeddingModel, 1024, "health_daily_summaries");
     }
 
-    /** healthy_goals -> goal_embedding (1024) */
+    /** health_goals -> goal_embedding (1024) */
     @Bean(name = "goalVectorStore")
     public PgVectorStore goalVectorStore(
             JdbcTemplate jdbcTemplate,
             @Qualifier("summaryGoalEmbeddingModel") EmbeddingModel embeddingModel) {
-        return buildStore(jdbcTemplate, embeddingModel, 1024, "healthy_goals");
+        return buildStore(jdbcTemplate, embeddingModel, 1024, "health_goals");
     }
 
-    /** healthy_activities -> activity_embedding (512) */
+    /** health_activities -> activity_embedding (512) */
     @Bean(name = "activityVectorStore")
     public PgVectorStore activityVectorStore(
             JdbcTemplate jdbcTemplate,
             @Qualifier("activityEmbeddingModel") EmbeddingModel embeddingModel) {
-        return buildStore(jdbcTemplate, embeddingModel, 512, "healthy_activities");
+        return buildStore(jdbcTemplate, embeddingModel, 512, "health_activities");
     }
 
-    /** healthy_diet_logs -> food_embedding (256) */
+    /** health_diet_logs -> food_embedding (256) */
     @Bean(name = "dietVectorStore")
     public PgVectorStore dietVectorStore(
             JdbcTemplate jdbcTemplate,
             @Qualifier("dietEmbeddingModel") EmbeddingModel embeddingModel) {
-        return buildStore(jdbcTemplate, embeddingModel, 256, "healthy_diet_logs");
+        return buildStore(jdbcTemplate, embeddingModel, 256, "health_diet_logs");
     }
 
     /** 缁熶竴鏋勫缓 PgVectorStore銆俰nitializeSchema(false) 琛ㄧず涓嶈嚜鍔ㄦ敼琛ㄧ粨鏋勩€?*/

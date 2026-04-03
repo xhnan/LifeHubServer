@@ -17,7 +17,7 @@ import java.util.List;
  * 单次主动运动与锻炼记录明细表（healthy_activities）基础实体。
  */
 @Data
-@TableName(value = "healthy_activities", autoResultMap = true)
+@TableName(value = "health_activities", autoResultMap = true)
 @Schema(description = "单次主动运动与锻炼记录明细表")
 public class BaseHealthyActivities {
 

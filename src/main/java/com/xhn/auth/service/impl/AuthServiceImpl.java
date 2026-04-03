@@ -22,6 +22,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,8 +95,8 @@ public class AuthServiceImpl implements AuthService {
         long tokenTtlMillis = jwtUtil.getExpirationMillis();
         Duration tokenTtl = jwtUtil.getExpirationDuration();
 
-        //refreshToken
-        String refreshToken = jwtUtil.generateToken(user.getUserId());
+        //refreshToken（使用refreshExpiration有效期）
+        String refreshToken = jwtUtil.generateToken(user.getUserId(), new HashMap<>(), jwtUtil.getRefreshExpirationMillis());
 
         // 7. 保存用户角色到Redis中（异步操作，不阻塞登录流程）
         List<SysRole> roles = sysUserRoleService.getRolesByUserId(user.getUserId());
@@ -206,8 +207,8 @@ public class AuthServiceImpl implements AuthService {
         // 6. 生成新的accessToken（使用正常的过期时间）
         String newAccessToken = jwtUtil.generateToken(userId);
 
-        // 7. 可选：生成新的refreshToken（刷新后旧refreshToken仍然有效，也可以选择轮换）
-        String newRefreshToken = jwtUtil.generateToken(userId);
+        // 7. 生成新的refreshToken（使用refreshExpiration有效期）
+        String newRefreshToken = jwtUtil.generateToken(userId, new HashMap<>(), jwtUtil.getRefreshExpirationMillis());
 
         // 8. 更新Redis中的角色和权限缓存（使用accessToken的过期时间）
         List<SysRole> roles = sysUserRoleService.getRolesByUserId(userId);

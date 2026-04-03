@@ -18,7 +18,7 @@ import java.util.List;
  * 健康助手特化的用户画像扩展表（healthy_user_profiles）基础实体。
  */
 @Data
-@TableName(value = "healthy_user_profiles", autoResultMap = true)
+@TableName(value = "health_user_profiles", autoResultMap = true)
 @Schema(description = "健康助手特化的用户画像扩展表")
 public class BaseHealthyUserProfiles {
 

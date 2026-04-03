@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * 用户体重与体脂记录明细表（healthy_weight_logs）基础实体。
  */
 @Data
-@TableName("healthy_weight_logs")
+@TableName("health_weight_logs")
 @Schema(description = "用户体重与体脂记录明细表")
 public class BaseHealthyWeightLogs {
 

@@ -55,30 +55,22 @@ public class ApiKeyFilter implements WebFilter {
         String path = request.getURI().getPath();
         String method = request.getMethod().name();
 
-        // 打印所有请求路径，用于调试
-        log.info("ApiKeyFilter invoked - Method: {}, Path: {}", method, path);
+        log.debug("ApiKeyFilter invoked - Method: {}, Path: {}", method, path);
 
         // 只拦截 POST /sys/app-version/quick-publish
         if (!path.equals("/sys/app-version/quick-publish")) {
-            log.debug("Path not matched, skipping filter");
             return chain.filter(exchange);
         }
 
         log.info("API-Key filter triggered for path: {}", path);
-        log.info("All request headers: {}", request.getHeaders().toSingleValueMap());
 
-        // 从请求头获取 API-Key（尝试多种可能的头名称）
+        // 从请求头获取 API-Key
         String requestApiKey = request.getHeaders().getFirst(API_KEY_HEADER);
-        log.info("Received API-Key from header '{}': {}", API_KEY_HEADER, requestApiKey);
-
-        // 如果没有找到，尝试其他常见的头名称
         if (requestApiKey == null) {
             requestApiKey = request.getHeaders().getFirst("api-key");
-            log.info("Trying alternative header 'api-key': {}", requestApiKey);
         }
         if (requestApiKey == null) {
             requestApiKey = request.getHeaders().getFirst("x-api-key");
-            log.info("Trying alternative header 'x-api-key': {}", requestApiKey);
         }
 
         // 验证 API-Key

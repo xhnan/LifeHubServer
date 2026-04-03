@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhn.health.agent.advicerecords.mapper.HealthAgentAdviceRecordsMapper">
+
+    <resultMap id="BaseResultMap" type="com.xhn.health.agent.advicerecords.model.HealthAgentAdviceRecords">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="agent_type" property="agentType"/>
+        <result column="advice_type" property="adviceType"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="source_summary" property="sourceSummary"/>
+        <result column="source_snapshot" property="sourceSnapshot"/>
+        <result column="priority_level" property="priorityLevel"/>
+        <result column="status" property="status"/>
+        <result column="valid_until" property="validUntil"/>
+        <result column="advice_vector" property="adviceVector" typeHandler="com.xhn.base.mybatis.handler.VectorTypeHandler"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, agent_type, advice_type, title, content, source_summary, source_snapshot,
+        priority_level, status, valid_until, advice_vector, created_at, updated_at
+    </sql>
+
+</mapper>
