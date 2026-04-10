@@ -2,7 +2,9 @@ package com.xhn.fin.accounts.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xhn.fin.accounts.dto.AccountSubjectDTO;
 import com.xhn.fin.accounts.dto.BalanceAdjustmentDTO;
+import com.xhn.fin.accounts.dto.SortWeightUpdateDTO;
 import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
@@ -127,6 +129,23 @@ public interface FinAccountsService extends IService<FinAccounts> {
      * @return 科目分类数据
      */
     SubjectCategoriesDTO getSubjectCategories(Long bookId);
+
+    /**
+     * 查询支出类叶子科目（按用户自定义排序）
+     * 排序规则：置顶(sortWeight>=1000) → 近30天使用频率 → sortWeight倒序 → ID
+     *
+     * @param bookId 账本ID
+     * @return 排序后的支出科目列表
+     */
+    List<AccountSubjectDTO> listExpenseSubjects(Long bookId);
+
+    /**
+     * 批量更新科目排序权重
+     *
+     * @param dto 排序更新请求
+     * @return 是否成功
+     */
+    boolean updateSortWeights(SortWeightUpdateDTO dto);
 
     /**
      * 调整账户余额

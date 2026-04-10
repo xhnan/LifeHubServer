@@ -73,6 +73,10 @@ public class BaseSysUser {
     @TableField("deleted_at")
     private LocalDateTime deletedAt;
 
+    @Schema(description = "GitHub用户ID，用于OAuth2登录关联")
+    @TableField("github_id")
+    private String githubId;
+
     @Schema(description = "邮箱是否验证")
     @TableField("email_verified")
     private Boolean emailVerified;

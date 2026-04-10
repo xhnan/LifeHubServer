@@ -1,9 +1,11 @@
 package com.xhn.base.config;
 
+import com.xhn.auth.oauth2.GithubLoginSuccessHandler;
 import com.xhn.base.constants.SecurityConstants;
 import com.xhn.base.security.AllPermissionReactiveAuthorizationManager;
 import com.xhn.base.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -25,7 +27,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    @Autowired
+    private GithubLoginSuccessHandler successHandler;
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         ReactiveAuthorizationManager<AuthorizationContext> authenticatedOnly = (Mono<Authentication> authentication, AuthorizationContext context) ->
@@ -41,6 +44,7 @@ public class SecurityConfig {
                         .pathMatchers(SecurityConstants.WHITE_LIST).permitAll()
                         .anyExchange().access(new AllPermissionReactiveAuthorizationManager(authenticatedOnly))
                 )
+                .oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authenticationSuccessHandler(successHandler))
                 .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)

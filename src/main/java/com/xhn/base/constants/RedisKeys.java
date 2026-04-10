@@ -29,4 +29,11 @@ public final class RedisKeys {
         return TOKEN_BLACKLIST_PREFIX + token;
     }
 
+    /** 二维码登录 key 前缀：qrcode:{qrCodeId} */
+    public static final String QRCODE_PREFIX = "qrcode:";
+
+    public static String qrcodeKey(String qrCodeId) {
+        return QRCODE_PREFIX + qrCodeId;
+    }
+
 }

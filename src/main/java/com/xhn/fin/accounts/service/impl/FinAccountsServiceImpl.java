@@ -3,6 +3,7 @@ package com.xhn.fin.accounts.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xhn.fin.accounts.dto.AccountSubjectDTO;
 import com.xhn.fin.accounts.dto.BalanceAdjustmentDTO;
+import com.xhn.fin.accounts.dto.SortWeightUpdateDTO;
 import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.mapper.FinAccountsMapper;
 import com.xhn.fin.accounts.model.FinAccounts;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.xhn.fin.accounts.mapper.SubjectCategorySortMapper;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,6 +44,9 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
 
     @Autowired
     private FinTransactionsService finTransactionsService;
+
+    @Autowired
+    private SubjectCategorySortMapper subjectCategorySortMapper;
 
     @Override
     public boolean saveAccount(FinAccounts finAccounts) {
@@ -746,6 +751,74 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
                 .sortWeight(account.getSortWeight())
                 .build();
     }
+
+    @Override
+    public List<AccountSubjectDTO> listExpenseSubjects(Long bookId) {
+        LambdaQueryWrapper<FinAccounts> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FinAccounts::getBookId, bookId);
+        queryWrapper.eq(FinAccounts::getAccountType, "EXPENSE");
+        queryWrapper.eq(FinAccounts::getIsLeaf, true);
+
+        List<FinAccounts> accounts = this.list(queryWrapper);
+
+        // 获取近30天使用频率
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(30);
+        Map<Long, Integer> usageMap = toUsageMap(
+                subjectCategorySortMapper.countExpenseOccurrenceUsage(bookId, startDate, endDate));
+
+        List<AccountSubjectDTO> subjects = accounts.stream()
+                .map(this::convertToAccountSubjectDTO)
+                .collect(Collectors.toList());
+
+        // 排序：置顶(sortWeight>=1000) → 使用频率 → sortWeight倒序 → ID
+        subjects.sort(Comparator
+                .comparing((AccountSubjectDTO s) -> isPinned(s)).reversed()
+                .thenComparing((AccountSubjectDTO s) -> usageMap.getOrDefault(s.getId(), 0), Comparator.reverseOrder())
+                .thenComparing((AccountSubjectDTO s) -> safeSortWeight(s), Comparator.reverseOrder())
+                .thenComparing(s -> s.getId() != null ? s.getId() : Long.MAX_VALUE)
+        );
+
+        return subjects;
+    }
+
+    private static Map<Long, Integer> toUsageMap(List<Map<String, Object>> rows) {
+        Map<Long, Integer> map = new HashMap<>();
+        if (rows == null) return map;
+        for (Map<String, Object> row : rows) {
+            Object accountId = row.get("account_id");
+            Object usageCount = row.get("usage_count");
+            if (accountId instanceof Number && usageCount instanceof Number) {
+                map.put(((Number) accountId).longValue(), ((Number) usageCount).intValue());
+            }
+        }
+        return map;
+    }
+
+    private static boolean isPinned(AccountSubjectDTO subject) {
+        return safeSortWeight(subject) >= 1000;
+    }
+
+    private static int safeSortWeight(AccountSubjectDTO subject) {
+        return subject == null || subject.getSortWeight() == null ? 0 : subject.getSortWeight();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateSortWeights(SortWeightUpdateDTO dto) {
+        Long bookId = dto.getBookId();
+        for (SortWeightUpdateDTO.SortItem item : dto.getItems()) {
+            FinAccounts account = this.getById(item.getId());
+            if (account == null || !bookId.equals(account.getBookId())) {
+                log.warn("更新排序权重失败：科目不存在或无权限, accountId={}, bookId={}", item.getId(), bookId);
+                continue;
+            }
+            account.setSortWeight(item.getSortWeight());
+            this.updateById(account);
+        }
+        return true;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long adjustBalance(BalanceAdjustmentDTO dto, Long userId) {

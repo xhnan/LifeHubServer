@@ -16,6 +16,11 @@ public class SecurityConstants {
      */
     public static final String ADMIN_ROLE_CODE = "ADMIN";
 
+    /**
+     * 默认用户角色编码（OAuth2 自动注册用户分配）
+     */
+    public static final String DEFAULT_USER_ROLE_CODE = "USER";
+
 
     /**
      * 白名单路径

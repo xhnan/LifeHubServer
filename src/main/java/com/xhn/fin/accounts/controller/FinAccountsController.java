@@ -2,6 +2,8 @@ package com.xhn.fin.accounts.controller;
 
 import com.xhn.base.utils.SecurityUtils;
 import com.xhn.fin.accounts.dto.BalanceAdjustmentDTO;
+import com.xhn.fin.accounts.dto.AccountSubjectDTO;
+import com.xhn.fin.accounts.dto.SortWeightUpdateDTO;
 import com.xhn.fin.accounts.dto.SubjectCategoriesDTO;
 import com.xhn.fin.accounts.model.FinAccounts;
 import com.xhn.fin.accounts.model.SubjectTreeDTO;
@@ -140,6 +142,24 @@ public class FinAccountsController {
         SubjectCategoriesDTO categories = finAccountsService.getSubjectCategories(bookId);
         categories = subjectCategoriesSortService.sortForBook(bookId, categories);
         return ResponseResult.success(categories);
+    }
+
+    @GetMapping("/expense")
+    @Operation(summary = "查询支出类科目（按用户自定义排序）")
+    public ResponseResult<List<AccountSubjectDTO>> listExpenseSubjects(
+            @Parameter(description = "账本ID") @RequestParam Long bookId
+    ) {
+        List<AccountSubjectDTO> subjects = finAccountsService.listExpenseSubjects(bookId);
+        return ResponseResult.success(subjects);
+    }
+
+    @PutMapping("/sort-weight")
+    @Operation(summary = "批量更新科目排序权重")
+    public ResponseResult<Boolean> updateSortWeights(
+            @Valid @RequestBody SortWeightUpdateDTO dto
+    ) {
+        boolean result = finAccountsService.updateSortWeights(dto);
+        return result ? ResponseResult.success(true) : ResponseResult.error("更新失败");
     }
 
     @PostMapping("/adjust-balance")
