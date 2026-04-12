@@ -748,6 +748,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
                 .code(account.getCode())
                 .accountType(account.getAccountType())
                 .icon(account.getIcon())
+                .sortOrder(account.getSortOrder())
                 .sortWeight(account.getSortWeight())
                 .build();
     }
@@ -766,6 +767,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         LocalDateTime startDate = endDate.minusDays(30);
         Map<Long, Integer> usageMap = toUsageMap(
                 subjectCategorySortMapper.countExpenseOccurrenceUsage(bookId, startDate, endDate));
+        Map<Long, Integer> top3RankMap = toTopUsageRankMap(usageMap);
 
         List<AccountSubjectDTO> subjects = accounts.stream()
                 .map(this::convertToAccountSubjectDTO)
@@ -774,8 +776,10 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
         // 排序：置顶(sortWeight>=1000) → 使用频率 → sortWeight倒序 → ID
         subjects.sort(Comparator
                 .comparing((AccountSubjectDTO s) -> isPinned(s)).reversed()
-                .thenComparing((AccountSubjectDTO s) -> usageMap.getOrDefault(s.getId(), 0), Comparator.reverseOrder())
+                .thenComparing((AccountSubjectDTO s) -> isTopUsage(s, top3RankMap)).reversed()
+                .thenComparing((AccountSubjectDTO s) -> topUsageRank(s, top3RankMap))
                 .thenComparing((AccountSubjectDTO s) -> safeSortWeight(s), Comparator.reverseOrder())
+                .thenComparing(FinAccountsServiceImpl::safeSortOrder)
                 .thenComparing(s -> s.getId() != null ? s.getId() : Long.MAX_VALUE)
         );
 
@@ -801,6 +805,40 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
 
     private static int safeSortWeight(AccountSubjectDTO subject) {
         return subject == null || subject.getSortWeight() == null ? 0 : subject.getSortWeight();
+    }
+
+    private static Map<Long, Integer> toTopUsageRankMap(Map<Long, Integer> usageMap) {
+        if (usageMap == null || usageMap.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        List<Map.Entry<Long, Integer>> topEntries = usageMap.entrySet().stream()
+                .filter(entry -> entry.getKey() != null && entry.getValue() != null && entry.getValue() > 0)
+                .sorted(Map.Entry.<Long, Integer>comparingByValue(Comparator.reverseOrder())
+                        .thenComparing(Map.Entry.comparingByKey()))
+                .limit(3)
+                .collect(Collectors.toList());
+
+        Map<Long, Integer> rankMap = new HashMap<>();
+        for (int i = 0; i < topEntries.size(); i++) {
+            rankMap.put(topEntries.get(i).getKey(), i);
+        }
+        return rankMap;
+    }
+
+    private static boolean isTopUsage(AccountSubjectDTO subject, Map<Long, Integer> topUsageRankMap) {
+        return subject != null && subject.getId() != null && topUsageRankMap.containsKey(subject.getId());
+    }
+
+    private static int topUsageRank(AccountSubjectDTO subject, Map<Long, Integer> topUsageRankMap) {
+        if (subject == null || subject.getId() == null) {
+            return Integer.MAX_VALUE;
+        }
+        return topUsageRankMap.getOrDefault(subject.getId(), Integer.MAX_VALUE);
+    }
+
+    private static long safeSortOrder(AccountSubjectDTO subject) {
+        return subject == null || subject.getSortOrder() == null ? Long.MAX_VALUE : subject.getSortOrder();
     }
 
     @Override

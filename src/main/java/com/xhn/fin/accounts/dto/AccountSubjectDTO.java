@@ -7,8 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 科目数据传输对象
- * 用于返回科目的基本信息
+ * 账户科目轻量 DTO
+ * 用于前端选择器中的科目列表展示。
  *
  * @author xhn
  * @date 2026-03-05
@@ -17,16 +17,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "科目信息")
+@Schema(description = "账户科目 DTO")
 public class AccountSubjectDTO {
 
-    @Schema(description = "科目ID")
+    @Schema(description = "账户科目 ID")
     private Long id;
 
-    @Schema(description = "科目名称")
+    @Schema(description = "账户科目名称")
     private String name;
 
-    @Schema(description = "科目代码")
+    @Schema(description = "账户科目编码")
     private String code;
 
     @Schema(description = "账户类型")
@@ -35,6 +35,9 @@ public class AccountSubjectDTO {
     @Schema(description = "图标")
     private String icon;
 
-    @Schema(description = "排序权重")
+    @Schema(description = "默认排序，正序")
+    private Long sortOrder;
+
+    @Schema(description = "用户设置排序，倒序")
     private Integer sortWeight;
 }
