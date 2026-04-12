@@ -40,4 +40,7 @@ public class AccountSubjectDTO {
 
     @Schema(description = "用户设置排序，倒序")
     private Integer sortWeight;
+
+    @Schema(description = "后端计算后的最终排序，前端按正序使用")
+    private Integer userSort;
 }

@@ -46,6 +46,7 @@ public class SubjectCategoriesSortService {
                 .thenComparing(SubjectCategoriesSortService::safeSortOrder)
                 .thenComparing(SubjectCategoriesSortService::safeId)
         );
+        applyUserSort(payment);
         expense.setPaymentSubjects(payment);
 
         List<AccountSubjectDTO> occurrence = expense.getOccurrenceSubjects() == null
@@ -59,6 +60,7 @@ public class SubjectCategoriesSortService {
                 .thenComparing(SubjectCategoriesSortService::safeSortOrder)
                 .thenComparing(SubjectCategoriesSortService::safeId)
         );
+        applyUserSort(occurrence);
         expense.setOccurrenceSubjects(occurrence);
 
         return categories;
@@ -124,5 +126,17 @@ public class SubjectCategoriesSortService {
 
     private static long safeId(AccountSubjectDTO subject) {
         return subject == null || subject.getId() == null ? Long.MAX_VALUE : subject.getId();
+    }
+
+    private static void applyUserSort(List<AccountSubjectDTO> subjects) {
+        if (subjects == null) {
+            return;
+        }
+        for (int i = 0; i < subjects.size(); i++) {
+            AccountSubjectDTO subject = subjects.get(i);
+            if (subject != null) {
+                subject.setUserSort(i + 1);
+            }
+        }
     }
 }

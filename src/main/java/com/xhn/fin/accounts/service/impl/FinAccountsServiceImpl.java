@@ -782,6 +782,7 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
                 .thenComparing(FinAccountsServiceImpl::safeSortOrder)
                 .thenComparing(s -> s.getId() != null ? s.getId() : Long.MAX_VALUE)
         );
+        applyUserSort(subjects);
 
         return subjects;
     }
@@ -839,6 +840,18 @@ public class FinAccountsServiceImpl extends ServiceImpl<FinAccountsMapper, FinAc
 
     private static long safeSortOrder(AccountSubjectDTO subject) {
         return subject == null || subject.getSortOrder() == null ? Long.MAX_VALUE : subject.getSortOrder();
+    }
+
+    private static void applyUserSort(List<AccountSubjectDTO> subjects) {
+        if (subjects == null) {
+            return;
+        }
+        for (int i = 0; i < subjects.size(); i++) {
+            AccountSubjectDTO subject = subjects.get(i);
+            if (subject != null) {
+                subject.setUserSort(i + 1);
+            }
+        }
     }
 
     @Override
