@@ -70,6 +70,8 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec
                         .authenticationSuccessHandler(successHandler)
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
                 )
                 .addFilterAt(apiKeyFilter, SecurityWebFiltersOrder.AUTHENTICATION)
