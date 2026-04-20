@@ -1,0 +1,4 @@
+interface:
+  display_name: "LifeHub Bookkeeping"
+  short_description: "Resolve default books and subjects, then record LifeHub expenses, income, and transfers"
+  default_prompt: "Use X-API-Key, fetch /fin/skills/bookkeeping-context first, select accounts from the returned subject lists, and create a balanced bookkeeping transaction."
