@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhn.fin.app.mapper.AppFinanceMapper">
+
+    <sql id="ClassifiedRecords">
+        WITH classified AS (
+            SELECT
+                t.id,
+                t.trans_date,
+                t.description AS note,
+                cat.type,
+                cat.category_id,
+                cat.category,
+                cat.icon,
+                cat.display_amount AS amount,
+                pay.account_id,
+                pay.account
+            FROM fin_transactions t
+            JOIN LATERAL (
+                SELECT
+                    e.account_id AS category_id,
+                    a.name AS category,
+                    a.icon,
+                    LOWER(a.account_type) AS type,
+                    CASE
+                        WHEN a.account_type = 'EXPENSE' THEN
+                            CASE WHEN e.direction = 'DEBIT' THEN e.amount ELSE -e.amount END
+                        WHEN a.account_type = 'INCOME' THEN
+                            CASE WHEN e.direction = 'CREDIT' THEN e.amount ELSE -e.amount END
+                        ELSE 0
+                    END AS display_amount
+                FROM fin_entries e
+                JOIN fin_accounts a ON e.account_id = a.id
+                WHERE e.trans_id = t.id
+                  AND e.book_id = t.book_id
+                  AND a.account_type IN ('EXPENSE', 'INCOME')
+                ORDER BY CASE WHEN a.account_type = 'EXPENSE' THEN 0 ELSE 1 END, e.id
+                LIMIT 1
+            ) cat ON TRUE
+            LEFT JOIN LATERAL (
+                SELECT
+                    e.account_id,
+                    a.name AS account
+                FROM fin_entries e
+                JOIN fin_accounts a ON e.account_id = a.id
+                WHERE e.trans_id = t.id
+                  AND e.book_id = t.book_id
+                  AND a.account_type IN ('ASSET', 'LIABILITY')
+                ORDER BY e.id
+                LIMIT 1
+            ) pay ON TRUE
+            WHERE t.book_id = #{bookId}
+        )
+    </sql>
+
+    <sql id="RecordFilters">
+        <if test="startDate != null">
+            AND trans_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND trans_date &lt;= #{endDate}
+        </if>
+        <if test="dateStart != null">
+            AND trans_date &gt;= #{dateStart}
+        </if>
+        <if test="dateEnd != null">
+            AND trans_date &lt;= #{dateEnd}
+        </if>
+        <if test="accountId != null">
+            AND account_id = #{accountId}
+        </if>
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        <if test="minAmount != null">
+            AND ABS(amount) &gt;= #{minAmount}
+        </if>
+        <if test="maxAmount != null">
+            AND ABS(amount) &lt;= #{maxAmount}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (note ILIKE CONCAT('%', #{keyword}, '%') OR category ILIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </sql>
+
+    <select id="sumBalanceByType" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+            (SELECT COALESCE(SUM(a.initial_balance), 0)
+             FROM fin_accounts a
+             WHERE a.book_id = #{bookId}
+               AND a.account_type = #{accountType}
+               AND a.is_leaf = TRUE
+               AND a.is_archived = FALSE)
+            +
+            (SELECT COALESCE(SUM(
+                CASE
+                    WHEN #{accountType} = 'ASSET' AND e.direction = 'DEBIT' THEN e.amount
+                    WHEN #{accountType} = 'ASSET' AND e.direction = 'CREDIT' THEN -e.amount
+                    WHEN #{accountType} = 'LIABILITY' AND e.direction = 'CREDIT' THEN e.amount
+                    WHEN #{accountType} = 'LIABILITY' AND e.direction = 'DEBIT' THEN -e.amount
+                    ELSE 0
+                END
+            ), 0)
+             FROM fin_entries e
+             JOIN fin_accounts a ON e.account_id = a.id
+             JOIN fin_transactions t ON e.trans_id = t.id
+             WHERE e.book_id = #{bookId}
+               AND a.account_type = #{accountType}
+               <if test="asOf != null">
+                   AND t.trans_date &lt;= #{asOf}
+               </if>)
+        , 0)
+    </select>
+
+    <select id="listAccountBalances" resultType="java.util.Map">
+        SELECT
+            a.id,
+            a.name,
+            a.account_type,
+            a.icon,
+            COALESCE(a.initial_balance, 0) + COALESCE(SUM(
+                CASE
+                    WHEN a.account_type = 'ASSET' AND e.direction = 'DEBIT' THEN e.amount
+                    WHEN a.account_type = 'ASSET' AND e.direction = 'CREDIT' THEN -e.amount
+                    WHEN a.account_type = 'LIABILITY' AND e.direction = 'CREDIT' THEN e.amount
+                    WHEN a.account_type = 'LIABILITY' AND e.direction = 'DEBIT' THEN -e.amount
+                    ELSE 0
+                END
+            ), 0) AS balance
+        FROM fin_accounts a
+        LEFT JOIN fin_entries e ON a.id = e.account_id AND e.book_id = #{bookId}
+        WHERE a.book_id = #{bookId}
+          AND a.account_type IN ('ASSET', 'LIABILITY')
+          AND a.is_leaf = TRUE
+          AND a.is_archived = FALSE
+        GROUP BY a.id, a.name, a.account_type, a.icon, a.initial_balance, a.sort_order
+        ORDER BY a.sort_order ASC NULLS LAST, a.id ASC
+    </select>
+
+    <select id="selectDailyIncomeExpense" resultType="java.util.Map">
+        SELECT
+            t.trans_date::date AS date,
+            COALESCE(SUM(CASE
+                WHEN a.account_type = 'INCOME' AND e.direction = 'CREDIT' THEN e.amount
+                WHEN a.account_type = 'INCOME' AND e.direction = 'DEBIT' THEN -e.amount
+                ELSE 0
+            END), 0) AS income,
+            COALESCE(SUM(CASE
+                WHEN a.account_type = 'EXPENSE' AND e.direction = 'DEBIT' THEN e.amount
+                WHEN a.account_type = 'EXPENSE' AND e.direction = 'CREDIT' THEN -e.amount
+                ELSE 0
+            END), 0) AS expense
+        FROM fin_transactions t
+        JOIN fin_entries e ON t.id = e.trans_id
+        JOIN fin_accounts a ON e.account_id = a.id
+        WHERE t.book_id = #{bookId}
+          AND e.book_id = #{bookId}
+          AND a.account_type IN ('INCOME', 'EXPENSE')
+          AND t.trans_date &gt;= #{startDate}
+          AND t.trans_date &lt;= #{endDate}
+        GROUP BY t.trans_date::date
+        ORDER BY t.trans_date::date
+    </select>
+
+    <select id="selectCategoryTotals" resultType="java.util.Map">
+        SELECT
+            a.name,
+            a.icon,
+            a.account_type,
+            COALESCE(SUM(
+                CASE
+                    WHEN a.account_type = 'EXPENSE' AND e.direction = 'DEBIT' THEN e.amount
+                    WHEN a.account_type = 'EXPENSE' AND e.direction = 'CREDIT' THEN -e.amount
+                    WHEN a.account_type = 'INCOME' AND e.direction = 'CREDIT' THEN e.amount
+                    WHEN a.account_type = 'INCOME' AND e.direction = 'DEBIT' THEN -e.amount
+                    ELSE 0
+                END
+            ), 0) AS amount
+        FROM fin_entries e
+        JOIN fin_accounts a ON e.account_id = a.id
+        JOIN fin_transactions t ON e.trans_id = t.id
+        WHERE e.book_id = #{bookId}
+          AND a.account_type = #{accountType}
+          <if test="startDate != null">
+              AND t.trans_date &gt;= #{startDate}
+          </if>
+          <if test="endDate != null">
+              AND t.trans_date &lt;= #{endDate}
+          </if>
+        GROUP BY a.id, a.name, a.icon, a.account_type
+        HAVING COALESCE(SUM(
+            CASE
+                WHEN a.account_type = 'EXPENSE' AND e.direction = 'DEBIT' THEN e.amount
+                WHEN a.account_type = 'EXPENSE' AND e.direction = 'CREDIT' THEN -e.amount
+                WHEN a.account_type = 'INCOME' AND e.direction = 'CREDIT' THEN e.amount
+                WHEN a.account_type = 'INCOME' AND e.direction = 'DEBIT' THEN -e.amount
+                ELSE 0
+            END
+        ), 0) &gt; 0
+        ORDER BY amount DESC
+    </select>
+
+    <select id="countRecords" resultType="long">
+        <include refid="ClassifiedRecords"/>
+        SELECT COUNT(*)
+        FROM classified
+        WHERE 1 = 1
+        <include refid="RecordFilters"/>
+    </select>
+
+    <select id="selectRecords" resultType="java.util.Map">
+        <include refid="ClassifiedRecords"/>
+        SELECT id, type, category, icon, ABS(amount) AS amount, note, account, account_id, trans_date
+        FROM classified
+        WHERE 1 = 1
+        <include refid="RecordFilters"/>
+        ORDER BY trans_date DESC, id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="selectMonthlySummary" resultType="java.util.Map">
+        <include refid="ClassifiedRecords"/>
+        SELECT
+            COALESCE(SUM(CASE WHEN type = 'income' THEN ABS(amount) ELSE 0 END), 0) AS income,
+            COALESCE(SUM(CASE WHEN type = 'expense' THEN ABS(amount) ELSE 0 END), 0) AS expense,
+            COUNT(CASE WHEN type = 'income' THEN 1 END) AS income_count,
+            COUNT(CASE WHEN type = 'expense' THEN 1 END) AS expense_count
+        FROM classified
+        WHERE trans_date &gt;= #{startDate}
+          AND trans_date &lt;= #{endDate}
+    </select>
+
+    <select id="selectTopRecords" resultType="java.util.Map">
+        <include refid="ClassifiedRecords"/>
+        SELECT id, type, category, icon, ABS(amount) AS amount, note
+        FROM classified
+        WHERE type = #{type}
+          AND trans_date &gt;= #{startDate}
+          AND trans_date &lt;= #{endDate}
+        ORDER BY ABS(amount) DESC, trans_date DESC, id DESC
+        LIMIT #{size}
+    </select>
+</mapper>
