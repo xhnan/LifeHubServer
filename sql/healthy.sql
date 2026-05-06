@@ -1,10 +1,10 @@
 
 
 -- ==========================================
--- 1. 健康画像扩展表 (healthy_user_profiles)
+-- 1. 健康画像扩展表 (health_user_profiles)
 -- 维度：2048（最详细的全局画像，供 AI 深度理解用户）
 -- ==========================================
-CREATE TABLE healthy_user_profiles (
+CREATE TABLE health_user_profiles (
                                        id BIGSERIAL PRIMARY KEY,
                                        user_id BIGINT UNIQUE NOT NULL,
                                        birth_date DATE,
@@ -17,24 +17,24 @@ CREATE TABLE healthy_user_profiles (
                                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE healthy_user_profiles IS '健康助手特化的用户画像扩展表';
-COMMENT ON COLUMN healthy_user_profiles.id IS '画像记录独立主键，自增BIGINT';
-COMMENT ON COLUMN healthy_user_profiles.user_id IS '关联主用户表的唯一标识';
-COMMENT ON COLUMN healthy_user_profiles.birth_date IS '出生日期，用于动态计算年龄和基础代谢';
-COMMENT ON COLUMN healthy_user_profiles.gender IS '性别生理特征，影响卡路里计算公式';
-COMMENT ON COLUMN healthy_user_profiles.height_cm IS '身高（厘米）';
-COMMENT ON COLUMN healthy_user_profiles.baseline_weight_kg IS '初始体重（千克）';
-COMMENT ON COLUMN healthy_user_profiles.target_weight_kg IS '目标体重（千克）';
-COMMENT ON COLUMN healthy_user_profiles.health_profile_embedding IS '用户健康特征与偏好的极高精度向量化表示，用于AI深度个性化响应 (2048维)';
-COMMENT ON COLUMN healthy_user_profiles.created_at IS '创建时间';
-COMMENT ON COLUMN healthy_user_profiles.updated_at IS '更新时间';
+COMMENT ON TABLE health_user_profiles IS '健康助手特化的用户画像扩展表';
+COMMENT ON COLUMN health_user_profiles.id IS '画像记录独立主键，自增BIGINT';
+COMMENT ON COLUMN health_user_profiles.user_id IS '关联主用户表的唯一标识';
+COMMENT ON COLUMN health_user_profiles.birth_date IS '出生日期，用于动态计算年龄和基础代谢';
+COMMENT ON COLUMN health_user_profiles.gender IS '性别生理特征，影响卡路里计算公式';
+COMMENT ON COLUMN health_user_profiles.height_cm IS '身高（厘米）';
+COMMENT ON COLUMN health_user_profiles.baseline_weight_kg IS '初始体重（千克）';
+COMMENT ON COLUMN health_user_profiles.target_weight_kg IS '目标体重（千克）';
+COMMENT ON COLUMN health_user_profiles.health_profile_embedding IS '用户健康特征与偏好的极高精度向量化表示，用于AI深度个性化响应 (2048维)';
+COMMENT ON COLUMN health_user_profiles.created_at IS '创建时间';
+COMMENT ON COLUMN health_user_profiles.updated_at IS '更新时间';
 
 
 -- ==========================================
--- 2. 每日活动汇总表 (healthy_daily_summaries)
+-- 2. 每日活动汇总表 (health_daily_summaries)
 -- 维度：1024（标准的段落级文本总结）
 -- ==========================================
-CREATE TABLE healthy_daily_summaries (
+CREATE TABLE health_daily_summaries (
                                          id BIGSERIAL PRIMARY KEY,
                                          user_id BIGINT NOT NULL,
                                          record_date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -49,25 +49,25 @@ CREATE TABLE healthy_daily_summaries (
                                          UNIQUE(user_id, record_date)
 );
 
-COMMENT ON TABLE healthy_daily_summaries IS '每日整体活动与消耗汇总表';
-COMMENT ON COLUMN healthy_daily_summaries.id IS '汇总记录独立主键，自增BIGINT';
-COMMENT ON COLUMN healthy_daily_summaries.user_id IS '关联的用户ID';
-COMMENT ON COLUMN healthy_daily_summaries.record_date IS '记录日期';
-COMMENT ON COLUMN healthy_daily_summaries.total_steps IS '当日累计总步数';
-COMMENT ON COLUMN healthy_daily_summaries.active_calories_kcal IS '活动消耗卡路里（千卡）';
-COMMENT ON COLUMN healthy_daily_summaries.resting_calories_kcal IS '静息/基础代谢消耗卡路里（千卡）';
-COMMENT ON COLUMN healthy_daily_summaries.total_distance_meters IS '当日累计估算距离（米）';
-COMMENT ON COLUMN healthy_daily_summaries.active_minutes IS '当日活跃/运动总时长（分钟）';
-COMMENT ON COLUMN healthy_daily_summaries.daily_context_embedding IS '当日活动情况的自然语言总结向量，供AI分析纪律性 (1024维)';
-COMMENT ON COLUMN healthy_daily_summaries.created_at IS '创建时间';
-COMMENT ON COLUMN healthy_daily_summaries.updated_at IS '更新时间';
+COMMENT ON TABLE health_daily_summaries IS '每日整体活动与消耗汇总表';
+COMMENT ON COLUMN health_daily_summaries.id IS '汇总记录独立主键，自增BIGINT';
+COMMENT ON COLUMN health_daily_summaries.user_id IS '关联的用户ID';
+COMMENT ON COLUMN health_daily_summaries.record_date IS '记录日期';
+COMMENT ON COLUMN health_daily_summaries.total_steps IS '当日累计总步数';
+COMMENT ON COLUMN health_daily_summaries.active_calories_kcal IS '活动消耗卡路里（千卡）';
+COMMENT ON COLUMN health_daily_summaries.resting_calories_kcal IS '静息/基础代谢消耗卡路里（千卡）';
+COMMENT ON COLUMN health_daily_summaries.total_distance_meters IS '当日累计估算距离（米）';
+COMMENT ON COLUMN health_daily_summaries.active_minutes IS '当日活跃/运动总时长（分钟）';
+COMMENT ON COLUMN health_daily_summaries.daily_context_embedding IS '当日活动情况的自然语言总结向量，供AI分析纪律性 (1024维)';
+COMMENT ON COLUMN health_daily_summaries.created_at IS '创建时间';
+COMMENT ON COLUMN health_daily_summaries.updated_at IS '更新时间';
 
 
 -- ==========================================
--- 3. 体重相关表 (healthy_weight_logs)
+-- 3. 体重相关表 (health_weight_logs)
 -- 维度：无（纯数值结构化数据，无需向量化）
 -- ==========================================
-CREATE TABLE healthy_weight_logs (
+CREATE TABLE health_weight_logs (
                                      id BIGSERIAL PRIMARY KEY,
                                      user_id BIGINT NOT NULL,
                                      record_date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -77,21 +77,21 @@ CREATE TABLE healthy_weight_logs (
                                      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE healthy_weight_logs IS '用户体重与体脂记录明细表';
-COMMENT ON COLUMN healthy_weight_logs.id IS '体重记录独立主键，自增BIGINT';
-COMMENT ON COLUMN healthy_weight_logs.user_id IS '关联的用户ID';
-COMMENT ON COLUMN healthy_weight_logs.record_date IS '记录日期';
-COMMENT ON COLUMN healthy_weight_logs.weight_kg IS '体重（千克）';
-COMMENT ON COLUMN healthy_weight_logs.body_fat_percentage IS '体脂率（百分比）';
-COMMENT ON COLUMN healthy_weight_logs.bmi IS '身体质量指数 (BMI)';
-COMMENT ON COLUMN healthy_weight_logs.created_at IS '数据写入时间';
+COMMENT ON TABLE health_weight_logs IS '用户体重与体脂记录明细表';
+COMMENT ON COLUMN health_weight_logs.id IS '体重记录独立主键，自增BIGINT';
+COMMENT ON COLUMN health_weight_logs.user_id IS '关联的用户ID';
+COMMENT ON COLUMN health_weight_logs.record_date IS '记录日期';
+COMMENT ON COLUMN health_weight_logs.weight_kg IS '体重（千克）';
+COMMENT ON COLUMN health_weight_logs.body_fat_percentage IS '体脂率（百分比）';
+COMMENT ON COLUMN health_weight_logs.bmi IS '身体质量指数 (BMI)';
+COMMENT ON COLUMN health_weight_logs.created_at IS '数据写入时间';
 
 
 -- ==========================================
--- 4. 运动与活动明细表 (healthy_activities)
+-- 4. 运动与活动明细表 (health_activities)
 -- 维度：512（较短的单次运动感受描述）
 -- ==========================================
-CREATE TABLE healthy_activities (
+CREATE TABLE health_activities (
                                     id BIGSERIAL PRIMARY KEY,
                                     user_id BIGINT NOT NULL,
                                     activity_type VARCHAR(50) NOT NULL,
@@ -103,23 +103,23 @@ CREATE TABLE healthy_activities (
                                     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE healthy_activities IS '单次主动运动与锻炼记录明细表';
-COMMENT ON COLUMN healthy_activities.id IS '运动记录独立主键，自增BIGINT';
-COMMENT ON COLUMN healthy_activities.user_id IS '关联的用户ID';
-COMMENT ON COLUMN healthy_activities.activity_type IS '运动类型 (如: running, swimming, weightlifting)';
-COMMENT ON COLUMN healthy_activities.start_time IS '运动开始时间';
-COMMENT ON COLUMN healthy_activities.duration_minutes IS '运动时长（分钟）';
-COMMENT ON COLUMN healthy_activities.calories_burned IS '消耗卡路里评估（千卡）';
-COMMENT ON COLUMN healthy_activities.description IS '运动详情文本描述，如用户的感受或具体内容';
-COMMENT ON COLUMN healthy_activities.activity_embedding IS '运动详情的短文本向量表示，支持自然语言检索该次运动 (512维)';
-COMMENT ON COLUMN healthy_activities.created_at IS '数据写入时间';
+COMMENT ON TABLE health_activities IS '单次主动运动与锻炼记录明细表';
+COMMENT ON COLUMN health_activities.id IS '运动记录独立主键，自增BIGINT';
+COMMENT ON COLUMN health_activities.user_id IS '关联的用户ID';
+COMMENT ON COLUMN health_activities.activity_type IS '运动类型 (如: running, swimming, weightlifting)';
+COMMENT ON COLUMN health_activities.start_time IS '运动开始时间';
+COMMENT ON COLUMN health_activities.duration_minutes IS '运动时长（分钟）';
+COMMENT ON COLUMN health_activities.calories_burned IS '消耗卡路里评估（千卡）';
+COMMENT ON COLUMN health_activities.description IS '运动详情文本描述，如用户的感受或具体内容';
+COMMENT ON COLUMN health_activities.activity_embedding IS '运动详情的短文本向量表示，支持自然语言检索该次运动 (512维)';
+COMMENT ON COLUMN health_activities.created_at IS '数据写入时间';
 
 
 -- ==========================================
--- 5. 饮食相关明细表 (healthy_diet_logs)
+-- 5. 饮食相关明细表 (health_diet_logs)
 -- 维度：256（超短文本，食物名词罗列）
 -- ==========================================
-CREATE TABLE healthy_diet_logs (
+CREATE TABLE health_diet_logs (
                                    id BIGSERIAL PRIMARY KEY,
                                    user_id BIGINT NOT NULL,
                                    meal_time TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -133,25 +133,25 @@ CREATE TABLE healthy_diet_logs (
                                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE healthy_diet_logs IS '饮食记录与营养摄入明细表';
-COMMENT ON COLUMN healthy_diet_logs.id IS '饮食记录独立主键，自增BIGINT';
-COMMENT ON COLUMN healthy_diet_logs.user_id IS '关联的用户ID';
-COMMENT ON COLUMN healthy_diet_logs.meal_time IS '进餐具体时间';
-COMMENT ON COLUMN healthy_diet_logs.meal_type IS '餐别 (如: breakfast, lunch, dinner, snack)';
-COMMENT ON COLUMN healthy_diet_logs.food_items IS '食物明细文本';
-COMMENT ON COLUMN healthy_diet_logs.total_calories IS '总摄入热量（千卡）';
-COMMENT ON COLUMN healthy_diet_logs.protein_g IS '蛋白质摄入量（克）';
-COMMENT ON COLUMN healthy_diet_logs.carbs_g IS '碳水化合物摄入量（克）';
-COMMENT ON COLUMN healthy_diet_logs.fat_g IS '脂肪摄入量（克）';
-COMMENT ON COLUMN healthy_diet_logs.food_embedding IS '食物明细的超短文本向量表示，用于AI判断膳食结构相似度 (256维)';
-COMMENT ON COLUMN healthy_diet_logs.created_at IS '数据写入时间';
+COMMENT ON TABLE health_diet_logs IS '饮食记录与营养摄入明细表';
+COMMENT ON COLUMN health_diet_logs.id IS '饮食记录独立主键，自增BIGINT';
+COMMENT ON COLUMN health_diet_logs.user_id IS '关联的用户ID';
+COMMENT ON COLUMN health_diet_logs.meal_time IS '进餐具体时间';
+COMMENT ON COLUMN health_diet_logs.meal_type IS '餐别 (如: breakfast, lunch, dinner, snack)';
+COMMENT ON COLUMN health_diet_logs.food_items IS '食物明细文本';
+COMMENT ON COLUMN health_diet_logs.total_calories IS '总摄入热量（千卡）';
+COMMENT ON COLUMN health_diet_logs.protein_g IS '蛋白质摄入量（克）';
+COMMENT ON COLUMN health_diet_logs.carbs_g IS '碳水化合物摄入量（克）';
+COMMENT ON COLUMN health_diet_logs.fat_g IS '脂肪摄入量（克）';
+COMMENT ON COLUMN health_diet_logs.food_embedding IS '食物明细的超短文本向量表示，用于AI判断膳食结构相似度 (256维)';
+COMMENT ON COLUMN health_diet_logs.created_at IS '数据写入时间';
 
 
 -- ==========================================
--- 6. 健康目标表 (healthy_goals)
+-- 6. 健康目标表 (health_goals)
 -- 维度：1024（标准的段落级目标描述与策略）
 -- ==========================================
-CREATE TABLE healthy_goals (
+CREATE TABLE health_goals (
                                id BIGSERIAL PRIMARY KEY,
                                user_id BIGINT NOT NULL,
                                goal_type VARCHAR(50) NOT NULL,
@@ -162,29 +162,15 @@ CREATE TABLE healthy_goals (
                                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE healthy_goals IS '用户健康目标与里程碑表';
-COMMENT ON COLUMN healthy_goals.id IS '目标记录独立主键，自增BIGINT';
-COMMENT ON COLUMN healthy_goals.user_id IS '关联的用户ID';
-COMMENT ON COLUMN healthy_goals.goal_type IS '目标类型 (如: weight_loss, step_goal, muscle_gain)';
-COMMENT ON COLUMN healthy_goals.target_value IS '目标数值';
-COMMENT ON COLUMN healthy_goals.deadline IS '期望达成日期';
-COMMENT ON COLUMN healthy_goals.status IS '状态 (active, achieved, abandoned)';
-COMMENT ON COLUMN healthy_goals.goal_embedding IS '自然语言目标的向量表示，供AI持续监控并给出鼓励策略 (1024维)';
-COMMENT ON COLUMN healthy_goals.created_at IS '数据写入时间';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+COMMENT ON TABLE health_goals IS '用户健康目标与里程碑表';
+COMMENT ON COLUMN health_goals.id IS '目标记录独立主键，自增BIGINT';
+COMMENT ON COLUMN health_goals.user_id IS '关联的用户ID';
+COMMENT ON COLUMN health_goals.goal_type IS '目标类型 (如: weight_loss, step_goal, muscle_gain)';
+COMMENT ON COLUMN health_goals.target_value IS '目标数值';
+COMMENT ON COLUMN health_goals.deadline IS '期望达成日期';
+COMMENT ON COLUMN health_goals.status IS '状态 (active, achieved, abandoned)';
+COMMENT ON COLUMN health_goals.goal_embedding IS '自然语言目标的向量表示，供AI持续监控并给出鼓励策略 (1024维)';
+COMMENT ON COLUMN health_goals.created_at IS '数据写入时间';
 
 -- 确保已经安装并启用了 pgvector 扩展
 -- CREATE EXTENSION IF NOT EXISTS vector;
@@ -315,58 +301,6 @@ COMMENT ON COLUMN health_psy_knowledge_base.updated_at IS '更新时间';
 -- 为知识库向量字段创建 HNSW 索引
 CREATE INDEX idx_health_psy_kb_vector ON health_psy_knowledge_base USING hnsw (content_vector vector_cosine_ops);
 
-
-
-CREATE TABLE IF NOT EXISTS health_psy_profiles (
-                                                   id BIGSERIAL PRIMARY KEY,
-                                                   user_id BIGINT UNIQUE NOT NULL,
-                                                   mbti_type VARCHAR(20),
-                                                   enneagram_type VARCHAR(20),
-                                                   baseline_stress_level INTEGER,
-                                                   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                                                   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS health_psy_daily_moods (
-                                                      id BIGSERIAL PRIMARY KEY,
-                                                      user_id BIGINT NOT NULL,
-                                                      mood_score INTEGER,
-                                                      primary_emotion VARCHAR(50),
-                                                      journal_text TEXT,
-                                                      record_date DATE NOT NULL DEFAULT CURRENT_DATE,
-                                                      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS health_psy_assessments (
-                                                      id BIGSERIAL PRIMARY KEY,
-                                                      user_id BIGINT NOT NULL,
-                                                      scale_name VARCHAR(100) NOT NULL,
-                                                      total_score INTEGER,
-                                                      severity_level VARCHAR(50),
-                                                      result_analysis TEXT,
-                                                      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS health_psy_chat_memories (
-                                                        id BIGSERIAL PRIMARY KEY,
-                                                        user_id BIGINT NOT NULL,
-                                                        role VARCHAR(20) NOT NULL,
-                                                        content TEXT NOT NULL,
-                                                        emotion_tags TEXT,
-                                                        content_vector VECTOR(1024),
-                                                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS health_psy_knowledge_base (
-                                                         id BIGSERIAL PRIMARY KEY,
-                                                         title VARCHAR(255) NOT NULL,
-                                                         category VARCHAR(100),
-                                                         content TEXT NOT NULL,
-                                                         content_vector VECTOR(1024),
-                                                         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                                                         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE IF NOT EXISTS health_risk_flags (
                                                  id BIGSERIAL PRIMARY KEY,
                                                  user_id BIGINT NOT NULL,
@@ -375,15 +309,6 @@ CREATE TABLE IF NOT EXISTS health_risk_flags (
                                                  reason TEXT NOT NULL,
                                                  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE INDEX IF NOT EXISTS health_psy_chat_memories_vector_idx
-    ON health_psy_chat_memories USING hnsw (content_vector vector_cosine_ops);
-
-CREATE INDEX IF NOT EXISTS health_psy_knowledge_base_vector_idx
-    ON health_psy_knowledge_base USING hnsw (content_vector vector_cosine_ops);
-
-
-
 
 CREATE TABLE public.health_agent_advice_records (
                                                     id BIGSERIAL PRIMARY KEY,

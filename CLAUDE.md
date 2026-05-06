@@ -250,6 +250,20 @@ List<YourEntity> selectCustomDataByUserId(Long userId);
 
 **Development Database**: PostgreSQL at `120.78.0.54:6252/LifeHub`
 
+### Database Query Skill
+
+Use the script `scripts/dbq.py` to query the database directly:
+
+```bash
+python scripts/dbq.py tables              # List all tables with sizes
+python scripts/dbq.py desc <table>        # Describe table schema
+python scripts/dbq.py count <table>       # Count rows in table
+python scripts/dbq.py query "<sql>"       # Execute arbitrary SQL
+python scripts/dbq.py search <table> <col> <value>  # Search by value
+```
+
+**Important**: In the actual database, all health tables use the prefix `health_` (e.g., `health_activities`, `health_user_profiles`), NOT `healthy_` as in the entity class names or sql files.
+
 ## Additional Services
 
 ### gRPC Service
