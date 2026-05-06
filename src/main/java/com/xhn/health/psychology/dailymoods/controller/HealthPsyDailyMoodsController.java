@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,6 +37,7 @@ public class HealthPsyDailyMoodsController {
             @RequestBody HealthPsyDailyMoods healthPsyDailyMoods
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthPsyDailyMoods.setUserId(userId);
                     boolean result = healthPsyDailyMoodsService.save(healthPsyDailyMoods);
@@ -49,6 +51,7 @@ public class HealthPsyDailyMoodsController {
             @Parameter(description = "记录ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthPsyDailyMoods mood = healthPsyDailyMoodsService.getById(id);
                     if (mood == null) {
@@ -92,6 +95,7 @@ public class HealthPsyDailyMoodsController {
     @Operation(summary = "获取我的心情记录列表")
     public Mono<ResponseResult<List<HealthPsyDailyMoods>>> getMyMoods() {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthPsyDailyMoods> moods = healthPsyDailyMoodsService.getMoodsByUserId(userId);
                     return ResponseResult.success(moods);
@@ -102,6 +106,7 @@ public class HealthPsyDailyMoodsController {
     @Operation(summary = "获取我的最新心情记录")
     public Mono<ResponseResult<HealthPsyDailyMoods>> getLatestMood() {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthPsyDailyMoods mood = healthPsyDailyMoodsService.getLatestMoodByUserId(userId);
                     return mood != null ? ResponseResult.success(mood) : ResponseResult.<HealthPsyDailyMoods>error("未找到心情记录");
@@ -114,6 +119,7 @@ public class HealthPsyDailyMoodsController {
             @Parameter(description = "记录日期") @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthPsyDailyMoods mood = healthPsyDailyMoodsService.getMoodByUserIdAndDate(userId, recordDate);
                     return mood != null ? ResponseResult.success(mood) : ResponseResult.<HealthPsyDailyMoods>error("未找到该日期的记录");
@@ -127,6 +133,7 @@ public class HealthPsyDailyMoodsController {
             @Parameter(description = "结束日期") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthPsyDailyMoods> moods = healthPsyDailyMoodsService.getMoodsByUserIdAndDateRange(userId, startDate, endDate);
                     return ResponseResult.success(moods);

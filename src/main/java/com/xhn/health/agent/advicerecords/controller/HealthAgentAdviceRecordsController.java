@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class HealthAgentAdviceRecordsController {
     @Operation(summary = "Create advice record")
     public Mono<ResponseResult<Boolean>> add(@RequestBody HealthAgentAdviceRecords adviceRecord) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     adviceRecord.setUserId(userId);
                     boolean result = healthAgentAdviceRecordsService.save(adviceRecord);
@@ -37,6 +39,7 @@ public class HealthAgentAdviceRecordsController {
     @Operation(summary = "Delete advice record")
     public Mono<ResponseResult<Boolean>> delete(@Parameter(description = "ID") @PathVariable Long id) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthAgentAdviceRecords adviceRecord = healthAgentAdviceRecordsService.getById(id);
                     if (adviceRecord == null) {
@@ -77,6 +80,7 @@ public class HealthAgentAdviceRecordsController {
             @RequestParam(required = false) String agentType,
             @RequestParam(required = false) Boolean activeOnly) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthAgentAdviceRecords> list;
                     if (Boolean.TRUE.equals(activeOnly)) {

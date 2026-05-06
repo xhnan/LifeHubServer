@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class HealthGoalsController {
             @RequestBody HealthGoals healthGoal
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthGoal.setUserId(userId);
                     boolean result = healthGoalsService.save(healthGoal);
@@ -47,6 +49,7 @@ public class HealthGoalsController {
             @Parameter(description = "目标ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthGoals goal = healthGoalsService.getById(id);
                     if (goal == null) {
@@ -93,6 +96,7 @@ public class HealthGoalsController {
             @Parameter(description = "目标类型") @RequestParam(required = false) String goalType
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthGoals> goals;
                     if (status != null && !status.isEmpty()) {

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class HealthAgentCheckinsController {
     @Operation(summary = "Create checkin")
     public Mono<ResponseResult<Boolean>> add(@RequestBody HealthAgentCheckins checkin) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     checkin.setUserId(userId);
                     boolean result = healthAgentCheckinsService.save(checkin);
@@ -37,6 +39,7 @@ public class HealthAgentCheckinsController {
     @Operation(summary = "Delete checkin")
     public Mono<ResponseResult<Boolean>> delete(@Parameter(description = "ID") @PathVariable Long id) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthAgentCheckins checkin = healthAgentCheckinsService.getById(id);
                     if (checkin == null) {
@@ -75,6 +78,7 @@ public class HealthAgentCheckinsController {
     @Operation(summary = "Get my checkins")
     public Mono<ResponseResult<List<HealthAgentCheckins>>> my(@RequestParam(required = false) Long followupPlanId) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthAgentCheckins> list = followupPlanId != null
                             ? healthAgentCheckinsService.getCheckinsByFollowupPlanId(followupPlanId)

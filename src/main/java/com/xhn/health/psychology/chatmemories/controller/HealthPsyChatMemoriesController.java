@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class HealthPsyChatMemoriesController {
             @RequestBody HealthPsyChatMemories healthPsyChatMemories
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthPsyChatMemories.setUserId(userId);
                     boolean result = healthPsyChatMemoriesService.save(healthPsyChatMemories);
@@ -47,6 +49,7 @@ public class HealthPsyChatMemoriesController {
             @Parameter(description = "记录ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthPsyChatMemories chatMemory = healthPsyChatMemoriesService.getById(id);
                     if (chatMemory == null) {
@@ -92,6 +95,7 @@ public class HealthPsyChatMemoriesController {
             @Parameter(description = "角色") @RequestParam(required = false) String role
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthPsyChatMemories> chatMemories;
                     if (role != null && !role.isEmpty()) {
@@ -109,6 +113,7 @@ public class HealthPsyChatMemoriesController {
             @Parameter(description = "记录数量") @RequestParam(defaultValue = "10") int limit
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthPsyChatMemories> chatMemories = healthPsyChatMemoriesService.getRecentChatMemoriesByUserId(userId, limit);
                     return ResponseResult.success(chatMemories);

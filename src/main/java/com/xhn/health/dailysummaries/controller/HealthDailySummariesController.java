@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,6 +37,7 @@ public class HealthDailySummariesController {
             @RequestBody HealthDailySummaries healthDailySummary
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthDailySummary.setUserId(userId);
                     boolean result = healthDailySummariesService.save(healthDailySummary);
@@ -49,6 +51,7 @@ public class HealthDailySummariesController {
             @Parameter(description = "汇总ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthDailySummaries summary = healthDailySummariesService.getById(id);
                     if (summary == null) {
@@ -92,6 +95,7 @@ public class HealthDailySummariesController {
     @Operation(summary = "获取我的每日健康汇总列表")
     public Mono<ResponseResult<List<HealthDailySummaries>>> getMySummaries() {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthDailySummaries> summaries = healthDailySummariesService.getSummariesByUserId(userId);
                     return ResponseResult.success(summaries);
@@ -104,6 +108,7 @@ public class HealthDailySummariesController {
             @Parameter(description = "记录日期") @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthDailySummaries summary = healthDailySummariesService.getSummaryByUserIdAndDate(userId, recordDate);
                     return summary != null ? ResponseResult.success(summary) : ResponseResult.<HealthDailySummaries>error("未找到该日期的记录");
@@ -117,6 +122,7 @@ public class HealthDailySummariesController {
             @Parameter(description = "结束日期") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthDailySummaries> summaries = healthDailySummariesService.getSummariesByUserIdAndDateRange(userId, startDate, endDate);
                     return ResponseResult.success(summaries);

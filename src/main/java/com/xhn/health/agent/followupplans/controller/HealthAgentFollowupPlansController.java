@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class HealthAgentFollowupPlansController {
     @Operation(summary = "Create followup plan")
     public Mono<ResponseResult<Boolean>> add(@RequestBody HealthAgentFollowupPlans followupPlan) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     followupPlan.setUserId(userId);
                     boolean result = healthAgentFollowupPlansService.save(followupPlan);
@@ -37,6 +39,7 @@ public class HealthAgentFollowupPlansController {
     @Operation(summary = "Delete followup plan")
     public Mono<ResponseResult<Boolean>> delete(@Parameter(description = "ID") @PathVariable Long id) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthAgentFollowupPlans followupPlan = healthAgentFollowupPlansService.getById(id);
                     if (followupPlan == null) {
@@ -75,6 +78,7 @@ public class HealthAgentFollowupPlansController {
     @Operation(summary = "Get my followup plans")
     public Mono<ResponseResult<List<HealthAgentFollowupPlans>>> my(@RequestParam(required = false) Boolean activeOnly) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthAgentFollowupPlans> list = Boolean.TRUE.equals(activeOnly)
                             ? healthAgentFollowupPlansService.getActiveFollowupPlansByUserId(userId)

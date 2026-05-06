@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * 心理档案控制器
@@ -31,6 +32,7 @@ public class HealthPsyProfilesController {
             @RequestBody HealthPsyProfiles healthPsyProfiles
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthPsyProfiles.setUserId(userId);
                     boolean result = healthPsyProfilesService.save(healthPsyProfiles);
@@ -44,6 +46,7 @@ public class HealthPsyProfilesController {
             @Parameter(description = "档案ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthPsyProfiles profile = healthPsyProfilesService.getById(id);
                     if (profile == null) {
@@ -80,6 +83,7 @@ public class HealthPsyProfilesController {
     @Operation(summary = "获取我的心理档案")
     public Mono<ResponseResult<HealthPsyProfiles>> getMyProfile() {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthPsyProfiles profile = healthPsyProfilesService.getProfileByUserId(userId);
                     return profile != null ? ResponseResult.success(profile) : ResponseResult.<HealthPsyProfiles>error("未找到心理档案");
@@ -92,6 +96,7 @@ public class HealthPsyProfilesController {
             @RequestBody HealthPsyProfiles healthPsyProfiles
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthPsyProfiles.setUserId(userId);
                     HealthPsyProfiles existingProfile = healthPsyProfilesService.getProfileByUserId(userId);

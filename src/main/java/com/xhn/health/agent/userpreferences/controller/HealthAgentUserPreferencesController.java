@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class HealthAgentUserPreferencesController {
     @Operation(summary = "Create user preferences")
     public Mono<ResponseResult<Boolean>> add(@RequestBody HealthAgentUserPreferences preferences) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     preferences.setUserId(userId);
                     boolean result = healthAgentUserPreferencesService.save(preferences);
@@ -36,6 +38,7 @@ public class HealthAgentUserPreferencesController {
     @Operation(summary = "Delete user preferences")
     public Mono<ResponseResult<Boolean>> delete(@Parameter(description = "ID") @PathVariable Long id) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthAgentUserPreferences preferences = healthAgentUserPreferencesService.getById(id);
                     if (preferences == null) {
@@ -74,6 +77,7 @@ public class HealthAgentUserPreferencesController {
     @Operation(summary = "Get my user preferences")
     public Mono<ResponseResult<HealthAgentUserPreferences>> my() {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthAgentUserPreferences preferences = healthAgentUserPreferencesService.getByUserId(userId);
                     return preferences != null ? ResponseResult.success(preferences) : ResponseResult.<HealthAgentUserPreferences>error("未找到记录");

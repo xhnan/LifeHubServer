@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * 用户健康档案控制器
@@ -31,6 +32,7 @@ public class HealthUserProfilesController {
             @RequestBody HealthUserProfiles healthUserProfile
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthUserProfile.setUserId(userId);
                     boolean result = healthUserProfilesService.save(healthUserProfile);
@@ -44,6 +46,7 @@ public class HealthUserProfilesController {
             @Parameter(description = "档案ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthUserProfiles profile = healthUserProfilesService.getById(id);
                     if (profile == null) {
@@ -80,6 +83,7 @@ public class HealthUserProfilesController {
     @Operation(summary = "获取我的健康档案")
     public Mono<ResponseResult<HealthUserProfiles>> getMyProfile() {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthUserProfiles profile = healthUserProfilesService.getUserProfileByUserId(userId);
                     return profile != null ? ResponseResult.success(profile) : ResponseResult.<HealthUserProfiles>error("未找到健康档案");
@@ -92,6 +96,7 @@ public class HealthUserProfilesController {
             @RequestBody HealthUserProfiles healthUserProfile
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthUserProfile.setUserId(userId);
                     HealthUserProfiles existingProfile = healthUserProfilesService.getUserProfileByUserId(userId);

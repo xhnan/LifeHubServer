@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class HealthPsyAssessmentsController {
             @RequestBody HealthPsyAssessments healthPsyAssessments
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthPsyAssessments.setUserId(userId);
                     boolean result = healthPsyAssessmentsService.save(healthPsyAssessments);
@@ -47,6 +49,7 @@ public class HealthPsyAssessmentsController {
             @Parameter(description = "评估记录ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthPsyAssessments assessment = healthPsyAssessmentsService.getById(id);
                     if (assessment == null) {
@@ -92,6 +95,7 @@ public class HealthPsyAssessmentsController {
             @Parameter(description = "量表名称") @RequestParam(required = false) String scaleName
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthPsyAssessments> assessments;
                     if (scaleName != null && !scaleName.isEmpty()) {
@@ -107,6 +111,7 @@ public class HealthPsyAssessmentsController {
     @Operation(summary = "获取我的最新心理评估记录")
     public Mono<ResponseResult<HealthPsyAssessments>> getLatestAssessment() {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthPsyAssessments assessment = healthPsyAssessmentsService.getLatestAssessmentByUserId(userId);
                     return assessment != null ? ResponseResult.success(assessment) : ResponseResult.<HealthPsyAssessments>error("未找到评估记录");

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,6 +37,7 @@ public class HealthDietLogsController {
             @RequestBody HealthDietLogs healthDietLog
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     healthDietLog.setUserId(userId);
                     boolean result = healthDietLogsService.save(healthDietLog);
@@ -49,6 +51,7 @@ public class HealthDietLogsController {
             @Parameter(description = "日志ID") @PathVariable Long id
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(userId -> {
                     HealthDietLogs dietLog = healthDietLogsService.getById(id);
                     if (dietLog == null) {
@@ -94,6 +97,7 @@ public class HealthDietLogsController {
             @Parameter(description = "用餐类型") @RequestParam(required = false) String mealType
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthDietLogs> dietLogs;
                     if (mealType != null && !mealType.isEmpty()) {
@@ -111,6 +115,7 @@ public class HealthDietLogsController {
             @Parameter(description = "日期") @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         return SecurityUtils.getCurrentUserId()
+                .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     List<HealthDietLogs> dietLogs = healthDietLogsService.getDietLogsByUserIdAndDate(userId, date);
                     return ResponseResult.success(dietLogs);

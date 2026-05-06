@@ -248,7 +248,7 @@ List<YourEntity> selectCustomDataByUserId(Long userId);
 
 ## Database Connection
 
-**Development Database**: PostgreSQL at `120.78.0.54:6252/LifeHub`
+**Development Database**: PostgreSQL (see `application-dev.properties` for connection details)
 
 ### Database Query Skill
 
