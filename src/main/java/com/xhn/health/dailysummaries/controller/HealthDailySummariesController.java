@@ -111,7 +111,7 @@ public class HealthDailySummariesController {
                 .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthDailySummaries summary = healthDailySummariesService.getSummaryByUserIdAndDate(userId, recordDate);
-                    return summary != null ? ResponseResult.success(summary) : ResponseResult.<HealthDailySummaries>error("未找到该日期的记录");
+                    return ResponseResult.success(summary);
                 });
     }
 

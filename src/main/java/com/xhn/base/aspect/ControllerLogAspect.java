@@ -45,7 +45,8 @@ public class ControllerLogAspect {
         long startTime = System.currentTimeMillis();
         Object result = joinPoint.proceed();
 
-        if (result instanceof Mono<?> mono) {
+        if (result instanceof Mono<?>) {
+            Mono<?> mono = (Mono<?>) result;
             return mono.doOnSuccess(data -> {
                 long cost = System.currentTimeMillis() - startTime;
                 log.info("<<< {} cost: {}ms result: {}", methodName, cost, toJson(data));
@@ -55,7 +56,8 @@ public class ControllerLogAspect {
             });
         }
 
-        if (result instanceof Flux<?> flux) {
+        if (result instanceof Flux<?>) {
+            Flux<?> flux = (Flux<?>) result;
             AtomicLong count = new AtomicLong();
             return flux.doOnNext(item -> count.incrementAndGet())
                     .doOnComplete(() -> {

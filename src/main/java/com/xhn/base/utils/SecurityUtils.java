@@ -18,8 +18,8 @@ public class SecurityUtils {
         return ReactiveSecurityContextHolder.getContext()
                 .map(ctx -> {
                     Authentication auth = ctx.getAuthentication();
-                    if (auth != null && auth.getPrincipal() instanceof Long userId) {
-                        return userId;
+                    if (auth != null && auth.getPrincipal() instanceof Long) {
+                        return (Long) auth.getPrincipal();
                     }
                     return null;
                 })
@@ -44,21 +44,23 @@ public class SecurityUtils {
     }
 
     private static Long readApiKeyId(Authentication authentication) {
-        if (authentication == null || !(authentication.getDetails() instanceof Map<?, ?> details)) {
+        if (authentication == null || !(authentication.getDetails() instanceof Map<?, ?>)) {
             return null;
         }
+        Map<?, ?> details = (Map<?, ?>) authentication.getDetails();
         Object value = details.get(API_KEY_ID_KEY);
-        if (value instanceof Number number) {
-            return number.longValue();
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
         }
         return null;
     }
 
     private static String readAuthType(Authentication authentication) {
-        if (authentication == null || !(authentication.getDetails() instanceof Map<?, ?> details)) {
+        if (authentication == null || !(authentication.getDetails() instanceof Map<?, ?>)) {
             return null;
         }
+        Map<?, ?> details = (Map<?, ?>) authentication.getDetails();
         Object value = details.get(AUTH_TYPE_KEY);
-        return value instanceof String str ? str : null;
+        return value instanceof String ? (String) value : null;
     }
 }

@@ -109,7 +109,7 @@ public class HealthPsyDailyMoodsController {
                 .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthPsyDailyMoods mood = healthPsyDailyMoodsService.getLatestMoodByUserId(userId);
-                    return mood != null ? ResponseResult.success(mood) : ResponseResult.<HealthPsyDailyMoods>error("未找到心情记录");
+                    return ResponseResult.success(mood);
                 });
     }
 
@@ -122,7 +122,7 @@ public class HealthPsyDailyMoodsController {
                 .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthPsyDailyMoods mood = healthPsyDailyMoodsService.getMoodByUserIdAndDate(userId, recordDate);
-                    return mood != null ? ResponseResult.success(mood) : ResponseResult.<HealthPsyDailyMoods>error("未找到该日期的记录");
+                    return ResponseResult.success(mood);
                 });
     }
 

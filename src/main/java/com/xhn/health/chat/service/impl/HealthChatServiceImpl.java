@@ -146,8 +146,8 @@ public class HealthChatServiceImpl implements HealthChatService {
     private String extractFinalResponse(AgentFinalEvent finalEvent) {
         if (finalEvent.getState() != null) {
             Object finalResponse = finalEvent.getState().get("final_response");
-            if (finalResponse instanceof String value) {
-                return value;
+            if (finalResponse instanceof String) {
+                return (String) finalResponse;
             }
         }
         return null;

@@ -109,7 +109,7 @@ public class HealthWeightLogsController {
                 .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthWeightLogs weightLog = healthWeightLogsService.getLatestWeightLogByUserId(userId);
-                    return weightLog != null ? ResponseResult.success(weightLog) : ResponseResult.<HealthWeightLogs>error("未找到体重记录");
+                    return ResponseResult.success(weightLog);
                 });
     }
 
@@ -122,7 +122,7 @@ public class HealthWeightLogsController {
                 .publishOn(Schedulers.boundedElastic())
                 .map(userId -> {
                     HealthWeightLogs weightLog = healthWeightLogsService.getWeightLogByUserIdAndDate(userId, recordDate);
-                    return weightLog != null ? ResponseResult.success(weightLog) : ResponseResult.<HealthWeightLogs>error("未找到该日期的记录");
+                    return ResponseResult.success(weightLog);
                 });
     }
 
